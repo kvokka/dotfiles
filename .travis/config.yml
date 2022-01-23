@@ -1,0 +1,15 @@
+---
+last_check:
+  etag: '"0a83295b089e73decf74851a88f2b190"'
+  version: 1.8.10
+  at: 1562279572
+checked_completion: true
+completion_version: 1.8.10
+endpoints:
+  https://api.travis-ci.org/:
+    access_token: 
+repos:
+  kvokka/asdf-kubefedctl:
+    endpoint: https://api.travis-ci.org/
+  kvokka/kvokka.github.io:
+    endpoint: https://api.travis-ci.org/
