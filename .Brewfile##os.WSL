@@ -6,6 +6,7 @@ tap 'homebrew/core'
 tap 'homebrew/services'
 tap 'homebrew/cask-fonts'
 
+brew 'gcc'
 brew 'bat'
 brew 'cmake'
 brew 'curl'
