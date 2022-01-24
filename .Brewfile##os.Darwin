@@ -51,6 +51,7 @@ brew 'zsh'
 brew 'kompose'
 brew 'txn2/tap/kubefwd'
 brew 'wireshark'
+brew 'thefuck'
 
 cask 'calibre'
 cask 'firefox'
@@ -68,6 +69,8 @@ cask 'virtualbox'
 cask 'virtualbox-extension-pack'
 cask 'visual-studio-code'
 cask 'font-hack-nerd-font'
+
+cask 'google-cloud-sdk'
 
 cask 'font-cantarell'
 cask 'font-fira-code'

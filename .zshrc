@@ -31,6 +31,9 @@ autoload -U +X bashcompinit && bashcompinit
 
 # The next line enables shell command completion for gcloud.
 [ -f ~/.google-cloud-sdk/completion.zsh.inc ] && source ~/.google-cloud-sdk/completion.zsh.inc
+[ -f ~/.google-cloud-sdk/path.zsh.inc ] && source ~/.google-cloud-sdk/path.zsh.inc
+[ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
+[ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 
 # added by travis gem
 [ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
@@ -40,13 +43,8 @@ autoload -U +X bashcompinit && bashcompinit
 
 [ -f ~/.zshrc_os_specific ] && source ~/.zshrc_os_specific
 
-plugins=(asdf cp docker docker-compose dotenv gem git github golang kubectl
-minikube npm rails rake ruby sudo tig vagrant yarn zsh-navigation-tools helm
-
-zsh-kubectl-prompt
-zsh-apple-touchbar
-# zsh-iterm-touchbar
-)
+plugins+=(asdf cp docker dotenv gem git github golang kubectl globalias
+minikube npm rails rake ruby sudo tig vagrant yarn zsh-navigation-tools helm thefuck)
 
 plugins+=(zsh-autosuggestions) # from https://github.com/zsh-users/zsh-autosuggestions
 # ZSH_AUTOSUGGEST_STRATEGY=(history completion)

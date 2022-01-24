@@ -6,31 +6,40 @@
 
 system_type=$(uname -s)
 
+if [ -f "$HOME/.Brewfile" ]; then
+  echo "Updating homebrew bundle"
+  brew bundle --global
+fi
+
 if [ "$system_type" = "Darwin" ]; then
 
-  if [ -f "$HOME/.Brewfile" ]; then
-    echo "Updating homebrew bundle"
-    brew bundle --global
-  fi
+  git clone --depth=1 https://github.com/superbrothers/zsh-kubectl-prompt.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-kubectl-prompt
+  git clone --depth=1 https://github.com/zsh-users/zsh-apple-touchbar.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-apple-touchbar
 
-elif [[ "$system_type" = "WSL" ]] && [[ "$system_type" = "Linux" ]]; then
+elif [[ "$system_type" = "WSL" ]] || [[ "$system_type" = "Linux" ]]; then
 
   # gloud install, see https://cloud.google.com/sdk/docs/install#deb
   echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
   curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 
   apt-get update
-  apt install curl git zsh apt-transport-https ca-certificates gnupg google-cloud-sdk
+  apt install -y apt-transport-https ca-certificates google-cloud-sdk
 
   echo "Install fonts from here: https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k"
 
   pause
+
+else
+
+  echo 'Unsupported OS'
+  exit 1
+
 fi
 
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.9.0
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
 asdf install
 helm plugin install https://github.com/databus23/helm-diff
