@@ -18,7 +18,7 @@ elif [[ "$system_type" = "Linux" ]]; then
   curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
   sudo apt-get update
-  sudo apt-get install -y build-essential apt-transport-https ca-certificates gnupg google-cloud-sdk
+  sudo apt-get install -y build-essential apt-transport-https ca-certificates gnupg zlib1g-dev google-cloud-sdk
 
   echo "Install fonts from here: https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k"
 
