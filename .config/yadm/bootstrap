@@ -12,12 +12,13 @@ if [ "$system_type" = "Darwin" ]; then
   git clone --depth=1 https://github.com/superbrothers/zsh-kubectl-prompt.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-kubectl-prompt
   git clone --depth=1 https://github.com/zsh-users/zsh-apple-touchbar.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-apple-touchbar
 
-elif [[ "$system_type" = "WSL" ]] || [[ "$system_type" = "Linux" ]]; then
+elif [[ "$system_type" = "Linux" ]]; then
 
-  echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+  echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
   curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
   sudo apt-get update
+  sudo apt-get install apt-transport-https ca-certificates gnupg
   sudo apt-get install build-essential apt-transport-https ca-certificates google-cloud-sdk
 
   echo "Install fonts from here: https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k"

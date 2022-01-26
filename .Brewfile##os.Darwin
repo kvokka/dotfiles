@@ -52,6 +52,7 @@ brew 'kompose'
 brew 'txn2/tap/kubefwd'
 brew 'wireshark'
 brew 'thefuck'
+brew 'diff-so-fancy'
 
 cask 'calibre'
 cask 'firefox'
