@@ -12,8 +12,8 @@
 .gsutil/credstore2
 .gem/credentials
 .config/gcloud/*
-!.config/gcloud/cache/*
-!.config/gcloud/logs/*
+!.config/gcloud/cache/**/*
+!.config/gcloud/logs/**/*
 .config/hub
 
 porn/ram.dat
