@@ -4,7 +4,7 @@ hash brew &> /dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubuserconte
 
 [ -f /home/linuxbrew/.linuxbrew/bin/brew ] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-brew install yadm # Install `yadm` following https://yadm.io/docs/install instructions otherwise
+brew install --force yadm # Install `yadm` following https://yadm.io/docs/install instructions otherwise
 
 yadm pull || yadm clone git@github.com:kvokka/dotfiles.git
 yadm bootstrap
