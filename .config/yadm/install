@@ -6,6 +6,6 @@ hash brew &> /dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubuserconte
 
 brew install --force yadm # Install `yadm` following https://yadm.io/docs/install instructions otherwise
 
-yadm pull || yadm clone git@github.com:kvokka/dotfiles.git
+yadm pull || yadm clone https://github.com/kvokka/dotfiles.git
 yadm bootstrap
 yadm decrypt
