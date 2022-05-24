@@ -7,6 +7,11 @@ hash brew &> /dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubuserconte
 
 brew install --force yadm # Install `yadm` following https://yadm.io/docs/install instructions otherwise
 
+if [ -f "$HOME/./zshrc" ]; then
+  echo "Existed .zshrc file found. Its recommended to remove it to allow YADM to do its job"
+  rm -i ./zshrc
+fi
+
 yadm pull || yadm clone https://github.com/kvokka/dotfiles.git
 yadm bootstrap
 yadm decrypt

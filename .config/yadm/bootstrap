@@ -53,3 +53,6 @@ helm plugin install https://github.com/databus23/helm-diff
   tar zxvf "${KREW}.tar.gz" &&
   ./"${KREW}" install krew
 )
+
+echo 'Switch to your terminal to Hack nerd font'
+echo 'Done'
