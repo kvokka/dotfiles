@@ -9,8 +9,7 @@ fi
 
 if [ "$system_type" = "Darwin" ]; then
 
-  git clone --depth=1 https://github.com/superbrothers/zsh-kubectl-prompt.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-kubectl-prompt
-  git clone --depth=1 https://github.com/zsh-users/zsh-apple-touchbar.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-apple-touchbar
+  # nope
 
 elif [[ "$system_type" = "Linux" ]]; then
 
@@ -31,7 +30,7 @@ else
 
 fi
 
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.9.0
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.10.1
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
