@@ -9,4 +9,4 @@ python 3.10.4
 hub v2.14.2
 skaffold 1.24.1
 dive 0.10.0
-golang 1.17.6
+golang 1.18.2
