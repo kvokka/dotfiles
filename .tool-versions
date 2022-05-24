@@ -3,7 +3,7 @@ kubectl 1.22.9
 kubeseal 0.15.0
 minikube 1.25.2
 helm 3.8.2
-nodejs 14.14.0
+nodejs 14.19.3
 docker-slim 1.22
 python 3.8.6
 hub v2.14.2
