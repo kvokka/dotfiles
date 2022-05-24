@@ -49,8 +49,6 @@ cask 'firefox'
 cask 'skype'
 cask 'transmission'
 cask 'transmission-remote-gui'
-cask 'virtualbox'
-cask 'virtualbox-extension-pack'
 cask 'visual-studio-code'
 cask 'font-hack-nerd-font'
 
