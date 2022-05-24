@@ -1,8 +1,8 @@
 ruby 2.7.2
-kubectl 1.20.4
+kubectl 1.22.9
 kubeseal 0.15.0
-minikube 1.25.1
-helm 3.7.2
+minikube 1.25.2
+helm 3.8.2
 nodejs 14.14.0
 docker-slim 1.22
 python 3.8.6
