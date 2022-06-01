@@ -15,3 +15,6 @@ fi
 yadm pull || yadm clone https://github.com/kvokka/dotfiles.git
 yadm bootstrap
 yadm decrypt
+
+# This hack allows us to use ssh for R/W access only in the case if we decided to decrypt the secrets
+[ -f ~/.ssh/id_rsa ] && yadm remote set-url origin git@github.com:kvokka/dotfiles.git
