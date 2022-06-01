@@ -34,6 +34,9 @@ fi
 
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.10.1
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+chown $USER:$(id -g -n) $HOMEBREW_REPOSITORY/share
+chmod -R g-w,o-w $HOMEBREW_REPOSITORY/share
+
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 

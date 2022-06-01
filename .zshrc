@@ -43,6 +43,13 @@ autoload -U +X bashcompinit && bashcompinit
 
 [ -f ~/.zshrc_os_specific ] && source ~/.zshrc_os_specific
 
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$(brew --prefix)/share/zsh/site-functions:$FPATH
+
+  autoload -Uz compinit
+  compinit
+fi
+
 plugins+=(asdf cp docker dotenv gem git github golang kubectl
 # globalias
 minikube npm rails rake ruby sudo tig vagrant yarn zsh-navigation-tools helm thefuck)
