@@ -11,6 +11,9 @@ if [ "$system_type" = "Darwin" ]; then
 
   echo 'Additions for Mac'
 
+  # Add java jdk in gcloud desired path
+  sudo ln -sfn $(brew --prefix java)/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+
 elif [[ "$system_type" = "Linux" ]]; then
 
   echo 'Additions for Linux'

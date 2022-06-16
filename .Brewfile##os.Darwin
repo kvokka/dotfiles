@@ -50,6 +50,7 @@ brew 'redis'
 brew 'memcached'
 brew 'shared-mime-info'
 brew 'geoip'
+brew 'java'
 
 cask 'calibre'
 cask 'firefox'
