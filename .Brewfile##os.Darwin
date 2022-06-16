@@ -44,6 +44,11 @@ brew 'wireshark'
 brew 'thefuck'
 brew 'diff-so-fancy'
 
+brew 'mysql'
+brew 'redis'
+brew 'memcached'
+brew 'shared-mime-info'
+
 cask 'calibre'
 cask 'firefox'
 cask 'skype'
