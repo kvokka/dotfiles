@@ -1,6 +1,6 @@
 ruby 2.7.2
 kubectl 1.22.9
-kubeseal 0.15.0
+kubeseal 0.18.0
 minikube 1.25.2
 helm 3.8.2
 nodejs 14.19.3
