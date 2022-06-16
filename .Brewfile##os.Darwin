@@ -44,10 +44,12 @@ brew 'wireshark'
 brew 'thefuck'
 brew 'diff-so-fancy'
 
+# replay development
 brew 'mysql'
 brew 'redis'
 brew 'memcached'
 brew 'shared-mime-info'
+brew 'geoip'
 
 cask 'calibre'
 cask 'firefox'
