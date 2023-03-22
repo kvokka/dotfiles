@@ -91,3 +91,7 @@ alias rg='/usr/local/bin/rg'
 alias gsha='git rev-parse HEAD'
 alias gcom='git checkout master'
 alias crails='kubectl exec -c rails -it $(kubectl get po -l component=rp-rails -o name --chunk-size=1 | tail -1) -- bundle exec rails console'
+alias brepl='gcloud compute ssh --zone "us-central1-a" "mysql-rplication-test1"  --project "replay-gaming"'
+alias f=fuck
+
+export USE_GKE_GCLOUD_AUTH_PLUGIN=True

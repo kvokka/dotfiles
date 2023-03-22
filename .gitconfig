@@ -32,8 +32,7 @@
 	vb = version-bump
 [push]
 	default = simple
-
-
+	autoSetupRemote = true
 
 [help]
 	# Automatically correct and execute mistyped commands
