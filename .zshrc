@@ -86,11 +86,12 @@ alias tmp='mkdir -p tmp && cd tmp'
 
 export EDITOR="code -w"
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+export PATH="$PATH:$HOME/.local/bin"
 
 alias rg='/usr/local/bin/rg'
 alias gsha='git rev-parse HEAD'
 alias gcom='git checkout master'
-alias crails='kubectl exec -c rails -it $(kubectl get po -l component=rp-rails -o name --chunk-size=1 | tail -1) -- bundle exec rails console'
+alias crails='kubectl exec -c rails -it $(kubectl get po -l component=rp-rails-corg -o name --chunk-size=1 | tail -1) -- bundle exec rails console'
 alias brepl='gcloud compute ssh --zone "us-central1-a" "mysql-rplication-test1"  --project "replay-gaming"'
 alias f=fuck
 
