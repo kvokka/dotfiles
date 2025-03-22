@@ -96,3 +96,5 @@ alias brepl='gcloud compute ssh --zone "us-central1-a" "mysql-rplication-test1" 
 alias f=fuck
 
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+export ASDF_GOLANG_MOD_VERSION_ENABLED=true
+
