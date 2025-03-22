@@ -35,7 +35,6 @@ else
 
 fi
 
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.10.1
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 chown $USER:$(id -g -n) $HOMEBREW_REPOSITORY/share
 chmod -R g-w,o-w $HOMEBREW_REPOSITORY/share
@@ -60,9 +59,6 @@ helm plugin install https://github.com/databus23/helm-diff
   ./"${KREW}" install krew
 )
 
-# Bundle special flags for legacy Ruby gems
-# for geoip gem
-bundle config build.geoip-c --with-geoip-dir=/opt/homebrew/opt/geoip
 
 echo 'Switch to your terminal to Hack nerd font'
 echo 'Done'

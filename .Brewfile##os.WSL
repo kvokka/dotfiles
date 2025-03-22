@@ -5,6 +5,7 @@ tap 'homebrew/core'
 tap 'homebrew/services'
 tap 'homebrew/cask-fonts'
 
+brew 'asdf'
 brew 'gcc'
 brew 'bat'
 brew 'cmake'
@@ -30,13 +31,3 @@ brew 'shellcheck'
 brew 'zsh'
 brew 'thefuck'
 brew 'diff-so-fancy'
-
-# replay development
-brew 'mysql'
-brew 'redis'
-brew 'memcached'
-brew 'shared-mime-info'
-brew 'geoip'
-brew 'java'
-
-cask 'google-cloud-sdk'
