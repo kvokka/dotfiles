@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "sequential-thinking": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "mcp/sequentialthinking"
+      ],
+      "disabled": false,
+      "autoApprove": [
+        "sequentialthinking"
+      ]
+    },
+    "git": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--mount",
+        "type=bind,src=${workspaceFolder},dst=/git-workdir",
+        "mcp/git"
+      ],
+      "disabled": false,
+      "autoApprove": [
+        "git_show",
+        "git_log",
+        "git_diff",
+        "git_diff_staged",
+        "git_diff_unstaged",
+        "git_status"
+      ]
+    }
+  }
+}
