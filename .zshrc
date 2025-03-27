@@ -14,7 +14,7 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"
 ZSH_DOTENV_PROMPT=false
 
-. $HOME/.asdf/asdf.sh
+[[ -f ~/$HOME/.asdf/asdf.sh ]] && . $HOME/.asdf/asdf.sh
 
 fpath=(${ASDF_DIR}/completions $fpath)
 
@@ -32,8 +32,8 @@ autoload -U +X bashcompinit && bashcompinit
 # The next line enables shell command completion for gcloud.
 [ -f ~/.google-cloud-sdk/completion.zsh.inc ] && source ~/.google-cloud-sdk/completion.zsh.inc
 [ -f ~/.google-cloud-sdk/path.zsh.inc ] && source ~/.google-cloud-sdk/path.zsh.inc
-[ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
-[ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
+brew 2&>/dev/null && [ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
+brew 2&>/dev/null && [ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 
 # added by travis gem
 [ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
@@ -42,6 +42,8 @@ autoload -U +X bashcompinit && bashcompinit
 [ -f ~/.minikube/completion ] && source ~/.minikube/completion
 
 [ -f ~/.zshrc_os_specific ] && source ~/.zshrc_os_specific
+
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh-completions:$(brew --prefix)/share/zsh/site-functions:$FPATH
@@ -52,12 +54,16 @@ fi
 
 plugins+=(asdf cp docker dotenv gem git github golang kubectl
 # globalias
-minikube npm rails rake ruby sudo tig vagrant yarn zsh-navigation-tools helm thefuck)
+minikube npm rails rake ruby sudo tig vagrant yarn zsh-navigation-tools helm)
+
+thefuck 2&>/dev/null && plugin+=(thefuck)
 
 plugins+=(zsh-autosuggestions) # from https://github.com/zsh-users/zsh-autosuggestions
 # ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
 source $ZSH/oh-my-zsh.sh
+
+[ -f ~/.env ] && source ~/.env
 
 alias ll='ls -alF'
 alias la='ls -A'
@@ -94,6 +100,9 @@ alias gcom='git checkout master'
 alias crails='kubectl exec -c rails -it $(kubectl get po -l component=rp-rails-corg -o name --chunk-size=1 | tail -1) -- bundle exec rails console'
 alias brepl='gcloud compute ssh --zone "us-central1-a" "mysql-rplication-test1"  --project "replay-gaming"'
 alias f=fuck
+
+# alias bat if required
+command -v bat >/dev/null 2>&1 || { command -v batcat >/dev/null 2>&1 && alias bat='batcat'; }
 
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 export ASDF_GOLANG_MOD_VERSION_ENABLED=true

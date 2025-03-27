@@ -22,3 +22,5 @@ porn/ram.dat
 .irb_history
 .pry_history
 .zsh_history
+
+.env
