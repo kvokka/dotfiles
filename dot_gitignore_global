@@ -1,0 +1,11 @@
+.idea
+.pry_history
+.ruby-gemset
+passenger.*
+.DS_Store
+.rake_tasks
+.vscode/
+yarn-error.log
+*.gem
+.rspec_status
+.pryrc

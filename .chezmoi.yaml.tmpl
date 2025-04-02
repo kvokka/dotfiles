@@ -26,5 +26,6 @@
 sourceDir: {{ .chezmoi.sourceDir | quote }}
 
 data:
-  name: {{ $name | quote }}
-  email: {{ $email | quote }}
+  my:
+    name: {{ $name | quote }}
+    email: {{ $email | quote }}
