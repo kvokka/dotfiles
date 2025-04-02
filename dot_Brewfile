@@ -1,0 +1,54 @@
+tap 'homebrew/cask'
+tap 'homebrew/cask-versions'
+tap 'homebrew/bundle'
+tap 'homebrew/core'
+tap 'homebrew/services'
+tap 'homebrew/cask-fonts'
+
+brew 'chezmoi'
+brew 'asdf'
+
+brew 'git'
+brew 'curl'
+brew 'wget'
+brew 'zsh'
+brew 'coreutils' # Brew includes them, but the version is way too old
+
+brew 'docker' #TODO: Replace with podman
+brew 'podman'
+
+brew 'bat'
+brew 'fzf'
+brew 'htop'
+brew 'ncdu'
+brew 'tree'
+brew 'diff-so-fancy'
+brew 'fd'
+brew 'ripgrep'
+brew 'shellcheck'
+
+{{ if and (eq .chezmoi.os "darwin") (ne (env "CODESPACES") "true") }}
+cask 'calibre'
+cask 'firefox'
+cask 'transmission'
+cask 'visual-studio-code'
+cask 'font-hack-nerd-font'
+cask 'docker'
+{{ end }}
+## legacy 2APR25
+# brew 'bash-completion'
+# brew 'txn2/tap/kubefwd'
+# brew 'archey'
+# brew 'dos2unix'
+# brew 'cmake'
+# brew 'eza'
+# brew 'gawk'
+# brew 'git-lfs'
+# brew 'gnupg2'
+# brew 'gnutls'
+# brew 'hadolint'
+# brew 'llvm'
+# brew 'nmap'
+# brew 'openvpn'
+# brew 'testssl'
+# brew 'trash'
