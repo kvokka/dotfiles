@@ -17,3 +17,5 @@ cat .tool-versions | while read v;do asdf plugin add $(cut -f1 -d' ' <<<$v);done
 asdf install
 
 command -v helm >/dev/null && helm plugin install https://github.com/databus23/helm-diff || true
+
+echo ">>> Installation is done!"
