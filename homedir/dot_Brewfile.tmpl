@@ -5,20 +5,14 @@ tap 'homebrew/core'
 tap 'homebrew/services'
 tap 'homebrew/cask-fonts'
 
-brew 'chezmoi'
-brew 'asdf'
-
 brew 'git'
 brew 'curl'
 brew 'wget'
 brew 'zsh'
 brew 'coreutils' # Brew includes them, but the version is way too old
 
-brew 'docker' #TODO: Replace with podman
-brew 'podman'
 
 brew 'bat'
-brew 'fzf'
 brew 'htop'
 brew 'ncdu'
 brew 'tree'
@@ -26,6 +20,13 @@ brew 'diff-so-fancy'
 brew 'fd'
 brew 'ripgrep'
 brew 'shellcheck'
+{{ if or (ne .chezmoi.os "linux") (ne .chezmoi.arch "arm64") }}
+# TODO: Move it in the main group after brew 4.5 release
+brew 'asdf'
+brew 'docker' #no #TODO: Replace with podman
+brew 'podman'
+brew 'fzf'
+{{ end }}
 
 {{ if and (eq .chezmoi.os "darwin") (ne (env "CODESPACES") "true") }}
 cask 'calibre'

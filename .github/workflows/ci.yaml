@@ -8,11 +8,16 @@ jobs:
   clone-and-install:
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/vscode/devcontainers/base:ubuntu
+      image: mcr.microsoft.com/vscode/devcontainers/go:latest
       env:
         CODESPACES: true
     steps:
-      - uses: actions/checkout@v2
-      - run: ./install.sh
+      - name: Ensure chezmoi directory exists
+        run: mkdir -p "$HOME/.local/share/chezmoi"
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          path: ".local/share/chezmoi"
+      - run: ".local/share/chezmoi/install.sh"
       - name: chezmoi data
-        run: '"$HOME/.local/bin/chezmoi" data'
+        run: 'chezmoi data'

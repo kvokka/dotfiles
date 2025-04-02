@@ -1,3 +1,2 @@
-case "$OSTYPE" in darwin*) TMP_BREW_PATH="/opt/homebrew/bin/brew";; linux*) TMP_BREW_PATH="/home/linuxbrew/.linuxbrew/bin/brew";; *) echo "Unsupported operating system: $OSTYPE"; exit 1;; esac
-[ -f "$TMP_BREW_PATH" ] && eval "$($TMP_BREW_PATH shellenv)"
-unset TMP_BREW_PATH
+case $(uname) in [Dd]arwin*) TMP_BREW_PATH="/opt/homebrew/bin/brew";; [Ll]inux*) TMP_BREW_PATH="/home/linuxbrew/.linuxbrew/bin/brew";; *) echo "Unsupported operating system: '$(uname)'"; exit 1;; esac
+[ -f "$TMP_BREW_PATH" ] && eval "$($TMP_BREW_PATH shellenv)" && unset TMP_BREW_PATH
