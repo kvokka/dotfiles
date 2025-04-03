@@ -1,6 +1,30 @@
 {{- /* Checks if running interactively, which is not the case for GitHub Codespaces */ -}}
 {{- $interactive := stdinIsATTY -}}
 
+{{/* boolean feature tags */}}
+{{- $ephemeral := false -}}{{/* true if this machine is ephemeral, e.g. a cloud or VM instance */}}
+{{- $headless := false -}}{{/* true if this machine does not have a screen and keyboard */}}
+{{- $personal := false -}}{{/* true if this machine should have personal secrets */}}
+{{- "" -}}
+
+{{/* detect GitHub codespaces, VSCode remote containers, Docker containers, Multipass VMs, and Vagrant boxes */}}
+{{- if or (env "CODESPACES") (env "REMOTE_CONTAINERS_IPC") (eq .chezmoi.username "root" "ubuntu" "vagrant" "vscode") -}}
+{{-   $ephemeral = true -}}
+{{-   $headless = true -}}
+{{- end -}}
+
+{{- if not $ephemeral -}}
+{{-   if eq .chezmoi.hostname "Mikes-MBP" -}}
+{{-     $personal = true -}}
+{{-   else if $interactive -}}
+{{-     $headless = promptBoolOnce . "headless" "headless" -}}
+{{-     $ephemeral = promptBoolOnce . "ephemeral" "ephemeral" -}}
+{{-   else -}}
+{{-     $ephemeral = true -}}
+{{-     $headless = true -}}
+{{-   end -}}
+{{- end -}}
+
 {{- /* Initializes the name variable with a default value */ -}}
 {{- $name := "kvokka" -}}
 {{- /* If name was previously set, reuses it */ -}}
@@ -26,6 +50,12 @@
 sourceDir: {{ .chezmoi.sourceDir | quote }}
 
 data:
-  my:
-    name: {{ $name | quote }}
-    email: {{ $email | quote }}
+  name: {{ $name | quote }}
+  email: {{ $email | quote }}
+  ephemeral: {{ $ephemeral }}
+  headless: {{ $headless }}
+  personal: {{ $personal }}
+
+  zshPlugins:
+    - "zsh-autosuggestions"
+    - "zsh-syntax-highlighting"

@@ -4,12 +4,23 @@
     exact: true
     stripComponents: 1
     refreshPeriod: "168h"
+    exclude: [
+        "*/.*",
+        "*/templates",
+        "*/themes",
+    ]
 ".oh-my-zsh/custom/plugins/zsh-syntax-highlighting":
     type: "archive"
     url: "https://github.com/zsh-users/zsh-syntax-highlighting/archive/master.tar.gz"
     exact: true
     stripComponents: 1
     refreshPeriod: "168h"
+    exclude: [
+        "*/.editorconfig",
+        "*/.gitattributes",
+        "*/.github",
+        "*/.gitignore",
+    ]
 ".oh-my-zsh/custom/plugins/zsh-autosuggestions":
     type: "archive"
     url: "https://github.com/zsh-users/zsh-autosuggestions/archive/master.tar.gz"
@@ -21,8 +32,7 @@
     url: "https://github.com/romkatv/powerlevel10k/archive/master.tar.gz"
     exact: true
     stripComponents: 1
-    refreshPeriod: "168h"
-{{ if and (eq .chezmoi.os "darwin") (ne (env "CODESPACES") "true") }}
+{{ if and (eq .chezmoi.os "darwin") (not .headless) }}
 ".iterm2_shell_integration.zsh":
     type: "file"
     executable: true
