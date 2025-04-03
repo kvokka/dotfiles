@@ -12,12 +12,8 @@ jobs:
       env:
         CODESPACES: true
     steps:
-      - name: Ensure chezmoi directory exists
-        run: mkdir -p "$HOME/.local/share/chezmoi"
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          path: ".local/share/chezmoi"
-      - run: ".local/share/chezmoi/install.sh"
+      - run: "./install.sh"
       - name: chezmoi data
-        run: 'chezmoi data'
+        run: '$HOME/.local/bin/chezmoi data'
