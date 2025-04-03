@@ -29,7 +29,7 @@ autoload -Uz compinit && compinit
 brew 2&>/dev/null && [ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
 brew 2&>/dev/null && [ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 
-{{ if and (eq .chezmoi.os "linux") (eq (env "CODESPACES") "true") }}
+{{ if .ephemeral }}
 [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 {{ end }}
 
@@ -51,7 +51,7 @@ source $ZSH/oh-my-zsh.sh
 
 [ -f ~/.env ] && source ~/.env
 
-{{ if and (eq .chezmoi.os "darwin") (ne (env "CODESPACES") "true") }}
+{{ if not .headless }}
 export_env_vars() {
     local env_file="${1}"
     if [ -f "$env_file" ]; then
