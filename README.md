@@ -4,6 +4,9 @@ Template dotfiles repository, managed with [chezmoi](https://chezmoi.io/).
 
 ## Installation
 
+* [bootstrap.sh](bootstrap.sh) - bootstraps environment, including [install.sh](install.sh)
+* [install.sh](install.sh) - installs chezmoi and init dotfiles
+
 ## Manual steps
 
 ### Linux
