@@ -2,10 +2,10 @@
 
 set -eu
 
+sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary
+
 # Until brew 4.5 is out we have to install it manually, only if we are in codespaces
 [ "$CODESPACES" = "true" ] && go install github.com/asdf-vm/asdf/cmd/asdf@v0.16.7
-
-sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary
 
 command -v brew &> /dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
