@@ -26,6 +26,8 @@
 	# http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
 	precomposeunicode = false
 	autocrlf = false
+	hooksPath = ~/.config/git/hooks
+
 [alias]
 	dsf = "!f() { [ -z \"$GIT_PREFIX\" ] || cd \"$GIT_PREFIX\" && git diff --color \"$@\" | diff-so-fancy  | less --tabs=4 -RFX; }; f"
   cb = "!git branch --merged | egrep -v '(^\\*|master|production)' | xargs git branch -d"
@@ -79,3 +81,4 @@
 
 [init]
 	defaultBranch = main
+	templateDir = ~/.git-template
