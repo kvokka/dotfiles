@@ -18,6 +18,8 @@ asdf install && asdf list
 
 command -v helm &>/dev/null && helm plugin install https://github.com/databus23/helm-diff || true
 
+ npm install -g aicommit2 # Use it until asdf plugin is available
+
 pre-commit install --install-hooks
 
 echo ">>> Installation is done!"
