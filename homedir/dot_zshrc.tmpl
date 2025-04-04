@@ -19,15 +19,6 @@ ZSH_DOTENV_PROMPT=false
 
 fpath=(${ASDF_DIR}/completions $fpath)
 
-# The next line updates PATH for the Google Cloud SDK.
-[ -f ~/.google-cloud-sdk/path.zsh.inc ] && source ~/.google-cloud-sdk/path.zsh.inc
-
-# The next line enables shell command completion for gcloud.
-[ -f ~/.google-cloud-sdk/completion.zsh.inc ] && source ~/.google-cloud-sdk/completion.zsh.inc
-[ -f ~/.google-cloud-sdk/path.zsh.inc ] && source ~/.google-cloud-sdk/path.zsh.inc
-brew 2&>/dev/null && [ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
-brew 2&>/dev/null && [ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
-
 {{ if .ephemeral }}
 [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 {{ end }}
@@ -90,3 +81,16 @@ alias tmp='mkdir -p tmp && cd tmp'
 alias gsha='git rev-parse HEAD'
 alias gcom='git checkout master'
 alias ag=aicommit2
+
+###### TODO: Remove this after 16 MAR 25
+
+export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+alias crails='kubectl exec -c rails -it $(kubectl get po -l component=rp-rails-corg -o name --chunk-size=1 | tail -1) -- bundle exec rails console'
+# The next line updates PATH for the Google Cloud SDK.
+[ -f ~/.google-cloud-sdk/path.zsh.inc ] && source ~/.google-cloud-sdk/path.zsh.inc
+
+# The next line enables shell command completion for gcloud.
+[ -f ~/.google-cloud-sdk/completion.zsh.inc ] && source ~/.google-cloud-sdk/completion.zsh.inc
+[ -f ~/.google-cloud-sdk/path.zsh.inc ] && source ~/.google-cloud-sdk/path.zsh.inc
+brew 2&>/dev/null && [ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
+brew 2&>/dev/null && [ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
