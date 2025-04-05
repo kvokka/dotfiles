@@ -18,7 +18,8 @@ asdf install && asdf list
 
 command -v helm &>/dev/null && helm plugin install https://github.com/databus23/helm-diff || true
 
- npm install -g aicommit2 # Use it until asdf plugin is available
+npm install -g aicommit2 # Use it until asdf plugin is available
+aicommit2 config set GEMINI.key=$GOOGLE_AI_STUDIO_API_KEY # kill after https://github.com/tak-bro/aicommit2/issues/125
 
 pre-commit install --install-hooks
 
