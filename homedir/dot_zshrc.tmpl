@@ -18,7 +18,10 @@ export ZSH_DOTENV_PROMPT=false
 export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 {{ if .ephemeral }}
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+if [[ "$USER" == "vscode" ]]; then
+  . "$(code --locate-shell-integration-path zsh)"
+  export POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION=''
+fi
 {{ end }}
 
 if type brew &>/dev/null; then
