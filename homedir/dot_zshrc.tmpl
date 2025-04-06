@@ -21,6 +21,7 @@ export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 if [[ "$USER" == "vscode" ]]; then
   . "$(code --locate-shell-integration-path zsh)"
   export POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION=''
+  export POWERLEVEL9K_OS_ICON_BACKGROUND=31
 fi
 {{ end }}
 
