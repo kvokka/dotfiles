@@ -13,7 +13,6 @@ source ~/.zprofile
 
 brew bundle --global
 
-source ~/.asdf/asdf.sh
 while read -r v || [[ -n "$v" ]]; do [[ -z "$v" ]] || asdf plugin add "$(cut -f1 -d' ' <<<"$v")"; done < ~/.tool-versions
 asdf install && asdf list
 
