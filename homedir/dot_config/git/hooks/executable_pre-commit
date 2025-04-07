@@ -13,7 +13,7 @@ else
 fi
 
 # Run pre-commit with the chosen config
-pre-commit run --config "$CONFIG_FILE" --all-files
+pre-commit run --config "$CONFIG_FILE"
 RESULT=$?
 
 # Exit with the result of the pre-commit run
