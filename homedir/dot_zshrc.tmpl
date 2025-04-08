@@ -19,15 +19,12 @@ export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 {{ if .ephemeral }}
 if [[ "$USER" == "vscode" ]]; then
-  command -v code >/dev/null 2>&1 && code &>/dev/null && source "$(code --locate-shell-integration-path zsh)"
   export POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION=''
   export POWERLEVEL9K_OS_ICON_BACKGROUND=31
 fi
 {{ end }}
 
-if type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh-completions:$(brew --prefix)/share/zsh/site-functions:$FPATH
-fi
+command -v brew >/dev/null 2>&1 && FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
 plugins+=(asdf cp docker dotenv gem git github golang kubectl
   npm rails rake ruby sudo tig yarn zsh-navigation-tools helm)
@@ -84,6 +81,8 @@ alias tmp='mkdir -p tmp && cd tmp'
 alias gsha='git rev-parse HEAD'
 alias gcom='git checkout master'
 alias ag='GEMINI_API_KEY=$GOOGLE_AI_STUDIO_API_KEY aicommit2'
+
+alias devc='docker exec -it -e TERM -e COLORTERM -e LC_ALL=C.UTF-8 vscode-devcontainer-boilerplate-app-1 /usr/bin/zsh'
 
 {{ if not .headless }}
 ###### TODO: Remove this after 16 MAY 25
