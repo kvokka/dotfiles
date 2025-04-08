@@ -1,0 +1,33 @@
+[env]
+
+[tools]
+
+nodejs = '23'
+python = '3.13'
+golang = '1.24'
+yarn = '1.22'
+rust = '1'
+uv = '0.6'
+just = '1'
+hadolint = '2.12'
+shellcheck = '0.10'
+markdownlint-cli2 = '0.17'
+gitleaks = '8.24'
+chezmoi = '2.61'
+bat = 'latest'
+pre-commit = '4.2'
+{{ if not .headless }}
+ruby = '3.4'
+kubectl = '1.31'
+kubeseal = '0.28'
+helm = '3.15'
+dive = '0.13'
+k9s = '0.40'
+terraform = '1.11'
+{{ end }}
+
+[settings]
+
+{{ if .ephemeral }}
+yes = true
+{{ end }}

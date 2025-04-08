@@ -9,3 +9,4 @@ yarn-error.log
 *.gem
 .rspec_status
 .pryrc
+mise.local.toml

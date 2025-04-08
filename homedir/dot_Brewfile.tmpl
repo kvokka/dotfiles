@@ -3,9 +3,8 @@ brew 'curl'
 brew 'wget'
 brew 'zsh'
 brew 'coreutils' # Brew includes them, but the version is way too old
+brew 'mise'
 
-brew 'bat'
-brew 'pre-commit'
 brew 'htop'
 brew 'ncdu'
 brew 'tree'
@@ -20,9 +19,6 @@ brew 'fzf'
 {{ end }}
 
 {{ if not .headless }}
-# TODO: Move it in the main group after brew 4.5 release
-brew 'asdf'
-
 cask 'calibre'
 cask 'firefox'
 cask 'transmission'
