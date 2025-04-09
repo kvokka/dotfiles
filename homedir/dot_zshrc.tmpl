@@ -24,8 +24,7 @@ fi
 
 command -v brew >/dev/null 2>&1 && FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
-plugins+=(mise cp docker dotenv gem git github golang kubectl
-  npm rails rake ruby sudo tig yarn zsh-navigation-tools helm
+plugins+=(
 {{- range .zshPlugins }}
   {{ . }}
 {{- end }}
