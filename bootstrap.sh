@@ -12,6 +12,4 @@ mise install
 
 command -v helm &>/dev/null && helm plugin install https://github.com/databus23/helm-diff || true
 
-pre-commit install --install-hooks
-
 echo ">>> Installation is done!"
