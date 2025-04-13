@@ -1,0 +1,52 @@
+{{ if and (eq .chezmoi.os "darwin" "linux") (not .headless) -}}
+
+{{ $extensions := list
+  "alexkrechik.cucumberautocomplete"
+  "davidanson.vscode-markdownlint"
+  "dnicolson.binary-plist"
+  "github.codespaces"
+  "github.copilot-chat"
+  "github.copilot"
+  "golang.go"
+  "johnpapa.vscode-peacock"
+  "mikestead.dotenv"
+  "ms-azuretools.vscode-docker"
+  "ms-vscode-remote.remote-containers"
+  "ms-vscode.makefile-tools"
+  "nuxt.mdc"
+  "redhat.vscode-yaml"
+  "rooveterinaryinc.roo-cline"
+  "saoudrizwan.claude-dev"
+  "shd101wyy.markdown-preview-enhanced"
+  "sidneys1.gitconfig"
+  "streetsidesoftware.code-spell-checker-russian"
+  "streetsidesoftware.code-spell-checker"
+  "tamasfe.even-better-toml"
+  "Tyriar.sort-lines"
+  "eamodio.gitlens"
+  "yzhang.markdown-all-in-one" -}}
+
+{{ $extensions_unused := list
+   "ms-python.debugpy"
+   "ms-python.isort"
+   "ms-python.python"
+   "ms-python.vscode-pylance"
+   "ms-vsliveshare.vsliveshare"
+   "shopify.ruby-lsp"
+   "sourcegraph.cody-ai"
+   "syler.sass-indented"
+   "technosophos.vscode-helm"
+   "stkb.rewrap"
+   "ms-vscode-remote.remote-ssh"
+   "ms-vscode-remote.remote-ssh-edit"
+   "ms-vscode-remote.vscode-remote-extensionpack" -}}
+
+#!/bin/bash
+
+set -eufo pipefail
+
+{{ range $extensions -}}
+code --force --install-extension {{ . }}
+{{ end -}}
+
+{{ end -}}
