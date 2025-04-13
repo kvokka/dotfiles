@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+OS="{{ .chezmoi.os }}"
+
+SOURCE="$HOME/.config/vscode/settings.json"
+
+if [ "$OS" = "darwin" ]; then
+    DEST="$HOME/Library/Application Support/Code/User/settings.json"
+elif [ "$OS" = "linux" ]; then
+    DEST="$HOME/.config/Code/User/settings.json"
+else
+    echo "Unsupported OS: $OS"
+    exit 1
+fi
+
+mkdir -p "$(dirname "$DEST")"
+
+[[ -f "$DEST" ]] && echo "Vscode config in '$DEST' already exists, skipping symlink creation." && exit 0
+
+ln -s "$SOURCE" "$DEST"
+
+echo "Installed VS Code settings to $DEST"

@@ -1,0 +1,137 @@
+{
+  "cSpell.language": ",ru,en,en-GB,en-US",
+  "explorer.confirmDelete": false,
+  "files.trimTrailingWhitespace": true,
+  "explorer.confirmDragAndDrop": false,
+  "cSpell.enabledLanguageIds": [
+    "asciidoc",
+    "c",
+    "cpp",
+    "csharp",
+    "css",
+    "go",
+    "handlebars",
+    "html",
+    "jade",
+    "javascript",
+    "javascriptreact",
+    "json",
+    "latex",
+    "less",
+    "markdown",
+    "php",
+    "plaintext",
+    "pub",
+    "python",
+    "restructuredtext",
+    "ruby",
+    "rust",
+    "scss",
+    "text",
+    "typescript",
+    "typescriptreact",
+    "yaml",
+    "yml"
+  ],
+  "cSpell.userWords": [
+    "chezmoi",
+    "datapoint",
+    "datapoints",
+    "delegators",
+    "devcontainers",
+    "dotenv",
+    "entrypoint",
+    "fieldnames",
+    "filednames",
+    "Finviz",
+    "gitignore",
+    "iterm",
+    "klass",
+    "kvokka",
+    "linuxbrew",
+    "Naic",
+    "NONINTERACTIVE",
+    "OHLC",
+    "postgres",
+    "postgress",
+    "Powerlevel",
+    "rabbitmq",
+    "rubocop",
+    "saoudrizwan",
+    "shellcheck",
+    "timeframe",
+    "timeframes",
+    "uint",
+    "unprocessable",
+    "VWAP"
+  ],
+  "editor.tabSize": 2,
+  "editor.renderWhitespace": "all",
+  "editor.renderControlCharacters": false,
+  "breadcrumbs.enabled": false,
+  "editor.formatOnSave": true,
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    },
+    "editor.rulers": [
+      80
+    ]
+  },
+  "[ruby]": {
+    "editor.rulers": [
+      100,
+      120
+    ]
+  },
+  "go.useLanguageServer": true,
+  "files.autoSave": "onFocusChange",
+  "yaml.format.enable": false,
+  "editor.fontFamily": "Hack Nerd Font, Menlo, Monaco, 'Courier New', monospace",
+  "workbench.editorAssociations": {
+    "*.ipynb": "jupyter-notebook"
+  },
+  "notebook.cellToolbarLocation": {
+    "default": "right",
+    "jupyter-notebook": "left"
+  },
+  "redhat.telemetry.enabled": false,
+  "cSpell.enableFiletypes": [
+    "helm"
+  ],
+  "files.associations": {
+    "charts/*.yaml": "helm-template"
+  },
+  "[python]": {
+    "editor.formatOnType": true
+  },
+  "window.zoomLevel": 2,
+  "git.openRepositoryInParentFolders": "never",
+  "editor.inlineSuggest.suppressSuggestions": true,
+  "cline.vsCodeLmModelSelector": {},
+  "cody.telemetry.level": "off",
+  "dev.containers.defaultFeatures": {},
+  "workbench.startupEditor": "none",
+  "vs-kubernetes": {
+    "vs-kubernetes.crd-code-completion": "disabled"
+  },
+  "bashIde.explainshellEndpoint": "http://localhost:5000",
+  "editor.fontSize": 14,
+  "terminal.integrated.fontSize": 16,
+  "files.insertFinalNewline": true,
+  "terminal.integrated.fontFamily": "Hack Nerd Font",
+  "roo-cline.allowedCommands": [
+    "npm test",
+    "npm install",
+    "tsc",
+    "git log",
+    "git diff",
+    "git show"
+  ],
+  "chat.agent.enabled": true,
+  "github.copilot.chat.codesearch.enabled": true,
+  "telemetry.telemetryLevel": "crash"
+}
