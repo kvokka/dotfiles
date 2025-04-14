@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Script to configure iTerm2 font settings
+PLIST_FILE="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
+PLISTBUDDY="/usr/libexec/PlistBuddy"
+
+# Check if PlistBuddy exists
+if [ ! -x "$PLISTBUDDY" ]; then
+    echo "Sorry, the PlistBuddy tool is missing. Please ensure it’s available at $PLISTBUDDY."
+    exit 0
+fi
+
+# Check if the iTerm2 plist file exists
+if [ ! -f "$PLIST_FILE" ]; then
+    echo "Sorry, the iTerm2 preferences file ($PLIST_FILE) is missing. Please ensure iTerm2 is installed and has been opened at least once."
+    exit 0
+fi
+
+# Set Normal Font to MesloLGS-NF-Regular 24
+echo "Setting Normal Font to MesloLGS-NF-Regular 24..."
+if ! "$PLISTBUDDY" -c "Set :\"New Bookmarks\":0:\"Normal Font\" \"MesloLGS-NF-Regular 24\"" "$PLIST_FILE" 2>/dev/null; then
+    echo "Failed to set Normal Font. Please ensure the font 'MesloLGS-NF-Regular' is installed and iTerm2 preferences are accessible."
+else
+    echo "Normal Font set successfully."
+fi
+
+# Disable Use Non-ASCII Font
+echo "Disabling Use Non-ASCII Font..."
+if ! "$PLISTBUDDY" -c "Set :\"New Bookmarks\":0:\"Use Non-ASCII Font\" false" "$PLIST_FILE" 2>/dev/null; then
+    echo "Failed to disable Non-ASCII Font. Please check iTerm2 preferences."
+else
+    echo "Use Non-ASCII Font disabled successfully."
+fi
+
+echo "Configuration complete. Please restart iTerm2 to apply changes (e.g., run 'killall iTerm2 && open -a iTerm2')."
