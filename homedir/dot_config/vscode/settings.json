@@ -134,4 +134,5 @@
   "github.copilot.chat.codesearch.enabled": true,
   "telemetry.telemetryLevel": "crash",
   "terminal.integrated.suggest.enabled": true,
+  "terminal.integrated.stickyScroll.enabled": true,
 }
