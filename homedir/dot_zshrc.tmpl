@@ -22,6 +22,8 @@ if [[ "$USER" == "vscode" ]]; then
 fi
 {{ end }}
 
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path bash)"
+
 command -v brew >/dev/null 2>&1 && FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
 plugins+=(

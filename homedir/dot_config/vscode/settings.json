@@ -111,7 +111,6 @@
   "window.zoomLevel": 2,
   "git.openRepositoryInParentFolders": "never",
   "editor.inlineSuggest.suppressSuggestions": true,
-  "cline.vsCodeLmModelSelector": {},
   "cody.telemetry.level": "off",
   "dev.containers.defaultFeatures": {},
   "workbench.startupEditor": "none",
@@ -133,5 +132,6 @@
   ],
   "chat.agent.enabled": true,
   "github.copilot.chat.codesearch.enabled": true,
-  "telemetry.telemetryLevel": "crash"
+  "telemetry.telemetryLevel": "crash",
+  "terminal.integrated.suggest.enabled": true,
 }
