@@ -25,6 +25,11 @@ dive = '0.13'
 k9s = '0.40'
 terraform = '1.11'
 {{ end }}
+{{ if eq .chezmoi.arch "arm64" -}}
+"asdf:jylenhof/asdf-git-cliff" = '2.8'
+{{- else -}}
+git-cliff = '2.8'
+{{- end }}
 
 [settings]
 
