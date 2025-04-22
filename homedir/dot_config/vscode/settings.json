@@ -81,6 +81,17 @@
       80
     ]
   },
+  "[mdc]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    },
+    "editor.rulers": [
+      80
+    ]
+  },
   "[ruby]": {
     "editor.rulers": [
       100,
