@@ -45,20 +45,6 @@ source $ZSH/oh-my-zsh.sh
 [ -f ~/.env ] && source ~/.env
 
 {{ if not .headless }}
-export_env_vars() {
-    local env_file="${1}"
-    if [ -f "$env_file" ]; then
-        while IFS='=' read -r key value; do
-            [[ "$key" =~ ^#.*$ ]] || [[ -z "$key" ]] && continue
-            key=$(echo "$key" | xargs)
-            value=$(echo "$value" | xargs)
-            export "$key=$value"
-        done < "$env_file"
-    fi
-}
-
-[ -f ~/.devcontainer/devcontainer.env ] && export_env_vars ~/.devcontainer/devcontainer.env
-
 {{ if eq .chezmoi.os "darwin" }}
 [ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.zsh
 {{ end }}
