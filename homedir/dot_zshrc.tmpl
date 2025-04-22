@@ -22,7 +22,10 @@ if [[ "$USER" == "vscode" ]]; then
 fi
 {{ end }}
 
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+  code --version &>/dev/null && . "$(code --locate-shell-integration-path zsh)" || true
+  cursor --version &>/dev/null && . "$(cursor --locate-shell-integration-path zsh)" || true
+fi
 
 command -v brew >/dev/null 2>&1 && FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
