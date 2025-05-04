@@ -103,7 +103,8 @@
   "yaml.format.enable": false,
   "editor.fontFamily": "Hack Nerd Font, Menlo, Monaco, 'Courier New', monospace",
   "workbench.editorAssociations": {
-    "*.ipynb": "jupyter-notebook"
+    "*.ipynb": "jupyter-notebook",
+    "*.mdc": "default"
   },
   "notebook.cellToolbarLocation": {
     "default": "right",
@@ -114,7 +115,9 @@
     "helm"
   ],
   "files.associations": {
-    "charts/*.yaml": "helm-template"
+    "charts/*.yaml": "helm-template",
+    "charts/*.yml": "helm-template",
+    "*.mdc": "markdown"
   },
   "[python]": {
     "editor.formatOnType": true
@@ -146,5 +149,5 @@
   "telemetry.telemetryLevel": "crash",
   "terminal.integrated.suggest.enabled": true,
   "terminal.integrated.stickyScroll.enabled": true,
-  "geminicodeassist.inlineSuggestions.enableAuto": false,
+  "geminicodeassist.inlineSuggestions.enableAuto": false
 }
