@@ -29,6 +29,7 @@ repos:
         entry: markdownlint-cli2
         language: system
         types: [markdown]
+        files: \.(md|mdc)$
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0  # Use the latest version or specify a version that suits your needs
     hooks:
