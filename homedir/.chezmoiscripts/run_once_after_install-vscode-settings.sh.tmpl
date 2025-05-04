@@ -3,21 +3,32 @@ set -e
 
 OS="{{ .chezmoi.os }}"
 
-SOURCE="$HOME/.config/vscode/settings.json"
+# Source paths for settings and keybindings
+SETTINGS_SOURCE="$HOME/.config/vscode/settings.json"
+KEYBINDINGS_SOURCE="$HOME/.config/vscode/keybindings.json"
 
+# Set destination path based on OS
 if [ "$OS" = "darwin" ]; then
-    DEST="$HOME/Library/Application Support/Code/User/settings.json"
+    DEST_PATH="$HOME/Library/Application Support/Code/User"
 elif [ "$OS" = "linux" ]; then
-    DEST="$HOME/.config/Code/User/settings.json"
+    DEST_PATH="$HOME/.config/Code/User"
 else
-    echo "Unsupported OS: $OS"
+    echo "Unsupported OS: $OS" >&2
     exit 1
 fi
 
-mkdir -p "$(dirname "$DEST")"
+# Ensure destination directory exists
+mkdir -p "$DEST_PATH"
 
-[[ -f "$DEST" ]] && echo "Vscode config in '$DEST' already exists, skipping symlink creation." && exit 0
+# Function to create symlink if file doesn't exist
+create_symlink() {
+    local src="$1" dest="$2"
+    [[ -f "$dest" ]] && echo "VS Code config at $dest exists." || \
+        ln -s "$src" "$dest" && echo "Linked $dest" || echo "Failed to link $dest" >&2
+}
 
-ln -s "$SOURCE" "$DEST"
+# Create symlinks
+create_symlink "$SETTINGS_SOURCE" "$DEST_PATH/settings.json"
+create_symlink "$KEYBINDINGS_SOURCE" "$DEST_PATH/keybindings.json"
 
-echo "Installed VS Code settings to $DEST"
+echo "Installed VS Code settings to $DEST_PATH"
