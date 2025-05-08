@@ -10,3 +10,4 @@ yarn-error.log
 .rspec_status
 .pryrc
 mise.local.toml
+**/node_modules/
