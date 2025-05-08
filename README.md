@@ -4,8 +4,15 @@ Template dotfiles repository, managed with [chezmoi](https://chezmoi.io/).
 
 ## Installation
 
-* [bootstrap.sh](bootstrap.sh) - bootstraps environment, including [install.sh](install.sh)
-* [install.sh](install.sh) - installs chezmoi and init dotfiles
+```bash
+export DOTFILES_GITHUB_USERNAME=kvokka # or your own username
+bash -c "$(curl -fsLS https://raw.githubusercontent.com/${DOTFILES_GITHUB_USERNAME}/dotfiles/refs/heads/master/bootstrap.sh)" \
+  -- ${DOTFILES_GITHUB_USERNAME}
+```
+
+## Scripts
+
+* [bootstrap.sh](./homedir/bootstrap.sh) - bootstraps environment, including [install.sh](install.sh)
 
 ## Manual steps
 
