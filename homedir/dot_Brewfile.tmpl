@@ -24,9 +24,11 @@ cask 'firefox'
 cask 'transmission'
 cask 'visual-studio-code'
 cask 'font-hack-nerd-font'
+cask 'font-meslo-lg-nerd-font'
 cask 'docker'
 cask 'vlc'
 {{ if eq .chezmoi.os "darwin" }}
+brew 'docker-credential-helper'
 cask 'iterm2'
 {{- end }}
 {{- end }}

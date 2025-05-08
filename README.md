@@ -19,6 +19,14 @@ name: # GitHub username, default: kvokka
 email: # GitHub email, default: kvokka@yahoo.com
 ```
 
+## Environment variables
+
+Should be placed in default `.env` file, list only common variables
+
+```env
+GOOGLE_AI_STUDIO_API_KEY= # Google AI Studio API key
+```
+
 ## Scripts
 
 * [bootstrap.sh](./homedir/bootstrap.sh) - bootstraps environment, including [install.sh](install.sh)

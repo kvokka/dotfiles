@@ -7,6 +7,8 @@ command -v chezmoi &>/dev/null || sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- ini
 command -v brew &> /dev/null || NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 source ~/.zsh/homebrew.zsh
 
+compaudit | xargs chmod g-w
+
 brew bundle --global
 mise install
 
