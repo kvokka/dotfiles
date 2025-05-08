@@ -10,6 +10,15 @@ bash -c "$(curl -fsLS https://raw.githubusercontent.com/${DOTFILES_GITHUB_USERNA
   -- ${DOTFILES_GITHUB_USERNAME}
 ```
 
+With connected terminal in process you will be asked:
+
+```plaintext
+headless install? [bool] # if this machine does not have a screen and keyboard; t/f, default: false
+ephemeral install? [bool] # if this machine is ephemeral, e.g. a cloud or VM instance; t/f, default: false
+name: # GitHub username, default: kvokka
+email: # GitHub email, default: kvokka@yahoo.com
+```
+
 ## Scripts
 
 * [bootstrap.sh](./homedir/bootstrap.sh) - bootstraps environment, including [install.sh](install.sh)
