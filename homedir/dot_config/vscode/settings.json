@@ -101,7 +101,7 @@
   "go.useLanguageServer": true,
   "files.autoSave": "onFocusChange",
   "yaml.format.enable": false,
-  "editor.fontFamily": "Hack Nerd Font, Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontFamily": "MesloLGS NF, Hack Nerd Font, Menlo, Monaco, 'Courier New', monospace",
   "workbench.editorAssociations": {
     "*.ipynb": "jupyter-notebook",
     "*.mdc": "default"
@@ -135,7 +135,7 @@
   "editor.fontSize": 14,
   "terminal.integrated.fontSize": 16,
   "files.insertFinalNewline": true,
-  "terminal.integrated.fontFamily": "Hack Nerd Font",
+  "terminal.integrated.fontFamily": "MesloLGS NF",
   "roo-cline.allowedCommands": [
     "npm test",
     "npm install",
