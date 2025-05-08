@@ -47,6 +47,8 @@ source $ZSH/oh-my-zsh.sh
 {{ if not .headless }}
 {{ if eq .chezmoi.os "darwin" }}
 [ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.zsh
+
+export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
 {{ end }}
 {{ end }}
 
