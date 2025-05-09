@@ -2,6 +2,8 @@
 
 set -eufo pipefail
 
+[[ "$OSTYPE" != "darwin"* ]] && exit 0
+
 defaults write -g AppleMiniaturizeOnDoubleClick -int 0
 defaults write -g ApplePressAndHoldEnabled -int 0
 defaults write -g InitialKeyRepeat -int 25
