@@ -9,9 +9,9 @@
 	whitespace = fix
 
 [core]
-	excludesfile = ~/.gitignore_global
+	excludesfile = ~/.config/git/ignore
 	pager = diff-so-fancy | less --tabs=4 -RFX
-	attributesfile = ~/.gitattributes
+	attributesfile = ~/.config/git/attributes
 
 	# Treat spaces before tabs and all kinds of trailing whitespace as an error
 	# [default] trailing-space: looks for spaces at the end of a line
@@ -27,14 +27,17 @@
 	precomposeunicode = false
 	autocrlf = false
 	hooksPath = ~/.config/git/hooks
+	compression = 9
+	preloadindex = true
 
 [alias]
 	dsf = "!f() { [ -z \"$GIT_PREFIX\" ] || cd \"$GIT_PREFIX\" && git diff --color \"$@\" | diff-so-fancy  | less --tabs=4 -RFX; }; f"
   cb = "!git branch --merged | egrep -v '(^\\*|master|production)' | xargs git branch -d"
 	vb = version-bump
 [push]
-	default = simple
+	default = current
 	autoSetupRemote = true
+	followTags = true
 	recurseSubmodules = on-demand
 
 [help]
@@ -61,8 +64,12 @@
 
 [url "git://gist.github.com/"]
 	insteadOf = "gist:"
+[url "git@github.com:{{ .github_login }}/"]
+	insteadOf = "my:"
 [diff "sopsdiffer"]
 	textconv = sops -d
+[diff]
+	interHunkContext = 10
 [color "diff-highlight"]
 	oldNormal = red bold
 	oldHighlight = red bold 52
@@ -79,10 +86,14 @@
 	first-run = false
 [pull]
 	rebase = false
-
+	default = current
+[rebase]
+	missingCommitsCheck = warn
+[log]
+	abbrevCommit = true
 [init]
 	defaultBranch = main
-	templateDir = ~/.config/git
+	templateDir = ~/.config/git/template
 
 [submodule]
 	recurse = true

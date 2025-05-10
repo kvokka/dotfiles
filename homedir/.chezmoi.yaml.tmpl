@@ -35,6 +35,16 @@
 {{-   $name = promptString "name" $name -}}
 {{- end -}}
 
+{{- /* Initializes the github_login variable with a default value */ -}}
+{{- $github_login := "kvokka" -}}
+{{- /* If github_login was previously set, reuses it */ -}}
+{{- if hasKey . "github_login" -}}
+{{-   $github_login = .github_login -}}
+{{- /* Otherwise, if running interactively, prompts for a name */ -}}
+{{- else if $interactive -}}
+{{-   $github_login = promptString "github_login" $github_login -}}
+{{- end -}}
+
 {{- /* Does the same for the email */ -}}
 {{- $email := "kvokka@yahoo.com" -}}
 {{- if hasKey . "email" -}}
@@ -52,6 +62,7 @@ sourceDir: {{ .chezmoi.sourceDir | quote }}
 data:
   name: {{ $name | quote }}
   email: {{ $email | quote }}
+  github_login: {{ $github_login | quote }}
   ephemeral: {{ $ephemeral }}
   headless: {{ $headless }}
   personal: {{ $personal }}

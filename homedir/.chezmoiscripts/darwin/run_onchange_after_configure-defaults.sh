@@ -20,8 +20,9 @@ defaults write -g WebAutomaticSpellingCorrectionEnabled -int 1
 defaults write -g com.apple.swipescrolldirection -int 0
 defaults write -g com.apple.trackpad.forceClick -int 0
 
-defaults write com.apple.dock autohide -int 0
-defaults write com.apple.dock largesize -int 128
+## For unknown reason it hangs, comment for now
+# defaults write com.apple.dock autohide -int 0
+# defaults write com.apple.dock largesize -int 128
 
-defaults write com.apple.finder FXPreferredViewStyle -string Nlsv
-defaults write com.apple.finder FXRemoveOldTrashItems -int 1
+# defaults write com.apple.finder FXPreferredViewStyle -string Nlsv
+# defaults write com.apple.finder FXRemoveOldTrashItems -int 1
