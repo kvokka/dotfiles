@@ -6,8 +6,8 @@ defaults write -g AppleMiniaturizeOnDoubleClick -int 0
 defaults write -g ApplePressAndHoldEnabled -int 0
 defaults write -g InitialKeyRepeat -int 25
 defaults write -g KeyRepeat -int 1
-defaults write -g InitialKeyRepeat -float 0.4
-defaults write -g KeyRepeat -float 0.016666
+defaults write -g KeyRepeatDelay -float 0.4
+defaults write -g KeyRepeatInterval -float 0.016666
 defaults write -g NSAutomaticCapitalizationEnabled -int 1
 defaults write -g NSAutomaticDashSubstitutionEnabled -int 1
 defaults write -g NSAutomaticPeriodSubstitutionEnabled -int 1
