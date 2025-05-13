@@ -14,9 +14,13 @@
 {{- end -}}
 
 {{- if not $ephemeral -}}
+{{-   $unknown_laptop := true -}}{{/* true if no known laptops detected */}}
 {{-   if eq .chezmoi.hostname "Mikes-MBP" -}}
 {{-     $personal = true -}}
-{{-   else if $interactive -}}
+{{-     $headless = false -}}
+{{-     $ephemeral = false -}}
+{{-     $unknown_laptop = false -}}
+{{-   else if and $interactive $unknown_laptop -}}
 {{-     $headless = promptBoolOnce . "headless" "headless" -}}
 {{-     $ephemeral = promptBoolOnce . "ephemeral" "ephemeral" -}}
 {{-   else -}}
