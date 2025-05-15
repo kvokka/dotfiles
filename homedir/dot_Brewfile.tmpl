@@ -11,6 +11,7 @@ brew 'tree'
 brew 'diff-so-fancy'
 brew 'fd'
 brew 'ripgrep'
+brew 'docker-credential-helper'
 
 {{ if or (ne .chezmoi.os "linux") (ne .chezmoi.arch "arm64") }}
 brew 'docker' #no #TODO: Replace with podman
@@ -27,7 +28,6 @@ cask 'font-meslo-lg-nerd-font'
 cask 'docker'
 cask 'vlc'
 {{ if eq .chezmoi.os "darwin" }}
-brew 'docker-credential-helper'
 cask 'iterm2'
 {{- end }}
 {{- end }}
