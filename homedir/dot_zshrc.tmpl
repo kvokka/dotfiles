@@ -74,20 +74,3 @@ alias ag='GEMINI_API_KEY=$GOOGLE_AI_STUDIO_API_KEY aicommit2'
 
 alias devc='docker exec -it -e TERM -e COLORTERM -e LC_ALL=C.UTF-8 vscode-devcontainer-boilerplate-app-1 /usr/bin/zsh'
 alias brave_debug="open -a 'Brave Browser' --args --remote-debugging-port=9222"
-
-{{ if not .headless }}
-###### TODO: Remove this after 16 MAY 25
-
-export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-alias crails='kubectl exec -c rails -it $(kubectl get po -l component=rp-rails-corg -o name --chunk-size=1 | tail -1) -- bundle exec rails console'
-# The next line updates PATH for the Google Cloud SDK.
-[ -f ~/.google-cloud-sdk/path.zsh.inc ] && source ~/.google-cloud-sdk/path.zsh.inc
-
-export PATH="$PATH:$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin/"
-
-# The next line enables shell command completion for gcloud.
-[ -f ~/.google-cloud-sdk/completion.zsh.inc ] && source ~/.google-cloud-sdk/completion.zsh.inc
-[ -f ~/.google-cloud-sdk/path.zsh.inc ] && source ~/.google-cloud-sdk/path.zsh.inc
-brew 2&>/dev/null && [ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
-brew 2&>/dev/null && [ -f "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc" ] && source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
-{{ end }}
