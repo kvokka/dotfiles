@@ -150,5 +150,20 @@
   "terminal.integrated.suggest.enabled": true,
   "terminal.integrated.stickyScroll.enabled": true,
   "geminicodeassist.inlineSuggestions.enableAuto": false,
-  "editor.wordWrap": "on"
+  "editor.wordWrap": "on",
+  "explorer.confirmPasteNative": false,
+  "mcp": {
+    "inputs": [],
+    "servers": {
+      "mcp-server-time": {
+        "command": "python",
+        "args": [
+          "-m",
+          "mcp_server_time",
+          "--local-timezone=America/Los_Angeles"
+        ],
+        "env": {}
+      }
+    }
+  }
 }
