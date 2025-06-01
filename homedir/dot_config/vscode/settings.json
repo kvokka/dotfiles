@@ -142,7 +142,15 @@
     "tsc",
     "git log",
     "git diff",
-    "git show"
+    "git show",
+    "npm run lint",
+    "npm run compile",
+    "npm run build",
+    "npm run dev",
+    "mvn package",
+    "java -jar",
+    "just run",
+    "git hook run pre-commit"
   ],
   "chat.agent.enabled": true,
   "github.copilot.chat.codesearch.enabled": true,
