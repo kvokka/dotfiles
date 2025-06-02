@@ -13,7 +13,13 @@ else
 fi
 
 # Run pre-commit with the chosen config
-pre-commit run --config "$CONFIG_FILE"
+if [ $# -gt 0 ]; then
+    # If arguments are provided, pass them to pre-commit run
+    pre-commit run --config "$CONFIG_FILE" "$@"
+else
+    # Otherwise, run pre-commit normally
+    pre-commit run --config "$CONFIG_FILE"
+fi
 RESULT=$?
 
 # Exit with the result of the pre-commit run
