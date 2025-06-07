@@ -150,7 +150,10 @@
     "mvn package",
     "java -jar",
     "just run",
-    "git hook run pre-commit -- --files $(git ls-files -m)"
+    "poetry run pytest tests/",
+    "poetry run pytest",
+    "poetry run run",
+    "just hooks"
   ],
   "chat.agent.enabled": true,
   "github.copilot.chat.codesearch.enabled": true,
