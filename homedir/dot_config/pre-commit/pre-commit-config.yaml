@@ -19,8 +19,6 @@ repos:
       - id: gitleaks
         entry: gitleaks protect -v --redact --staged
         require_serial: true
-        environment:
-          GITLEAKS_CONFIG: ~/.gitleaks.toml
   - repo: https://github.com/DavidAnson/markdownlint-cli2
     rev: v0.17.2  # Use the latest version or specify a version that suits your needs
     hooks:
