@@ -19,6 +19,17 @@ name: # GitHub username, default: kvokka
 email: # GitHub email, default: kvokka@yahoo.com
 ```
 
+### WSL
+
+```bash
+export SUDO_PASSWORD="your_password_here"
+echo $SUDO_PASSWORD | sudo -S apt update
+
+export DOTFILES_GITHUB_USERNAME=kvokka # or your own username
+bash -c "$(curl -fsLS https://raw.githubusercontent.com/${DOTFILES_GITHUB_USERNAME}/dotfiles/refs/heads/master/bootstrap.sh)" \
+  -- ${DOTFILES_GITHUB_USERNAME}
+```
+
 ## Environment variables
 
 Should be placed in default `.env` file, list only common variables
