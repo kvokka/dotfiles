@@ -2,7 +2,7 @@ generate=3
 includeBody=true
 
 [GEMINI]
-model[]=gemini-2.5-flash-preview-05-20
+model[]=gemini-2.5-flash
 temperature=0.7
 maxTokens=4000
 topP=0.9
