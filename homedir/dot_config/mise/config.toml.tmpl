@@ -16,6 +16,9 @@ gitleaks = '8.24'
 chezmoi = '2.62'
 bat = 'latest'
 pre-commit = '4.2'
+fzf = '0.63.0'
+fd = '10.2.0'
+ripgrep = '14.1.1'
 {{ if not .headless }}
 ruby = '3.4'
 kubectl = '1.31'
@@ -24,6 +27,7 @@ helm = '3.15'
 dive = '0.13'
 k9s = '0.40'
 terraform = '1.11'
+podman = '5.5.2'
 {{ end }}
 {{ if eq .chezmoi.arch "arm64" -}}
 "asdf:jylenhof/asdf-git-cliff" = '2.8'

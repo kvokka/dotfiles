@@ -9,14 +9,10 @@ brew 'htop'
 brew 'ncdu'
 brew 'tree'
 brew 'diff-so-fancy'
-brew 'fd'
-brew 'ripgrep'
 brew 'docker-credential-helper'
 
 {{ if or (ne .chezmoi.os "linux") (ne .chezmoi.arch "arm64") }}
 brew 'docker' #no #TODO: Replace with podman
-brew 'podman'
-brew 'fzf'
 {{ end }}
 
 {{ if not .headless }}
