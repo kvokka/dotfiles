@@ -160,7 +160,7 @@
   "telemetry.telemetryLevel": "crash",
   "terminal.integrated.suggest.enabled": true,
   "terminal.integrated.stickyScroll.enabled": true,
-  "geminicodeassist.inlineSuggestions.enableAuto": false,
+  "geminicodeassist.inlineSuggestions.enableAuto": true,
   "editor.wordWrap": "on",
   "explorer.confirmPasteNative": false,
   "mcp": {
@@ -176,5 +176,15 @@
         "env": {}
       }
     }
-  }
+  },
+  "diffEditor.renderSideBySide": false,
+  "github.copilot.enable": {
+    "*": false
+  },
+  "augment.chat.userGuidelines": "# Critical\n\n* Read @/docs/ files and update them before returning the result.\n* Do not comment the changed or removed lines of code and keep the comment in the code to a minimum. In the contrast I encourage you to write comments in the method/function annotation.\n* You must follow all markdownlint policies when edit or create markdown.\n* Before returning the result, you must run `just hooks`, read the output in the terminal and fix all the errors. It run all the checkers and linters that are configured in the project, including tests.\n* Any edits in README.md file must be done in very brief manner. This file should be updated only when there is a major change in the project.\n* If you were asked to create tests or specs, you must keep them and DO NOT remove them after the implementation is done. They should be kept in the repository for future reference and to ensure that the feature works as expected.\n* All the code you wtite must be covered by tests, using TDD principle. If you are not sure how to test it, ask me in the chat.\n* If the code changes the existing functionality, you must update the tests accordingly and ensure that they pass. Do not remove the tests, but update them to reflect the new functionality.\n* If you are not sure about something, ask me in the chat. Do not guess, do not assume, do not make changes without understanding the requirements. Always clarify the requirements before making any changes.\n* Before you start any planning or task, you should keep in mind that the first step is to read the requirements and understand them. The second - is to create the clear plan of how it should be made\nand that plan should be stored in the docs folder before you start the implementation. For each task, you should create a separate file in the docs folder with the name of the task and a brief description of what it is about. The file should be named in the format `task-name.md`, where `task-name` is the name of the task. And reflect that in PRP until the task is done. The file should be updated with the progress of the task and the final result. The file should be kept in the repository for future reference and to ensure that the task is done correctly.\n* Each task must have verification step and you should endure that it is covered by tests. If you are not sure how to test it, ask me in the chat.",
+  "geminicodeassist.updateChannel": "Insiders",
+  "python.analysis.typeCheckingMode": "strict",
+  "geminicodeassist.agentYoloMode": true,
+  "geminicodeassist.enableTelemetry": false,
+  "remote.autoForwardPortsSource": "hybrid"
 }

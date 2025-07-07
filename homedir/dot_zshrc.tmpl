@@ -7,6 +7,7 @@ fi
 
 source ~/.zsh/homebrew.zsh
 source ~/.zsh/p10k.container.zsh
+source ~/.zsh/alias_devc.zsh
 source ~/.p10k.zsh
 
 # Path to your oh-my-zsh installation.
@@ -73,5 +74,4 @@ alias gsha='git rev-parse HEAD'
 alias gcom='git checkout master'
 alias ag='GEMINI_API_KEY=$GOOGLE_AI_STUDIO_API_KEY aicommit2'
 
-alias devc='docker exec -it -e TERM -e COLORTERM -e LC_ALL=C.UTF-8 $(docker ps --filter name=app-1 -q) /usr/bin/zsh'
 alias brave_debug="open -a 'Brave Browser' --args --remote-debugging-port=9222"
