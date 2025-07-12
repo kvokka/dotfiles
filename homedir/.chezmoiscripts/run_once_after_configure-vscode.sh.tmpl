@@ -48,7 +48,7 @@ set -eufo pipefail
 command -v code &> /dev/null || brew install --cask visual-studio-code
 
 {{ range $extensions -}}
-code --force --install-extension {{ . }}
+code --force --install-extension {{ . }} || true
 {{ end -}}
 
 {{ end -}}

@@ -13,4 +13,5 @@ source ~/.zsh/homebrew.zsh
 brew bundle --global
 mise install
 
+[[ -t 0 ]] && echo ">>> Re-login to apply all changes"
 echo ">>> Installation is done!"
