@@ -14,17 +14,13 @@ brew 'docker-credential-helper'
 tap 'atlassian/homebrew-acli'
 brew 'acli'
 
-{{ if or (ne .chezmoi.os "linux") (ne .chezmoi.arch "arm64") }}
-brew 'docker' #no #TODO: Replace with podman
-{{ end }}
-
 {{ if not .headless }}
 cask 'calibre'
 cask 'firefox'
 cask 'transmission'
 cask 'visual-studio-code'
 cask 'font-meslo-lg-nerd-font'
-cask 'docker'
+cask 'docker-desktop' #TODO: Replace with podman
 cask 'vlc'
 {{ if eq .chezmoi.os "darwin" }}
 cask 'iterm2'
