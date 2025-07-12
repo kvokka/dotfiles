@@ -24,3 +24,6 @@ defaults write com.apple.dock largesize -int 128
 defaults write com.apple.finder FXPreferredViewStyle -string Nlsv
 defaults write com.apple.finder FXRemoveOldTrashItems -int 1
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+defaults write com.googlecode.iterm2 PrefsCustomFolder -string "~/.config/iterm2"
+defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true

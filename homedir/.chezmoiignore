@@ -11,6 +11,7 @@
 {{ if ne .chezmoi.os "darwin" }}
 .chezmoiscripts/darwin/**
 .docker/config.json
+.config/iterm2/com.googlecode.iterm2.plist
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
