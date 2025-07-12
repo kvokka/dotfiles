@@ -6,33 +6,38 @@ nodejs = '23'
 python = '3.12'
 golang = '1.24'
 yarn = ['4.9.1']
-rust = '1'
-uv = '0.6'
+uv = '0.7'
 just = '1'
 hadolint = '2.12'
 shellcheck = '0.10'
-markdownlint-cli2 = '0.17'
-gitleaks = '8.24'
-chezmoi = '2.62'
+markdownlint-cli2 = '0.18.1'
+gitleaks = '8.27'
+cosign = '2.5'
+chezmoi = '2.63'
 bat = 'latest'
 pre-commit = '4.2'
-fzf = '0.63.0'
+fzf = '0.64.0'
 fd = '10.2.0'
 ripgrep = '14.1.1'
 {{ if not .headless }}
 ruby = '3.4'
-kubectl = '1.31'
-kubeseal = '0.28'
-helm = '3.15'
 dive = '0.13'
-k9s = '0.40'
-terraform = '1.11'
-podman = '5.5.2'
+podman = '5.5'
 {{ end }}
+
+# # # # # # extras
+# rust = '1'
+# terraform = '1.11'
+# kubectl = '1.31'
+# kubeseal = '0.28'
+# k9s = '0.40'
+# helm = '3.15'
+# helm-diff = '3.12'
+
 {{ if eq .chezmoi.arch "arm64" -}}
-"asdf:jylenhof/asdf-git-cliff" = '2.8'
+# "asdf:jylenhof/asdf-git-cliff" = '2.8'
 {{- else -}}
-git-cliff = '2.8'
+# git-cliff = '2.8'
 {{- end }}
 
 [settings]

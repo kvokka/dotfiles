@@ -13,6 +13,4 @@ source ~/.zsh/homebrew.zsh
 brew bundle --global
 mise install
 
-command -v helm &>/dev/null && helm plugin install https://github.com/databus23/helm-diff || true
-
 echo ">>> Installation is done!"

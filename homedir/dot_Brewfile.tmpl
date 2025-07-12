@@ -10,9 +10,10 @@ brew 'ncdu'
 brew 'tree'
 brew 'diff-so-fancy'
 brew 'docker-credential-helper'
+brew 'libyaml' # implicit Ruby 3.3-3.4 dependency
 
 tap 'atlassian/homebrew-acli'
-brew 'acli'
+brew 'acli' # Rovodev
 
 {{ if not .headless }}
 cask 'calibre'
