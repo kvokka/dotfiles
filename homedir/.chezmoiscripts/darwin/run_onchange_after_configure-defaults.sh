@@ -18,6 +18,9 @@ defaults write -g WebAutomaticSpellingCorrectionEnabled -int 1
 defaults write -g com.apple.swipescrolldirection -int 0
 defaults write -g com.apple.trackpad.forceClick -int 0
 
+defaults write com.apple.AppleMultitouchTrackpad "Clicking" -int 1
+defaults write com.apple.AppleMultitouchTrackpad "TrackpadRightClick" -int 1
+
 defaults write com.apple.dock autohide -int 0
 defaults write com.apple.dock largesize -int 128
 
