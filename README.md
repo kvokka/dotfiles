@@ -5,9 +5,7 @@ Template dotfiles repository, managed with [chezmoi](https://chezmoi.io/).
 ## Installation
 
 ```bash
-export DOTFILES_GITHUB_USERNAME=kvokka # or your own username
-bash -c "$(curl -fsLS https://raw.githubusercontent.com/${DOTFILES_GITHUB_USERNAME}/dotfiles/refs/heads/master/bootstrap.sh)" \
-  -- ${DOTFILES_GITHUB_USERNAME}
+bash -c "$(curl -fsLS https://raw.githubusercontent.com/kvokka/dotfiles/refs/heads/master/bootstrap.sh)"
 ```
 
 With connected terminal in process you will be asked:
@@ -19,34 +17,22 @@ name: # GitHub username, default: kvokka
 email: # GitHub email, default: kvokka@yahoo.com
 ```
 
-### WSL
+NOTES:
+
+* `personal` setting is responsible for extra tools installation and should be patched
+with the actual hostname
+
+### WSL/Parallels MacOs
 
 ```bash
 export SUDO_PASSWORD="your_password_here"
-echo $SUDO_PASSWORD | sudo -S apt update
 
-export DOTFILES_GITHUB_USERNAME=kvokka # or your own username
-bash -c "$(curl -fsLS https://raw.githubusercontent.com/${DOTFILES_GITHUB_USERNAME}/dotfiles/refs/heads/master/bootstrap.sh)" \
-  -- ${DOTFILES_GITHUB_USERNAME}
+bash -c "$(curl -fsLS https://raw.githubusercontent.com/kvokka/dotfiles/refs/heads/master/bootstrap.sh)"
 ```
 
-## Environment variables
+## Notes
 
-Should be placed in default `.env` file, list only common variables
-
-```env
-GOOGLE_AI_STUDIO_API_KEY= # Google AI Studio API key
-```
-
-## Scripts
-
-* [bootstrap.sh](./homedir/bootstrap.sh) - bootstraps environment, including [install.sh](install.sh)
-
-## Manual steps
-
-### Linux
-
-Install fonts from [here](https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k)
+* [fonts](https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k)
 
 ## License
 

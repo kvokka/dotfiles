@@ -45,7 +45,7 @@
 
 set -eufo pipefail
 
-command -v code &> /dev/null || brew install --cask visual-studio-code
+source ~/.zsh/homebrew.zsh
 
 {{ range $extensions -}}
 code --force --install-extension {{ . }} || true

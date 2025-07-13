@@ -1,0 +1,65 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{ $taps := list "atlassian/homebrew-acli" }}{{/* Rovodev */}}
+
+{{ $brews := list
+  "git"
+  "curl"
+  "wget"
+  "zsh"
+  "coreutils"
+  "mise"
+  "htop"
+  "ncdu"
+  "tree"
+  "diff-so-fancy"
+  "docker-credential-helper"
+}}
+
+{{ $brews = append $brews "libyaml" }}{{/* implicit Ruby 3.3-3.4 dependency */}}
+{{ $brews = append $brews "acli" }}{{/* Rovodev */}}
+
+{{ if eq .chezmoi.os "darwin" -}}
+  {{ $brews = append $brews "dockutil" }}
+{{- end }}
+
+{{ $casks := list
+  "google-chrome"
+  "visual-studio-code"
+  "font-meslo-lg-nerd-font"
+}}
+
+{{ if eq .chezmoi.os "darwin" -}}
+  {{ $casks = append $casks "iterm2" }}
+{{- end }}
+
+{{ if .personal -}}
+  {{ $casks = append $casks "docker" }}{{/* Install docker-desktop. TODO: Replace with podman */}}
+  {{ $casks = append $casks "whatsapp" }}
+  {{ $casks = append $casks "telegram" }}
+  {{ $casks = append $casks "vlc" }}
+  {{ $casks = append $casks "calibre" }}
+  {{ $casks = append $casks "firefox" }}
+  {{ $casks = append $casks "transmission" }}
+  {{ $casks = append $casks "veracrypt" }}
+  {{ $casks = append $casks "grammarly-desktop" }}
+{{- end }}
+
+command -v compaudit &> /dev/null && compaudit | xargs chmod g-w
+source ~/.zsh/homebrew.zsh
+
+brew bundle --file=/dev/stdin <<EOF
+{{ range ($taps | sortAlpha | uniq) -}}
+tap "{{ . }}"
+{{ end -}}
+{{ range ($brews | sortAlpha | uniq) -}}
+brew "{{ . }}"
+{{ end -}}
+{{ if not .headless -}}
+{{ range ($casks | sortAlpha | uniq) -}}
+cask "{{ . }}"
+{{ end -}}
+{{- end }}
+EOF
