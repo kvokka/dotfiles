@@ -10,7 +10,6 @@ command -v chezmoi &>/dev/null || sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- ini
 command -v compaudit &> /dev/null && compaudit | xargs chmod g-w
 source ~/.zsh/homebrew.zsh
 
-brew bundle --global
 mise install
 
 [[ -t 0 ]] && echo ">>> Re-login to apply all changes"

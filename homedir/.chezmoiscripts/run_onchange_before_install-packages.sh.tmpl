@@ -1,0 +1,62 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{ $taps := list
+  "atlassian/homebrew-acli" {# Rovodev #}
+-}}
+
+{{ $brews := list
+  "git"
+  "curl"
+  "wget"
+  "zsh"
+  "coreutils" {{/* Brew includes them, but the version is way too old */}}
+  "mise"
+
+  "htop"
+  "ncdu"
+  "tree"
+  "diff-so-fancy"
+  "docker-credential-helper"
+  "dockutil"
+
+  "libyaml" {{/* implicit Ruby 3.3-3.4 dependency */}}
+  "acli" {{/* Rovodev */}}
+-}}
+
+{{ $casks := list
+  "google-chrome"
+  "visual-studio-code"
+  "font-meslo-lg-nerd-font"
+  "docker-desktop" {{/* #TODO: Replace with podman */}}
+
+  {{ if eq .chezmoi.os "darwin" }}
+  "iterm2"
+  {{end}}
+
+  {{ if .personal }}
+  "whatsapp"
+  "telegram"
+  "vlc"
+  "calibre"
+  "firefox"
+  "transmission"
+  {{end}}
+-}}
+
+#brew bundle --file=/dev/stdin <<EOF
+
+echo <<EOF
+{{ range ($taps | sortAlpha | uniq) -}}
+tap "{{ . }}"
+{{ end -}}
+{{ range ($brews | sortAlpha | uniq) -}}
+brew "{{ . }}"
+{{ end -}}
+{{ if not .headless }}
+{{ range ($casks | sortAlpha | uniq) -}}
+cask "{{ . }}"
+{{ end -}}
+{{ end -}}
+EOF

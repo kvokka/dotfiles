@@ -4,8 +4,6 @@ set -eufo pipefail
 
 trap 'killall Dock' EXIT
 
-command -v dockutil &> /dev/null || brew install dockutil
-
 declare -a remove_labels=(
 	Launchpad
 	Messages
