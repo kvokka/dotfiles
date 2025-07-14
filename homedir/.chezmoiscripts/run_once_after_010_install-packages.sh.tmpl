@@ -44,7 +44,7 @@ set -eufo pipefail
   {{ $casks = append $casks "firefox" }}
   {{ $casks = append $casks "transmission" }}
   {{ $casks = append $casks "veracrypt" }}
-  {{ $casks = append $casks "grammarly-desktop" }}
+  {{/* $casks = append $casks "grammarly-desktop" */}}
 {{- end }}
 
 command -v compaudit &> /dev/null && compaudit | xargs chmod g-w
