@@ -30,8 +30,10 @@ for label in "${remove_labels[@]}"; do
 	dockutil --no-restart --remove "${label}" || true
 done
 
-dockutil --add /Applications/Visual\ Studio\ Code.app --position 1 &>/dev/null
+dockutil --no-restart --add /Applications/Visual\ Studio\ Code.app --position 1 &>/dev/null
 
-dockutil --add /Applications/Google\ Chrome.app --position 2 &>/dev/null
+dockutil --no-restart --add /Applications/Google\ Chrome.app --position 2 &>/dev/null
 
 dockutil --add /Applications/iTerm.app/ --position 3 &>/dev/null
+
+true
