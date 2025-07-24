@@ -3,8 +3,8 @@ version: 1
 agent:
   # Additional system prompt to append to the agent's default system prompt
   additionalSystemPrompt: >
-    * read AGENTS.md to be aware about the project
-    * follow rules in the file .roo/rules/custom.md
+    * read AGENTS.md and pyproject.toml to be aware about the project
+    * follow rules in the files .roo/rules/custom.md and .ai/core.md
   # Enable streaming responses from the AI model
   streaming: true
   # Temperature setting for AI model responses (0.0-1.0)
