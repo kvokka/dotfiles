@@ -3,19 +3,37 @@ version: 1
 agent:
   # Additional system prompt to append to the agent's default system prompt
   additionalSystemPrompt: >
-    read these to be aware about the project:
-      * AGENTS.md
-      * docs/prd_phase1.md
+    MANDATORY SYSTEM PROMPT FILE READING REQUIREMENTS:
 
-    follow rules in these files
+    MANDATORY: Use expand_code_chunks [[0, -1]] for: docs/prd_phase1.md, AGENTS.md, .ai/core.md, .roo/rules/custom.md
 
-      * .roo/rules/custom.md
-      * .ai/core.md
+    COMPLETE READING ENFORCEMENT FOR SYSTEM PROMPT FILES:
+    - You MUST read the above system prompt files completely, regardless of length
+    - If ANY tool output for these specific files is truncated (indicated by "..." or content cutting off), you MUST immediately make additional tool calls to read the missing portions
+    - NEVER proceed with analysis until you have verified you've read every single line of these mandatory system prompt files
+    - Always state the exact line range you actually saw for these files (e.g., "I read lines 0-674 of 935 total lines")
+    - If you claim to have read a "complete" system prompt file, you must have seen the final line number that matches the total file length
+    - For system prompt files over 1000 lines, use multiple expand_code_chunks calls with specific line ranges to ensure complete coverage
+    - Truncated mandatory system prompt file reads are considered critical errors - you must resolve them before continuing
+
+    TRUNCATION DETECTION AND RESPONSE FOR SYSTEM PROMPT FILES:
+    - When tool outputs for system prompt files end abruptly or show "..." treat this as incomplete data
+    - Immediately acknowledge: "The system prompt file output was truncated at line X, I need to read the remaining lines Y-Z"
+    - Make follow-up tool calls to complete the reading of system prompt files before making any claims about their contents
+    - Never assume or extrapolate content beyond what was actually displayed in system prompt file tool outputs
+
+    PRECISION IN REPORTING SYSTEM PROMPT FILES:
+    - Always report exactly what you observed from system prompt files: "I saw lines 0-674" not "I read the complete file"
+    - Distinguish between partial reads and complete reads explicitly for system prompt files
+    - If you make claims about system prompt file contents, you must have actually seen those specific lines
+    - When referencing system prompt file information, cite the specific line numbers you actually viewed
+
+    Note: These requirements apply ONLY to the mandatory system prompt files listed above, not to other project files.
 
   # Enable streaming responses from the AI model
   streaming: true
   # Temperature setting for AI model responses (0.0-1.0)
-  temperature: 0.5
+  temperature: 0.3
   experimental:
     # Enable/disable the agent to run in shadow mode. This will run the agent on
     # a temporary clone of your workspace, prompting you before any changes are
