@@ -5,7 +5,7 @@ agent:
   additionalSystemPrompt: >
     MANDATORY SYSTEM PROMPT FILE READING REQUIREMENTS:
 
-    MANDATORY: Use expand_code_chunks [[0, -1]] for: docs/prd_phase1.md, AGENTS.md, .ai/core.md, .roo/rules/custom.md
+    MANDATORY: Use expand_code_chunks [[0, -1]] for: AGENTS.md, .ai/core.md
 
     COMPLETE READING ENFORCEMENT FOR SYSTEM PROMPT FILES:
     - You MUST read the above system prompt files completely, regardless of length
@@ -34,6 +34,7 @@ agent:
   streaming: true
   # Temperature setting for AI model responses (0.0-1.0)
   temperature: 0.3
+  modelId: gpt-5-2025-08-07
   experimental:
     # Enable/disable the agent to run in shadow mode. This will run the agent on
     # a temporary clone of your workspace, prompting you before any changes are

@@ -193,5 +193,6 @@
     }
   ],
   "roo-cline.deniedCommands": [],
-  "editor.trimAutoWhitespace": false
+  "editor.trimAutoWhitespace": false,
+  "files.trimTrailingWhitespace": true
 }
