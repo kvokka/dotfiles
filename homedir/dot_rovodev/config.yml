@@ -33,7 +33,9 @@ agent:
   # Enable streaming responses from the AI model
   streaming: true
   # Temperature setting for AI model responses (0.0-1.0)
-  temperature: 0.3
+  temperature: 0.5 # default is 0.3
+  # modelId: gpt-5-2025-08-07
+  # modelId: claude-sonnet-4@20250514
   modelId: gpt-5-2025-08-07
   experimental:
     # Enable/disable the agent to run in shadow mode. This will run the agent on
