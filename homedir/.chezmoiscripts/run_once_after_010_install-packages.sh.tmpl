@@ -37,7 +37,7 @@ set -eufo pipefail
 {{- end }}
 
 {{ if .personal -}}
-  {{ $casks = append $casks "docker" }}{{/* Install docker-desktop. TODO: Replace with podman */}}
+  {{/* $casks = append $casks "docker"; Skip install docker-desktop. TODO: Replace with podman */}}
   {{ $casks = append $casks "whatsapp" }}
   {{ $casks = append $casks "telegram" }}
   {{ $casks = append $casks "vlc" }}
