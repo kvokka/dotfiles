@@ -15,7 +15,7 @@ defaults write -g NSAutomaticSpellingCorrectionEnabled -int 1
 defaults write -g NSAutomaticQuoteSubstitutionEnabled -int 1
 defaults write -g NSDocumentSaveNewDocumentsToCloud -int 0
 defaults write -g WebAutomaticSpellingCorrectionEnabled -int 1
-defaults write -g com.apple.swipescrolldirection -int 0
+# defaults write -g com.apple.swipescrolldirection -int 0
 defaults write -g com.apple.trackpad.forceClick -int 0
 
 defaults write com.apple.AppleMultitouchTrackpad "Clicking" -int 1
