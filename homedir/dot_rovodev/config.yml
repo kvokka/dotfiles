@@ -42,6 +42,21 @@ agent:
     # a temporary clone of your workspace, prompting you before any changes are
     # applied to your working directory.
     enableShadowMode: false
+  # Enable the deep planning tool for complex task planning
+  enableDeepPlanTool: true
+
+atlassianConnections:
+  # Global jira projects user is part of
+  jiraProjects: []
+  # Directory where any local overrides are stored
+  localOverridePath: .rovodev/atlassian_connections.json
+  # Whether atlassian integration is enabled
+  enabled: false
+  # Editing mode for the prompt session
+  editingMode: EMACS
+  # Maximum width of the console output in characters, or 'fill' to fill the
+  # terminal width
+  maxOutputWidth: 120
 
 sessions:
   # Automatically restore the last active session on startup
@@ -69,39 +84,45 @@ toolPermissions:
   default: allow
   # Permission settings for specific tools
   tools:
-    create_file: ask
-    delete_file: ask
+    create_file: allow
+    delete_file: allow
     find_and_replace_code: allow
     open_files: allow
     expand_code_chunks: allow
     expand_folder: allow
     grep_file_content: allow
     grep_file_paths: allow
-    getAccessibleAtlassianResources: allow
-    getConfluenceSpaces: allow
-    getConfluencePages: allow
-    getPagesInConfluenceSpace: allow
-    getConfluencePageAncestors: allow
-    getConfluencePageFooterComments: allow
-    getConfluencePageInlineComments: allow
-    getConfluencePageDescendants: allow
-    searchConfluenceUsingCql: allow
-    getJiraIssue: allow
-    getTransitionsForJiraIssue: allow
-    lookupJiraAccountId: allow
-    searchJiraIssuesUsingJql: allow
-    getJiraIssueRemoteIssueLinks: allow
-    getVisibleJiraProjects: allow
-    getJiraProjectIssueTypesMetadata: allow
-    createConfluencePage: ask
-    updateConfluencePage: ask
-    createConfluenceFooterComment: ask
-    createConfluenceInlineComment: ask
-    editJiraIssue: ask
-    createJiraIssue: ask
-    transitionJiraIssue: ask
-    addCommentToJiraIssue: ask
+    getAccessibleAtlassianResources: deny
+    getConfluenceSpaces: deny
+    getConfluencePages: deny
+    getPagesInConfluenceSpace: deny
+    getConfluencePageAncestors: deny
+    getConfluencePageFooterComments: deny
+    getConfluencePageInlineComments: deny
+    getConfluencePageDescendants: deny
+    searchConfluenceUsingCql: deny
+    getJiraIssue: deny
+    getTransitionsForJiraIssue: deny
+    lookupJiraAccountId: deny
+    searchJiraIssuesUsingJql: deny
+    getJiraIssueRemoteIssueLinks: deny
+    getVisibleJiraProjects: deny
+    getJiraProjectIssueTypesMetadata: deny
+    createConfluencePage: deny
+    updateConfluencePage: deny
+    createConfluenceFooterComment: deny
+    createConfluenceInlineComment: deny
+    editJiraIssue: deny
+    createJiraIssue: deny
+    transitionJiraIssue: deny
+    addCommentToJiraIssue: deny
     create_technical_plan: allow
+    chrome_inject_script: allow
+    chrome_console: allow
+    chrome_navigate: allow
+    chrome_screenshot: allow
+    chrome_get_web_content: allow
+    chrome_get_interactive_elements: allow
   bash:
     # Default permission for bash commands not explicitly listed
     default: allow
@@ -123,4 +144,6 @@ toolPermissions:
       permission: allow
   # List of allowed MCP server names
   #### It does not use them anyway, so better let them soak
-  allowedMcpServers: []
+  allowedMcpServers:
+  - http://host.docker.internal:12306/mcp
+  - https://mcp.context7.com/mcp
