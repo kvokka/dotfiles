@@ -147,3 +147,4 @@ toolPermissions:
   allowedMcpServers:
   - http://host.docker.internal:12306/mcp
   - https://mcp.context7.com/mcp
+  - npx -y mcp-remote https://docs.mcp.cloudflare.com/sse

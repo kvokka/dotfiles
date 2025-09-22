@@ -194,5 +194,9 @@
   ],
   "roo-cline.deniedCommands": [],
   "editor.trimAutoWhitespace": false,
-  "files.trimTrailingWhitespace": true
+  "files.trimTrailingWhitespace": true,
+  "azureTerraform.survey": {
+    "surveyPromptDate": "2025-09-23T09:14:23.726Z",
+    "surveyPromptIgnoredCount": 1
+  }
 }
