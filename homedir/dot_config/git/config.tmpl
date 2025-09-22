@@ -97,3 +97,10 @@
 
 [submodule]
 	recurse = true
+
+{{ if eq .chezmoi.os "darwin" }}
+[filter "plist"]
+    clean = plutil -convert xml1 -o - %f
+[diff "plist"]
+    textconv = plutil -convert xml1 -o -
+{{ end }}

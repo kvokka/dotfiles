@@ -12,6 +12,7 @@
 .chezmoiscripts/darwin/**
 .docker/config.json
 .config/iterm2/com.googlecode.iterm2.plist
+Library/Preferences/**
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
