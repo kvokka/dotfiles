@@ -16,7 +16,3 @@ web_search = true
 # Send desktop notifications when approvals are required or a turn completes.
 # Defaults to false.
 notifications = true
-
-# You can optionally filter to specific notification types.
-# Available types are "agent-turn-complete" and "approval-requested".
-notifications = [ "agent-turn-complete", "approval-requested" ]
