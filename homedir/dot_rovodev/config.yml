@@ -52,11 +52,6 @@ atlassianConnections:
   localOverridePath: .rovodev/atlassian_connections.json
   # Whether atlassian integration is enabled
   enabled: false
-  # Editing mode for the prompt session
-  editingMode: EMACS
-  # Maximum width of the console output in characters, or 'fill' to fill the
-  # terminal width
-  maxOutputWidth: 120
 
 sessions:
   # Automatically restore the last active session on startup
