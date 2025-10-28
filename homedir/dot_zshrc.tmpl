@@ -54,6 +54,10 @@ export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
 {{ end }}
 {{ end }}
 
+{{ if eq .chezmoi.os "linux" }}
+[ "$(stat -c '%U:%G' /var/run/docker.sock)" != "root:docker" ] && sudo chown root:docker /var/run/docker.sock
+{{ end }}
+
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
