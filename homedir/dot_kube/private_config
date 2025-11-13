@@ -1,0 +1,51 @@
+apiVersion: v1
+clusters:
+- cluster:
+    server: https://gke-21e4bcda957f4aa79aadd3cc50a08127eda1-244573552447.europe-west2.gke.goog
+  name: gke_capi-production-21756_europe-west2_production
+- cluster:
+    server: https://gke-3e4ec5369401474ea013347b9b3de0629ebb-14834481085.europe-west2-a.gke.goog
+  name: gke_capi-staging-27323_europe-west2-a_staging
+contexts:
+- context:
+    cluster: gke_capi-production-21756_europe-west2_production
+    user: gke_capi-production-21756_europe-west2_production
+  name: gke_capi-production-21756_europe-west2_production
+- context:
+    cluster: gke_capi-staging-27323_europe-west2-a_staging
+    user: gke_capi-staging-27323_europe-west2-a_staging
+  name: gke_capi-staging-27323_europe-west2-a_staging
+- context:
+    cluster: gke_capi-production-21756_europe-west2_production
+    user: gke_capi-production-21756_europe-west2_production
+  name: production
+- context:
+    cluster: gke_capi-staging-27323_europe-west2-a_staging
+    user: gke_capi-staging-27323_europe-west2-a_staging
+  name: staging
+current-context: production
+kind: Config
+preferences: {}
+users:
+- name: gke_capi-production-21756_europe-west2_production
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      args: null
+      command: /opt/homebrew/Caskroom/gcloud-cli/latest/google-cloud-sdk/bin/gke-gcloud-auth-plugin
+      env: null
+      installHint: Install gke-gcloud-auth-plugin for use with kubectl by following
+        https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin
+      interactiveMode: IfAvailable
+      provideClusterInfo: true
+- name: gke_capi-staging-27323_europe-west2-a_staging
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      args: null
+      command: /opt/homebrew/Caskroom/gcloud-cli/latest/google-cloud-sdk/bin/gke-gcloud-auth-plugin
+      env: null
+      installHint: Install gke-gcloud-auth-plugin for use with kubectl by following
+        https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin
+      interactiveMode: IfAvailable
+      provideClusterInfo: true
