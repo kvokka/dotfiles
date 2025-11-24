@@ -1,7 +1,8 @@
-model = "gpt-5-codex"
+model = "gpt-5.1-codex-max"
 model_reasoning_effort = "high"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
+web_search_request = true
 
 [history]
 persistence = "save-all"
@@ -9,10 +10,10 @@ persistence = "save-all"
 [projects."/workspace"]
 trust_level = "trusted"
 
-[tools]
-web_search = true
-
 [tui]
 # Send desktop notifications when approvals are required or a turn completes.
 # Defaults to false.
 notifications = true
+
+[notice]
+"hide_gpt-5.1-codex-max_migration_prompt" = false
