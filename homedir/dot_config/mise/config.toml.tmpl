@@ -2,29 +2,29 @@
 
 [tools]
 
-nodejs = '24.6'
+nodejs = '24.11'
 python = '3.13'
-golang = '1.24'
-yarn = ['4.9.1']
-uv = '0.7'
-just = '1'
-hadolint = '2.12'
-shellcheck = '0.10'
+uv = '0.9'
+just = '1.43'
+hadolint = '2.14'
+shellcheck = '0.11'
 markdownlint-cli2 = '0.18.1'
-gitleaks = '8.27'
-cosign = '2.5'
-chezmoi = '2.65'
-bat = 'latest'
-pre-commit = '4.2'
-fzf = '0.64.0'
-fd = '10.2.0'
+gitleaks = '8.30'
+chezmoi = '2.67'
+bat = '0.26'
+pre-commit = '4.5'
+fzf = '0.67'
+fd = '10.3'
 jq = '1.8'
-ripgrep = '14.1.1'
+ripgrep = '15.1'
 {{ if not .headless }}
 ruby = '3.4'
 dive = '0.13'
 podman = '5.5'
 terraform = '1.13'
+golang = '1.25'
+yarn = ['4.12']
+cosign = '2.5'
 {{ end }}
 
 # # # # # # extras
@@ -34,12 +34,7 @@ terraform = '1.13'
 # k9s = '0.40'
 # helm = '3.15'
 # helm-diff = '3.12'
-
-{{ if eq .chezmoi.arch "arm64" -}}
-# "asdf:jylenhof/asdf-git-cliff" = '2.8'
-{{- else -}}
 # git-cliff = '2.8'
-{{- end }}
 
 [settings]
 
