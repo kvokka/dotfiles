@@ -1,4 +1,4 @@
-model = "gpt-5.1-codex-max"
+model = "gpt-5.2"
 model_reasoning_effort = "xhigh"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
@@ -17,3 +17,4 @@ notifications = true
 
 [notice]
 "hide_gpt-5.1-codex-max_migration_prompt" = false
+hide_rate_limit_model_nudge = true
