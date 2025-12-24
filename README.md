@@ -25,6 +25,7 @@ with the actual hostname
 ### WSL/Parallels MacOs
 
 ```bash
+# This is optional, some casks for macOs require that, can be entered in the installation process
 export SUDO_PASSWORD="your_password_here"
 
 bash -c "$(curl -fsLS https://raw.githubusercontent.com/kvokka/dotfiles/refs/heads/master/bootstrap.sh)"

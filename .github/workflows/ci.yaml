@@ -14,6 +14,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - run: "./ci.sh"
-      - name: chezmoi data
-        run: '$HOME/.local/bin/chezmoi data'
+      - run: "./bootstrap.sh"
+      - run: "tree -a -L 2 $HOME"
+      - name: smoke test
+        run: |
+          ~/.local/share/mise/shims/chezmoi --version
+          ~/.local/share/mise/shims/chezmoi data
