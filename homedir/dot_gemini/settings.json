@@ -6,7 +6,15 @@
     "enablePermanentToolApproval": true
   },
   "general": {
-    "previewFeatures": true
+    "previewFeatures": true,
+    "checkpointing": {
+      "enabled": true
+    },
+    "enablePromptCompletion": true,
+    "retryFetchErrors": true,
+    "sessionRetention": {
+      "maxAge": "30d"
+    }
   },
   "ui": {
     "showStatusInTitle": true,
@@ -27,10 +35,36 @@
     "shell": {
       "showColor": true
     },
-    "autoAccept": true
+    "autoAccept": true,
+    "allowed": [
+      "run_shell_command(*)"
+    ]
   },
   "contextFileName": "AGENTS.md",
   "model": {
+    "name": "gemini-3-pro-preview",
     "compressionThreshold": 0.8
+  },
+  "modelConfigs": {
+    "customAliases": {
+      "classifier": {
+        "extends": "gemini-3-flash-preview"
+      },
+      "prompt-completion": {
+        "extends": "gemini-3-flash-preview"
+      },
+      "edit-corrector": {
+        "extends": "gemini-3-flash-preview"
+      },
+      "summarizer-default": {
+        "extends": "gemini-3-flash-preview"
+      },
+      "summarizer-shell": {
+        "extends": "gemini-3-flash-preview"
+      },
+      "next-speaker-checker": {
+        "extends": "gemini-3-flash-preview"
+      }
+    }
   }
 }
