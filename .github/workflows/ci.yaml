@@ -2,6 +2,13 @@ name: ci
 
 on:
   push:
+    # The smoke test is testing only chezmoi config, this elliminates waste of resources
+    paths:
+    - .github/workflows/**
+    - homedir/.chezmoiscripts/**
+    - homedir/.chezmoi*
+    - .chezmoi*
+    - bootstrap.sh
   pull_request:
 
 jobs:
