@@ -22,6 +22,8 @@ set -eufo pipefail
 {{ $brews = append $brews "libyaml" }}{{/* implicit Ruby 3.3-3.4 dependency */}}
 {{ $brews = append $brews "acli" }}{{/* Rovodev */}}
 
+{{ $brews = append $brews "gemini-cli" }}
+
 {{ if eq .chezmoi.os "darwin" -}}
   {{ $brews = append $brews "dockutil" }}
 {{- end }}

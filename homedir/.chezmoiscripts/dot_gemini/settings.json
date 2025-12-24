@@ -1,0 +1,34 @@
+{
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    },
+    "enablePermanentToolApproval": true
+  },
+  "general": {
+    "previewFeatures": true
+  },
+  "ui": {
+    "showStatusInTitle": true,
+    "hideBanner": true,
+    "footer": {
+      "hideModelInfo": false,
+      "hideContextPercentage": false
+    },
+    "showMemoryUsage": true,
+    "showModelInfoInChat": true,
+    "hideWindowTitle": true
+  },
+  "context": {
+    "loadMemoryFromIncludeDirectories": false
+  },
+  "tools": {
+    "shell": {
+      "showColor": true
+    },
+    "autoAccept": true
+  },
+  "model": {
+    "compressionThreshold": 0.8
+  }
+}
