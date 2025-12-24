@@ -20,6 +20,7 @@
     "hideWindowTitle": true
   },
   "context": {
+    "fileName": "AGENTS.md",
     "loadMemoryFromIncludeDirectories": false
   },
   "tools": {
@@ -28,6 +29,7 @@
     },
     "autoAccept": true
   },
+  "contextFileName": "AGENTS.md",
   "model": {
     "compressionThreshold": 0.8
   }
