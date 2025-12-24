@@ -17,10 +17,7 @@ else
   chezmoi=chezmoi
 fi
 
-# POSIX way to get script's dir: https://stackoverflow.com/a/29834779/12156188
-script_dir="$(cd -P -- "$(dirname -- "$(command -v -- "$0")")" && pwd -P)"
-
-eval "$chezmoi" init --apply "--source=$script_dir"
+./bootstrap.sh
 
 tree -a -L 2 "$HOME"
 
