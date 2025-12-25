@@ -47,25 +47,103 @@
     "compressionThreshold": 0.8
   },
   "modelConfigs": {
-    "customAliases": {
-      "classifier": {
-        "extends": "gemini-3-flash-preview"
+    "overrides": [
+      {
+        "match": {
+          "model": "classifier"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
       },
-      "prompt-completion": {
-        "extends": "gemini-3-flash-preview"
+      {
+        "match": {
+          "model": "prompt-completion"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
       },
-      "edit-corrector": {
-        "extends": "gemini-3-flash-preview"
+      {
+        "match": {
+          "model": "edit-corrector"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
       },
-      "summarizer-default": {
-        "extends": "gemini-3-flash-preview"
+      {
+        "match": {
+          "model": "summarizer-default"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
       },
-      "summarizer-shell": {
-        "extends": "gemini-3-flash-preview"
+      {
+        "match": {
+          "model": "summarizer-shell"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
       },
-      "next-speaker-checker": {
-        "extends": "gemini-3-flash-preview"
+      {
+        "match": {
+          "model": "web-fetch"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
+      },
+      {
+        "match": {
+          "model": "web-search"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
+      },
+      {
+        "match": {
+          "model": "loop-detection"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
+      },
+      {
+        "match": {
+          "model": "loop-detection-double-check"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
+      },
+      {
+        "match": {
+          "model": "llm-edit-fixer"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
+      },
+      {
+        "match": {
+          "model": "next-speaker-checker"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
+      },
+      {
+        "match": {
+          "model": "gemini-2.5-flash-lite"
+        },
+        "modelConfig": {
+          "name": "gemini-3-flash-preview"
+        }
       }
-    }
+    ]
   }
 }
