@@ -29,6 +29,7 @@
   },
   "context": {
     "fileName": "AGENTS.md",
+    "discoveryMaxDirs": 1,
     "loadMemoryFromIncludeDirectories": false
   },
   "tools": {
