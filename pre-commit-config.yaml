@@ -6,9 +6,12 @@ repos:
     hooks:
       - id: check-added-large-files
       - id: check-yaml
+      - id: check-toml
       - id: mixed-line-ending
       - id: end-of-file-fixer
       - id: trailing-whitespace
+      - id: check-symlinks
+      - id: check-executables-have-shebangs
   - repo: https://gitlab.com/bmares/check-json5
     rev: v1.0.0
     hooks:
@@ -23,7 +26,3 @@ repos:
     rev: v0.0.204
     hooks:
       - id: rumdl-fmt
-  - repo: https://github.com/hadolint/hadolint
-    rev: v2.14.0
-    hooks:
-      - id: hadolint
