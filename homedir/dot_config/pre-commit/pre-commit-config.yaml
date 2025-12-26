@@ -19,17 +19,11 @@ repos:
       - id: gitleaks
         entry: gitleaks protect -v --redact --staged
         require_serial: true
-  - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.20.0  # Use the latest version or specify a version that suits your needs
+  - repo: https://github.com/rvben/rumdl-pre-commit
+    rev: v0.0.204
     hooks:
-      - id: markdownlint-cli2
-        name: Lint Markdown files with markdownlint-cli2
-        entry: markdownlint-cli2
-        language: system
-        types: [markdown]
-        files: \.(md|mdc)$
-        args: [--fix]
-        stages: [pre-commit]  # Explicitly run during commit stage
+      - id: rumdl-fmt
+        args: [--force-exclude]  # Respect exclude patterns from config
   - repo: https://github.com/hadolint/hadolint
     rev: v2.14.0
     hooks:
