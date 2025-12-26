@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-yaml
@@ -14,13 +14,13 @@ repos:
     hooks:
     - id: check-json5
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.24.2
+    rev: v8.30.0
     hooks:
       - id: gitleaks
         entry: gitleaks protect -v --redact --staged
         require_serial: true
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.17.2  # Use the latest version or specify a version that suits your needs
+    rev: v0.20.0  # Use the latest version or specify a version that suits your needs
     hooks:
       - id: markdownlint-cli2
         name: Lint Markdown files with markdownlint-cli2
@@ -31,6 +31,6 @@ repos:
         args: [--fix]
         stages: [pre-commit]  # Explicitly run during commit stage
   - repo: https://github.com/hadolint/hadolint
-    rev: v2.12.0  # Use the latest version or specify a version that suits your needs
+    rev: v2.14.0
     hooks:
       - id: hadolint

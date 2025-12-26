@@ -15,16 +15,16 @@ fi
 # Run pre-commit with the chosen config
 if [ $# -gt 0 ]; then
     # If arguments are provided, pass them to pre-commit run
-    pre-commit run --config "$CONFIG_FILE" "$@"
+    prek run --config "$CONFIG_FILE" "$@"
 else
     # Otherwise, run pre-commit normally
-    pre-commit run --config "$CONFIG_FILE"
+    prek run --config "$CONFIG_FILE"
 fi
 RESULT=$?
 
 # Exit with the result of the pre-commit run
 if [ $RESULT -ne 0 ]; then
-    echo "Pre-commit hooks failed."
+    echo "Prek (pre-commit) hooks failed."
     exit 1
 fi
 
