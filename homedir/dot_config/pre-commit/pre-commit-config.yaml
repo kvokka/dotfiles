@@ -14,7 +14,7 @@ repos:
     hooks:
     - id: check-json5
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.30.0
+    rev: v8.29.1
     hooks:
       - id: gitleaks
         entry: gitleaks protect -v --redact --staged
