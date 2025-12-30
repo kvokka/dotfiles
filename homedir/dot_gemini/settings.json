@@ -44,10 +44,18 @@
   "contextFileName": "AGENTS.md",
   "model": {
     "name": "gemini-3-pro-preview",
-    "compressionThreshold": 0.8
+    "compressionThreshold": 0.6
   },
   "modelConfigs": {
     "customOverrides": [
+      {
+        "match": {
+          "model": "chat-base"
+        },
+        "modelConfig": {
+          "temperature": 0.35
+        }
+      },
       {
         "match": {
           "model": "classifier"
@@ -77,7 +85,10 @@
           "model": "summarizer-default"
         },
         "modelConfig": {
-          "model": "gemini-3-flash-preview"
+          "model": "gemini-3-flash-preview",
+          "generateContentConfig": {
+            "maxOutputTokens": 30000
+          }
         }
       },
       {
