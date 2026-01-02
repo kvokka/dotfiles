@@ -1,8 +1,46 @@
 {
   "plugin": [
-    "opencode-antigravity-auth@1.2.7"
+    "opencode-antigravity-auth@1.2.7",
+    "oh-my-opencode",
+    "opencode-openai-codex-auth"
   ],
   "provider": {
+    "openai": {
+      "name": "OpenAI",
+      "api": "codex",
+      "models": {
+        "gpt-5.2": {
+          "name": "GPT-5.2"
+        },
+        "gpt-5.2-codex-low": {
+          "name": "GPT-5.2-codex",
+          "options": {
+            "reasoningEffort": "low"
+          }
+        },
+        "gpt-5.2-codex": {
+          "name": "GPT-5.2-codex",
+          "options": {
+            "reasoningEffort": "medium"
+          }
+        },
+        "gpt-5.2-codex-high": {
+          "name": "GPT-5.2-codex",
+          "options": {
+            "reasoningEffort": "high"
+          }
+        },
+        "gpt-5.2-codex-xhigh": {
+          "name": "GPT-5.2-codex",
+          "options": {
+            "reasoningEffort": "xhigh"
+          }
+        },
+        "codex-1": {
+          "name": "Codex-1"
+        }
+      }
+    },
     "google": {
       "models": {
         "antigravity-gemini-3-pro-low": {

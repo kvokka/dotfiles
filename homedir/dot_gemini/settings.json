@@ -1,4 +1,9 @@
 {
+  "context": {
+    "fileName": "AGENTS.md",
+    "discoveryMaxDirs": 1,
+    "loadMemoryFromIncludeDirectories": false
+  },
   "security": {
     "auth": {
       "selectedType": "oauth-personal"
@@ -27,11 +32,6 @@
     "showModelInfoInChat": true,
     "hideWindowTitle": true
   },
-  "context": {
-    "fileName": "AGENTS.md",
-    "discoveryMaxDirs": 1,
-    "loadMemoryFromIncludeDirectories": false
-  },
   "tools": {
     "shell": {
       "showColor": true
@@ -41,7 +41,6 @@
       "run_shell_command(*)"
     ]
   },
-  "contextFileName": "AGENTS.md",
   "model": {
     "name": "gemini-3-pro-preview",
     "compressionThreshold": 0.6
