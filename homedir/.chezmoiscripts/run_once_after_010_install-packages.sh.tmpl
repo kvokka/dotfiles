@@ -17,14 +17,10 @@ set -eufo pipefail
   "diff-so-fancy"
   "tig"
   "docker-credential-helper"
-  "rumdl"
-  "ty"
 }}
 
 {{ $brews = append $brews "libyaml" }}{{/* implicit Ruby 3.3-3.4 dependency */}}
 {{ $brews = append $brews "acli" }}{{/* Rovodev */}}
-
-{{ $brews = append $brews "gemini-cli" }}
 
 {{ if eq .chezmoi.os "darwin" -}}
   {{ $brews = append $brews "dockutil" }}
@@ -34,7 +30,6 @@ set -eufo pipefail
   "google-chrome"
   "visual-studio-code"
   "font-meslo-lg-nerd-font"
-  "codex"
 }}
 
 {{ if eq .chezmoi.os "darwin" -}}
