@@ -12,6 +12,29 @@
       "http://localhost:5173"
     ]
   },
+  "formatter": {
+    "markdown-formatter": {
+      "command": [
+        "rumdl",
+        "fmt",
+        "--fix",
+        "$FILE"
+      ],
+      "extensions": [
+        ".md"
+      ]
+    },
+    "python-types-checker": {
+      "command": [
+        "ty",
+        "check",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
+    }
+  },
   "model": "google/antigravity-gemini-3-pro-high",
   "small_model": "google/antigravity-gemini-3-flash",
   "provider": {
