@@ -1,6 +1,6 @@
 {
   "plugin": [
-    "opencode-antigravity-auth@1.2.7",
+    "opencode-antigravity-auth@1.2.8-beta.1",
     "oh-my-opencode",
     "opencode-openai-codex-auth"
   ],
