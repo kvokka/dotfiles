@@ -23,7 +23,13 @@ eval "$(mise activate zsh)"
 if [[ "$USER" == "vscode" ]]; then
   export POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION=''
   export POWERLEVEL9K_OS_ICON_BACKGROUND=31
-  [ "$(stat -c '%U:%G' /var/run/docker.sock)" != "root:docker" ] && sudo chown root:docker /var/run/docker.sock
+
+  if [ "$(stat -c '%U:%G' /var/run/docker.sock)" != "root:docker" ]; then
+    DOCKER_GID=999
+    sudo groupadd -g ${DOCKER_GID} docker &>/dev/null && \
+    sudo chown root:docker /var/run/docker.sock && \
+    sudo usermod -aG docker vscode
+  fi
   [ -f ~/.devcontainer/.env.devcontainer ] && source ~/.devcontainer/.env.devcontainer
 fi
 {{ end }}
