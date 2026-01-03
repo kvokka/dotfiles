@@ -12,6 +12,8 @@
       "http://localhost:5173"
     ]
   },
+  "model": "google/antigravity-gemini-3-pro-high",
+  "small_model": "google/antigravity-gemini-3-flash",
   "provider": {
     "openai": {
       "name": "OpenAI",
