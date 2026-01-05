@@ -31,6 +31,14 @@ export SUDO_PASSWORD="your_password_here"
 bash -c "$(curl -fsLS https://raw.githubusercontent.com/kvokka/dotfiles/refs/heads/master/bootstrap.sh)"
 ```
 
+#### Use with another user
+
+```shell
+export GITHUB_USERNAME=my-user
+
+bash -c "$(curl -fsLS https://raw.githubusercontent.com/kvokka/dotfiles/refs/heads/master/bootstrap.sh)"
+```
+
 ## Notes
 
 * [fonts](https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k)

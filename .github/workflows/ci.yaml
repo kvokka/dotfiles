@@ -22,6 +22,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - run: "./bootstrap.sh"
+        env:
+          BOOTSTRAP_TIMEOUT: 600
       - run: "tree -a -L 2 $HOME"
       - name: smoke test
         run: |
