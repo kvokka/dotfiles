@@ -17,17 +17,18 @@ TIMEOUT="${BOOTSTRAP_TIMEOUT:-1800}"
 SLEEP_INTERVAL=10
 
 # --------------------------------------------------
-# Fast exit if already bootstrapped
-# --------------------------------------------------
-if [[ -f "$MARKER" ]] && command -v brew >/dev/null 2>&1 && command -v chezmoi >/dev/null 2>&1; then
-  echo "==> Bootstrap already completed (marker exists and tools present)."
-  exit 0
-fi
-
-# --------------------------------------------------
 # Main bootstrap with lock
 # --------------------------------------------------
 bootstrap_with_lock() {
+
+  # --------------------------------------------------
+  # Fast exit if already bootstrapped
+  # --------------------------------------------------
+  if [[ -f "$MARKER" ]] && command -v brew >/dev/null 2>&1 && command -v chezmoi >/dev/null 2>&1; then
+    echo "==> Bootstrap already completed (marker exists and tools present)."
+    exit 0
+  fi
+
   exec 200>"$LOCKFILE"
 
   if flock -n 200; then
