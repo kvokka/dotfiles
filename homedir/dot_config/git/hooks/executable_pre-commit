@@ -5,21 +5,13 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 
 # Check if a project-specific .pre-commit-config.yaml exists
 if [ -f "$REPO_ROOT/.pre-commit-config.yaml" ]; then
-    # Use the project-specific config
-    CONFIG_FILE="$REPO_ROOT/.pre-commit-config.yaml"
+    # Let prek discover the config automatically
+    prek run "$@"
 else
     # Fall back to the global config
-    CONFIG_FILE="$HOME/.config/pre-commit/pre-commit-config.yaml"
+    prek run --config "$HOME/.config/pre-commit/pre-commit-config.yaml" "$@"
 fi
 
-# Run pre-commit with the chosen config
-if [ $# -gt 0 ]; then
-    # If arguments are provided, pass them to pre-commit run
-    prek run --config "$CONFIG_FILE" "$@"
-else
-    # Otherwise, run pre-commit normally
-    prek run --config "$CONFIG_FILE"
-fi
 RESULT=$?
 
 # Exit with the result of the pre-commit run
