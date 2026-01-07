@@ -1,8 +1,9 @@
 {
   "plugin": [
-    "opencode-antigravity-auth@1.2.8-beta.1",
+    "opencode-antigravity-auth@1.2.8-beta.3",
     "oh-my-opencode",
-    "opencode-openai-codex-auth"
+    "opencode-openai-codex-auth",
+    "opencode-websearch-cited"
   ],
   "server": {
     "port": 4096,
@@ -71,6 +72,11 @@
         },
         "codex-1": {
           "name": "Codex-1"
+        }
+      },
+      "options": {
+        "websearch_cited": {
+          "model": "gpt-5.2"
         }
       }
     },
@@ -245,6 +251,11 @@
               "text"
             ]
           }
+        }
+      },
+      "options": {
+        "websearch_cited": {
+          "model": "gemini-3-flash-preview"
         }
       }
     }

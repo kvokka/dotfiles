@@ -7,22 +7,77 @@
       "model": "google/antigravity-gemini-3-pro-high"
     },
     "oracle": {
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "ask",
+        "doom_loop": "allow",
+        "external_directory": "ask"
+      },
       "model": "openai/gpt-5.2-codex-xhigh"
     },
     "librarian": {
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "ask"
+      },
       "model": "google/antigravity-gemini-3-flash"
     },
     "explore": {
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "ask"
+      },
       "model": "google/antigravity-gemini-3-flash"
     },
     "frontend-ui-ux-engineer": {
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "ask"
+      },
       "model": "google/antigravity-gemini-3-pro-high"
     },
     "document-writer": {
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "ask"
+      },
       "model": "google/antigravity-gemini-3-flash"
     },
     "multimodal-looker": {
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "ask"
+      },
       "model": "google/antigravity-gemini-3-flash"
+    }
+  },
+  "background_task": {
+    "defaultConcurrency": 5,
+    "providerConcurrency": {
+      "anthropic": 3,
+      "openai": 5,
+      "google": 15
+    },
+    "modelConcurrency": {
+      "google/antigravity-gemini-3-flash": 10,
+      "google/gemini-3-flash": 10,
+      "google/gemini-3-flash-preview": 10
     }
   }
 }
