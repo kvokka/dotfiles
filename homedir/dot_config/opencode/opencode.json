@@ -25,6 +25,26 @@
         ".md"
       ]
     },
+    "ruff-check": {
+      "command": [
+        "ruff",
+        "check",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
+    },
+    "ruff-format": {
+      "command": [
+        "ruff",
+        "format",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
+    },
     "python-types-checker": {
       "command": [
         "ty",
