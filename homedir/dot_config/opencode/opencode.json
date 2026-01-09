@@ -57,7 +57,7 @@
       ]
     }
   },
-  "model": "google/antigravity-gemini-3-pro-high",
+  "model": "google/antigravity-gemini-3-pro",
   "small_model": "google/antigravity-gemini-3-flash",
   "provider": {
     "openai": {
