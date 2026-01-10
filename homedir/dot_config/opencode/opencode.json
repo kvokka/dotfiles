@@ -55,6 +55,19 @@
       "extensions": [
         ".py"
       ]
+    },
+    "biome-check": {
+      "command": [
+        "biome",
+        "check",
+        "$FILE"
+      ],
+      "extensions": [
+        ".ts",
+        ".tsx",
+        "json",
+        "css"
+      ]
     }
   },
   "model": "google/antigravity-gemini-3-pro",
