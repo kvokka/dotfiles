@@ -10,8 +10,19 @@
         "doom_loop": "allow",
         "external_directory": "ask"
       },
-      // "model": "google/claude-opus-4-5-thinking"
-      "model": "google/antigravity-gemini-3-pro"
+      "model": "google/claude-opus-4-5-thinking"
+      // "model": "google/antigravity-gemini-3-pro"
+    },
+    "Planner-Sisyphus": {
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "ask",
+        "doom_loop": "allow",
+        "external_directory": "ask"
+      },
+      "model": "google/claude-opus-4-5-thinking"
+      // "model": "google/antigravity-gemini-3-pro"
     },
     "oracle": {
       "permission": {
