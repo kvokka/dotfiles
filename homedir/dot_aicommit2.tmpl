@@ -1,0 +1,22 @@
+generate=5
+includeBody=true
+
+[TOGETHER]
+compatible=true
+model=gemini-3-flash-preview
+{{ if eq .chezmoi.os "darwin" -}}
+url="http://0.0.0.0:8317"
+{{- else -}}
+url="http://host.docker.internal:8317"
+{{- end }}
+path=/v1
+key=quotio-local-01F5A882-83B5-453B-A155-A85B74593578
+temperature=0.7
+numCtx=1000000
+topP=0.9
+
+[GEMINI]
+disabled=true
+
+[OPENAI]
+disabled=true
