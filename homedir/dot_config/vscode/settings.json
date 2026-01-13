@@ -198,5 +198,7 @@
   "azureTerraform.survey": {
     "surveyPromptDate": "2025-09-23T09:14:23.726Z",
     "surveyPromptIgnoredCount": 1
-  }
+  },
+  "scm.repositories.explorer": true,
+  "scm.repositories.selectionMode": "single"
 }

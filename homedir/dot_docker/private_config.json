@@ -1,6 +1,11 @@
 {
-	"auths": {},
+	"auths": {
+		"gcr.io": {}
+	},
 	"credsStore": "osxkeychain",
+	"credHelpers": {
+		"europe-west2-docker.pkg.dev": "gcloud"
+	},
 	"currentContext": "desktop-linux",
 	"plugins": {
 		"debug": {
@@ -12,8 +17,5 @@
 	},
 	"features": {
 		"hooks": "true"
-	},
-	"credHelpers": {
-		"europe-west2-docker.pkg.dev": "gcloud"
 	}
 }
