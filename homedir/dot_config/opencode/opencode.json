@@ -394,7 +394,7 @@
       "npm": "@ai-sdk/anthropic",
       "options": {
         "apiKey": "quotio-local-01F5A882-83B5-453B-A155-A85B74593578",
-        "baseURL": "http://127.0.0.1:8317/v1"
+        "baseURL": "{env:QUOTIO_PROXY_FULL_URL}"
       }
     },
     "openai": {
