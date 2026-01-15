@@ -18,3 +18,7 @@ Library/Preferences/**
 {{ if ne .chezmoi.os "linux" }}
 .chezmoiscripts/linux/**
 {{ end }}
+
+{{ if ne .github_login "kvokka" }}
+.config/git/config-checkeatrade
+{{ end }}
