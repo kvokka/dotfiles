@@ -25,7 +25,6 @@ contexts:
   name: staging
 current-context: production
 kind: Config
-preferences: {}
 users:
 - name: gke_capi-production-21756_europe-west2_production
   user:
