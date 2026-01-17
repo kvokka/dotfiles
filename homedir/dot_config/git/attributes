@@ -1,2 +1,15 @@
 Library/Preferences/*.plist filter=plist
 Library/Preferences/*.plist diff=plist
+
+*.tmpl                  filter=home-tilde
+*.sh                    filter=home-tilde
+*.zsh                   filter=home-tilde
+*.bash                  filter=home-tilde
+*.yaml                  filter=home-tilde
+*.yml                   filter=home-tilde
+*.toml                  filter=home-tilde
+*.json                  filter=home-tilde
+run_*                   filter=home-tilde
+.chezmoitemplates/**    filter=home-tilde
+
+Library/Application[[:space:]]Support/Quotio/config.yaml filter=tilde-home

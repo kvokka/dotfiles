@@ -1,0 +1,7 @@
+[filter "home-tilde"]
+	clean = "perl -pe 's{^\\Q$ENV{HOME}\\E(/|$)}{~$1}; s{\\Q$ENV{HOME}\\E/}{~/}g'"
+	smudge = cat
+
+[filter "tilde-home"]
+    clean  = cat
+    smudge = "perl -pe 's{^~(/|$)}{$ENV{HOME}$1}; s{^~/}{~${/}}'"

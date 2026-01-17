@@ -112,3 +112,6 @@
 [includeIf "gitdir:**/*checkatrade*/"]
     path = ~/.config/git/config-checkeatrade
 {{ end }}
+
+[includeIf "gitdir:{{ .chezmoi.workingTree }}/**"]
+    path = ~/.config/git/config-chezmoi
