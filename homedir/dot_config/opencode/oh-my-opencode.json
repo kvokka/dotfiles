@@ -32,7 +32,7 @@
         "doom_loop": "allow",
         "external_directory": "ask"
       },
-      "model": "openai/gpt-5.2-codex-xhigh"
+      "model": "quotio/gpt-5.2-codex:xhigh"
     },
     "librarian": {
       "permission": {
@@ -88,14 +88,13 @@
   "background_task": {
     "defaultConcurrency": 5,
     "providerConcurrency": {
-      "anthropic": 3,
-      "openai": 5,
-      "google": 15
+      "quotio": 20
     },
     "modelConcurrency": {
-      "google/antigravity-gemini-3-flash": 10,
-      "google/gemini-3-flash": 10,
-      "google/gemini-3-flash-preview": 10
+      "quotio/gemini-3-flash-preview": 15,
+      "quotio/gemini-3-pro-preview": 10,
+      "quotio/gemini-claude-opus-4-5-thinking": 3,
+      "quotio/gpt-5.2-codex": 3
     }
   }
 }
