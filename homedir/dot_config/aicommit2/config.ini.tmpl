@@ -4,6 +4,8 @@ includeBody=true
 [TOGETHER]
 compatible=true
 model=gemini-3-flash-preview
+# aicommit2 does not support env var sumbstitution, track https://github.com/tak-bro/aicommit2/issues/213
+# and replace with `url=$QUOTIO_PROXY_URL` after the implementation
 {{ if eq .chezmoi.os "darwin" -}}
 url="http://0.0.0.0:8317"
 {{- else -}}

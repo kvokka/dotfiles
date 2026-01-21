@@ -17,12 +17,14 @@ name: # GitHub username, default: kvokka
 email: # GitHub email, default: kvokka@yahoo.com
 ```
 
-NOTES:
+### Extras
 
 * `personal` setting is responsible for extra tools installation and should be patched
 with the actual hostname
 
-### WSL/Parallels MacOs
+* Recommended to set `MISE_GITHUB_TOKEN` in `~/.env` file with the [access token](https://github.com/settings/personal-access-tokens) to public repos only to avoid hitting GitHub download limits
+
+## WSL/Parallels MacOs
 
 ```bash
 # This is optional, some casks for macOs require that, can be entered in the installation process
@@ -31,7 +33,7 @@ export SUDO_PASSWORD="your_password_here"
 bash -c "$(curl -fsLS https://raw.githubusercontent.com/kvokka/dotfiles/refs/heads/master/bootstrap.sh)"
 ```
 
-#### Use with another user
+### Use with another user
 
 ```shell
 export GITHUB_USERNAME=my-user
