@@ -7,6 +7,8 @@
 .oh-my-zsh/plugins/**
 .oh-my-zsh/templates/**
 .oh-my-zsh/custom/themes/powerlevel10k/**/*.zwc
+.oh-my-zsh/CONTRIBUTING.md
+.oh-my-zsh/LICENSE.txt
 
 {{ if ne .chezmoi.os "darwin" }}
 .chezmoiscripts/darwin/**
