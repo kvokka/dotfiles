@@ -11,9 +11,6 @@
     "explore": {
       "model": "google/gemini-3-flash-preview"
     },
-    "title": {
-      "model": "google/gemini-3-flash-preview"
-    },
     "multimodal-looker": {
       "model": "google/gemini-3-flash-preview"
     },

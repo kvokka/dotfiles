@@ -67,6 +67,23 @@
       ]
     }
   },
+  "agent": {
+    "title": {
+      "model": "google/gemini-3-flash-preview"
+    },
+    "summary": {
+      "model": "google/gemini-3-flash-preview"
+    },
+    "explore": {
+      "model": "google/gemini-3-flash-preview"
+    },
+    "compaction": {
+      "model": "google/gemini-3-flash-preview"
+    },
+    "general": {
+      "model": "anthropic/gemini-claude-sonnet-4-5"
+    }
+  },
   "model": "google/gemini-3-pro",
   "small_model": "google/gemini-3-flash",
   "provider": {
