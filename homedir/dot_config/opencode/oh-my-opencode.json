@@ -3,16 +3,29 @@
   // https://github.com/code-yeongyu/oh-my-opencode/blob/master/docs/configurations.md
   "agents": {
     "sisyphus": {
-      "model": "anthropic/gemini-claude-opus-4-5-thinking"
+      "model": "anthropic/gemini-claude-opus-4-5-thinking",
+      "permission": {
+        "doom_loop": "allow"
+      }
     },
     "librarian": {
-      "model": "google/gemini-3-flash-preview"
+      "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "bash": "allow",
+        "doom_loop": "allow"
+      }
     },
     "explore": {
-      "model": "google/gemini-3-flash-preview"
+      "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "doom_loop": "allow"
+      }
     },
     "multimodal-looker": {
-      "model": "google/gemini-3-flash-preview"
+      "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "doom_loop": "allow"
+      }
     },
     "prometheus": {
       "model": "anthropic/gemini-claude-opus-4-5-thinking"
@@ -29,19 +42,34 @@
   },
   "categories": {
     "artistry": {
-      "model": "google/gemini-3-pro-preview"
+      "model": "google/gemini-3-pro-preview",
+      "permission": {
+        "doom_loop": "allow"
+      }
     },
     "quick": {
-      "model": "google/gemini-3-flash-preview"
+      "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "doom_loop": "allow"
+      }
     },
     "unspecified-low": {
-      "model": "anthropic/gemini-claude-sonnet-4-5-thinking"
+      "model": "anthropic/gemini-claude-sonnet-4-5-thinking",
+      "permission": {
+        "doom_loop": "allow"
+      }
     },
     "unspecified-high": {
-      "model": "anthropic/gemini-claude-opus-4-5-thinking"
+      "model": "anthropic/gemini-claude-opus-4-5-thinking",
+      "permission": {
+        "doom_loop": "allow"
+      }
     },
     "writing": {
-      "model": "google/gemini-3-flash-preview"
+      "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "doom_loop": "allow"
+      }
     }
   },
   "experimental": {
