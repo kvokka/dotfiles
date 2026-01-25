@@ -185,7 +185,7 @@
           "reasoning": true
         },
       },
-      "npm": "@ai-sdk/openai-compatible",
+      "npm": "@ai-sdk/anthropic",
       "options": {
         "apiKey": "{env:QUOTIO_PROXY_API_KEY}",
         "baseURL": "{env:QUOTIO_PROXY_FULL_URL}"
@@ -294,7 +294,7 @@
         }
       },
       "name": "OpenAI",
-      "npm": "@ai-sdk/openai-compatible",
+      "npm": "@ai-sdk/openai",
       "options": {
         "apiKey": "{env:QUOTIO_PROXY_API_KEY}",
         "baseURL": "{env:QUOTIO_PROXY_FULL_URL}"
@@ -477,7 +477,7 @@
         "gemini-3-pro"
       ],
       "name": "Google",
-      "npm": "@ai-sdk/openai-compatible",
+      "npm": "@ai-sdk/google",
       "options": {
         "websearch_cited": {
           "model": "gemini-3-flash-preview"
