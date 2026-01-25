@@ -14,6 +14,11 @@
         "bash": "allow",
         "doom_loop": "allow",
         "webfetch": "allow"
+      },
+      "tools": {
+        "delegate_task": true,
+        "webfetch": true,
+        "websearch": true
       }
     },
     "explore": {
