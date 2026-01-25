@@ -12,13 +12,16 @@
       "model": "google/gemini-3-flash-preview",
       "permission": {
         "bash": "allow",
-        "doom_loop": "allow"
+        "doom_loop": "allow",
+        "webfetch": "allow"
       }
     },
     "explore": {
       "model": "google/gemini-3-flash-preview",
       "permission": {
-        "doom_loop": "allow"
+        "bash": "allow",
+        "doom_loop": "allow",
+        "webfetch": "allow"
       }
     },
     "multimodal-looker": {
