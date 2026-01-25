@@ -52,7 +52,7 @@
     "defaultConcurrency": 10,
     "providerConcurrency": {
       "google": 20,
-      "anthropic": 5,
+      "anthropic": 1,
       "openai": 3
     },
     "modelConcurrency": {
@@ -60,8 +60,8 @@
       "google/gemini-3-flash": 15,
       "google/gemini-3-pro-preview": 10,
       "google/gemini-3-pro": 10,
-      "anthropic/gemini-claude-opus-4-5-thinking": 3,
-      "anthropic/gemini-claude-sonnet-4-5-thinking": 3,
+      "anthropic/gemini-claude-opus-4-5-thinking": 1,
+      "anthropic/gemini-claude-sonnet-4-5-thinking": 1,
       "openai/gpt-5.2-codex": 3,
       "openai/gpt-5.2": 3
     }
