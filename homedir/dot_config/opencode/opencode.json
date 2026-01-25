@@ -78,16 +78,13 @@
       "model": "google/gemini-3-flash-preview"
     },
     "compaction": {
-      "model": "google/gemini-3-flash-preview",
-      "permission": {
-        "doom_loop": "allow"
-      }
+      "model": "google/gemini-3-pro-preview",
     },
     "general": {
       "model": "anthropic/gemini-claude-sonnet-4-5"
     }
   },
-  "model": "google/gemini-3-pro",
+  "model": "google/gemini-3-pro-preview",
   "small_model": "google/gemini-3-flash-preview",
   "enabled_providers": [
     "openai",
@@ -438,49 +435,17 @@
             }
           },
           "name": "Quotio Gemini 3 Pro Preview"
-        },
-        "gemini-3-pro": {
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "high": {
-              "thinkingLevel": "high"
-            },
-            "minimal": {
-              "thinkingLevel": "minimal"
-            },
-            "low": {
-              "thinkingLevel": "low"
-            },
-            "medium": {
-              "thinkingLevel": "medium"
-            }
-          },
-          "name": "Quotio Gemini 3 Pro"
-        },
+        }
       },
       "whitelist": [
         "gemini-2.5-flash",
         "gemini-2.5-flash-lite",
         "gemini-3-flash-preview",
         "gemini-3-pro-image-preview",
-        "gemini-3-pro-preview",
-        "gemini-3-pro"
+        "gemini-3-pro-preview"
       ],
       "name": "Google",
-      "npm": "@ai-sdk/google",
+      "npm": "@ai-sdk/openai-compatible",
       "options": {
         "websearch_cited": {
           "model": "gemini-3-flash-preview"
