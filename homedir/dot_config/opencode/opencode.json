@@ -78,7 +78,10 @@
       "model": "google/gemini-3-flash-preview"
     },
     "compaction": {
-      "model": "google/gemini-3-flash-preview"
+      "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "doom_loop": "allow"
+      }
     },
     "general": {
       "model": "anthropic/gemini-claude-sonnet-4-5"

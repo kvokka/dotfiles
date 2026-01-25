@@ -44,10 +44,10 @@
       "model": "google/gemini-3-flash-preview"
     }
   },
-  "experimental": {
-    "aggressive_truncation": true,
-    "auto_resume": true
-  },
+  // "experimental": {
+  //   "aggressive_truncation": true,
+  //   "auto_resume": true
+  // },
   "background_task": {
     "defaultConcurrency": 10,
     "providerConcurrency": {
