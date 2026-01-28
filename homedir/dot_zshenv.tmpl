@@ -11,3 +11,5 @@ export QUOTIO_PROXY_URL=http://host.docker.internal:8317
 {{- end }}
 export QUOTIO_PROXY_FULL_URL=$QUOTIO_PROXY_URL/v1
 export AICOMMIT_CONFIG_PATH=$HOME/.config/aicommit2/config.ini
+
+[ -f ~/.sectets/shared/.env ] && source ~/.sectets/shared/.env

@@ -30,7 +30,6 @@ if [[ "$USER" == "vscode" ]]; then
     sudo chown root:docker /var/run/docker.sock
     sudo usermod -aG docker vscode
   fi
-  [ -f ~/.devcontainer/.env.devcontainer ] && source ~/.devcontainer/.env.devcontainer
 fi
 {{ end }}
 {{ end }}
@@ -55,7 +54,7 @@ compinit
 
 source $ZSH/oh-my-zsh.sh
 
-[ -f ~/.env ] && source ~/.env
+[ -d ~/.secrets/home ] && for d in ~/.secrets/home/*/ ; do [ -d "$d" ] && ln -sf "$d" ~; done
 
 {{ if not .headless }}
 {{ if eq .chezmoi.os "darwin" }}
@@ -69,20 +68,17 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
-alias be="bundle exec"
 alias gcane='git commit --amend --no-edit'
-alias ggggg='rm *.gem && gem build *.gemspec && gem install *.gem && gem push *.gem && gaa'
 
 alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true -q)'
 alias docker_clean_ps='docker rm $(docker ps --filter=status=exited --filter=status=created -q)'
 
 kill_process(){ps -aux | grep $1 | awk '{print $2}' | xargs kill -9 }
 
-alias bera='bundle exec rubocop -a'
 alias tmp='mkdir -p tmp && cd tmp'
 
 alias gsha='git rev-parse HEAD'
 alias gcom='git checkout master'
-alias ag='GEMINI_API_KEY=$GOOGLE_AI_STUDIO_API_KEY aicommit2'
+alias ag='aicommit2'
 
 alias brave_debug="open -a 'Brave Browser' --args --remote-debugging-port=9222"

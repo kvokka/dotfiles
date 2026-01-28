@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Get the root of the current Git repository
+REPO_ROOT=$(git rev-parse --show-toplevel)
+
+# Check if a project-specific .pre-commit-config.yaml exists
+if [ -f "$REPO_ROOT/.pre-commit-config.yaml" ]; then
+    # Let prek discover the config automatically
+    prek run "$@"
+else
+    # Fall back to the global config
+    prek run --config "$HOME/.config/pre-commit/pre-commit-config.yaml" "$@"
+fi
+
+RESULT=$?
+
+# Exit with the result of the pre-commit run
+if [ $RESULT -ne 0 ]; then
+    echo "Prek (pre-commit) hooks failed."
+    exit 1
+fi
+
+exit 0

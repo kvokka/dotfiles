@@ -22,7 +22,7 @@ email: # GitHub email, default: kvokka@yahoo.com
 * `personal` setting is responsible for extra tools installation and should be patched
 with the actual hostname
 
-* Recommended to set `MISE_GITHUB_TOKEN` in `~/.env` file with the [access token](https://github.com/settings/personal-access-tokens) to public repos only to avoid hitting GitHub download limits
+* Recommended to set secrets in `~/.secrets/shared/.env` (using `~/.secrets/shared/.env.example`). To avoid GitHub rate limits only `MISE_GITHUB_TOKEN` file with the [access token](https://github.com/settings/personal-access-tokens) to public repos only is required
 
 ## WSL/Parallels MacOs
 
