@@ -4,15 +4,9 @@ includeBody=true
 [TOGETHER]
 compatible=true
 model=gemini-3-flash-preview
-# aicommit2 does not support env var sumbstitution, track https://github.com/tak-bro/aicommit2/issues/213
-# and replace with `url=$QUOTIO_PROXY_URL` after the implementation
-{{ if eq .chezmoi.os "darwin" -}}
-url="http://0.0.0.0:8317"
-{{- else -}}
-url="http://host.docker.internal:8317"
-{{- end }}
+url="${QUOTIO_PROXY_URL}"
+key=${QUOTIO_PROXY_API_KEY}
 path=/v1
-key=quotio-local-01F5A882-83B5-453B-A155-A85B74593578
 temperature=0.7
 numCtx=1000000
 topP=0.9
