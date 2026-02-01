@@ -98,6 +98,9 @@
 [submodule]
 	recurse = true
 
+[worktree]
+useRelativePaths = true
+
 {{ if eq .chezmoi.os "darwin" }}
 [filter "plist"]
     clean = plutil -convert xml1 -o - %f
