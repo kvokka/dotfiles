@@ -27,10 +27,13 @@ set -eufo pipefail
   {{ $brews = append $brews "dockutil" }}
 {{- end }}
 
+{{/* "font-meslo-lg-nerd-font" used with from p10k, font `MesloLGM NF` */}}
+{{/* "font-fira-code-nerd-font" used with oh-my-posh, font `MesloLGM Nerd Font` */}}
 {{ $casks := list
   "google-chrome"
   "visual-studio-code"
   "font-meslo-lg-nerd-font"
+  "font-fira-code-nerd-font"
 }}
 
 {{ if eq .chezmoi.os "darwin" -}}

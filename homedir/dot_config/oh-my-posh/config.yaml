@@ -1,0 +1,307 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json
+
+version: 4
+final_space: true
+shell_integration: true
+
+palette:
+  bg-dark: "#003543"
+  bg-blue: "#0087D8"
+  bg-lime: "#d2ff5e"
+  bg-orange: "#ff9248"
+  bg-coral: "#f26d50"
+  bg-cyan: "#89d1dc"
+  bg-purple: "#83769c"
+  bg-pink: "#f1184c"
+  fg-light: "#ffffff"
+  fg-dark: "#193549"
+  git-clean: "#d2ff5e"
+  git-modified: "#ff9248"
+  git-diverged: "#f26d50"
+  git-ahead: "#89d1dc"
+  git-behind: "#f17c37"
+  k8s-bg: "#326CE5"
+  aws-bg: "#FF9900"
+  gcp-bg: "#4285F4"
+  terraform-bg: "#7B42BC"
+  docker-bg: "#2496ED"
+  container-bg: "#4a3a6a"
+  error-bg: "#e91e63"
+  right-muted: "#29315A"
+
+blocks:
+  # =========================[ Line #1 - Left ]=========================
+  - type: prompt
+    alignment: left
+    segments:
+      - type: os
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b0"
+        foreground: "p:fg-light"
+        background: "p:bg-dark"
+        template: " {{ .Icon }} "
+
+      - type: text
+        style: diamond
+        leading_diamond: ""
+        trailing_diamond: "\ue0b0"
+        foreground: "p:fg-light"
+        background: "p:container-bg"
+        template: "{{ if .Env.CONTAINER_NAME }} \uf308 {{ .Env.CONTAINER_NAME }} {{ end }}"
+
+      - type: path
+        style: powerline
+        powerline_symbol: "\ue0b0"
+        foreground: "p:fg-dark"
+        background: "p:bg-blue"
+        template: " \ue5ff {{ .Path }} "
+        options:
+          style: agnoster_short
+          max_depth: 3
+          folder_separator_icon: "/"
+          home_icon: "~"
+
+      - type: git
+        style: powerline
+        powerline_symbol: "\ue0b0"
+        foreground: "p:fg-dark"
+        background: "p:git-clean"
+        background_templates:
+          - "{{ if or (.Working.Changed) (.Staging.Changed) }}p:git-modified{{ end }}"
+          - "{{ if and (gt .Ahead 0) (gt .Behind 0) }}p:git-diverged{{ end }}"
+          - "{{ if gt .Ahead 0 }}p:git-ahead{{ end }}"
+          - "{{ if gt .Behind 0 }}p:git-behind{{ end }}"
+        template: " {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \ueb4b {{ .StashCount }}{{ end }} "
+        options:
+          fetch_status: true
+          fetch_upstream_icon: false
+          branch_identical_icon: ""
+          branch_gone_icon: ""
+
+      - type: status
+        style: powerline
+        powerline_symbol: "\ue0b0"
+        foreground: "p:fg-light"
+        background: "p:error-bg"
+        template: " \uf00d {{ reason .Code }} "
+
+  # =========================[ Line #1 - Right ]=========================
+  - type: prompt
+    alignment: right
+    overflow: break
+    segments:
+      - type: executiontime
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4"
+        foreground: "#d6deeb"
+        background: "#575656"
+        template: " \ueba2 {{ .FormattedMs }} "
+        options:
+          threshold: 10000
+          style: austin
+
+      - type: node
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4"
+        foreground: "#3C873A"
+        background: "#303030"
+        template: " \ue718 {{ .Full }} "
+        options:
+          display_mode: context
+          fetch_package_manager: false
+
+      - type: bun
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4"
+        foreground: "#f0db8c"
+        background: "#303030"
+        template: " \ue76f {{ .Full }} "
+        options:
+          display_mode: context
+
+      - type: python
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4"
+        foreground: "#FFE873"
+        background: "#306998"
+        template: " \ue235 {{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }} "
+        options:
+          display_mode: context
+
+      - type: go
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4"
+        foreground: "#06aad5"
+        background: "#ffffff"
+        template: " \ue627 {{ .Full }} "
+        options:
+          display_mode: context
+
+      - type: rust
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4"
+        foreground: "#000000"
+        background: "#ffffff"
+        template: " \ue7a8 {{ .Full }} "
+        options:
+          display_mode: context
+
+      - type: ruby
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4"
+        foreground: "#9c1006"
+        background: "#ffffff"
+        template: " \ue791 {{ .Full }} "
+        options:
+          display_mode: context
+
+      - type: java
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4"
+        foreground: "#ec2729"
+        background: "#ffffff"
+        template: " \ue738 {{ .Full }} "
+        options:
+          display_mode: context
+
+      - type: sysinfo
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4"
+        foreground: "#ffffff"
+        background: "#8f43f3"
+        template: " \ue266 {{ round .PhysicalPercentUsed .Precision }}% "
+        options:
+          precision: 0
+
+      - type: time
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4"
+        foreground: "#d6deeb"
+        background: "#234d70"
+        template: " \uf017 {{ .CurrentDate | date .Format }} "
+        options:
+          time_format: "15:04:05"
+
+  # =========================[ Line #2 - Prompt ]=========================
+  - type: prompt
+    alignment: left
+    newline: true
+    segments:
+      - type: root
+        style: plain
+        foreground: "#ffcc00"
+        template: "\u26a1 "
+
+      - type: text
+        style: plain
+        foreground: "p:bg-pink"
+        foreground_templates:
+          - "{{ if gt .Code 0 }}p:error-bg{{ end }}"
+        template: "❯ "
+
+# =========================[ Transient Prompt ]=========================
+transient_prompt:
+  foreground: "p:bg-pink"
+  foreground_templates:
+    - "{{ if gt .Code 0 }}p:error-bg{{ end }}"
+  background: "transparent"
+  template: "❯ "
+
+# =========================[ Tooltips ]=========================
+tooltips_action: replace
+tooltips:
+  - type: kubectl
+    tips:
+      - kubectl
+      - k
+      - kgp
+      - kgs
+      - kgd
+      - kga
+      - kgn
+      - kgns
+      - kctx
+      - kubectx
+      - kns
+      - kubens
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    foreground: "p:fg-light"
+    background: "p:k8s-bg"
+    template: " \u2388 {{ .Context }}{{ if .Namespace }} :: {{ .Namespace }}{{ end }} "
+    options:
+      parse_kubeconfig: true
+
+  - type: helm
+    tips:
+      - helm
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    foreground: "p:fg-dark"
+    background: "#a7cae1"
+    template: " \ue7fb {{ .Version }} "
+    options:
+      display_mode: always
+
+  - type: terraform
+    tips:
+      - terraform
+      - tf
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    foreground: "p:fg-light"
+    background: "p:terraform-bg"
+    template: " \ue69a {{ .WorkspaceName }}{{ if .Version }} {{ .Version }}{{ end }} "
+    options:
+      fetch_version: true
+
+  - type: terraform
+    tips:
+      - tofu
+      - opentofu
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    foreground: "p:fg-dark"
+    background: "#FFDA18"
+    template: " \ue69a {{ .WorkspaceName }}{{ if .Version }} {{ .Version }}{{ end }} "
+    options:
+      fetch_version: true
+      command: tofu
+
+  - type: aws
+    tips:
+      - aws
+      - awslocal
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    foreground: "p:fg-dark"
+    background: "p:aws-bg"
+    template: " \ue7ad {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }} "
+
+  - type: gcp
+    tips:
+      - gcloud
+      - gsutil
+      - bq
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    foreground: "p:fg-light"
+    background: "p:gcp-bg"
+    template: " \ue7b2 {{ .Project }} "

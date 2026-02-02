@@ -26,6 +26,11 @@
       "environment": {
         "Authorization": "Bearer ${RENDER_API_KEY}"
       },
+    },
+    "oh-my-posh-validator": {
+      "type": "remote",
+      "enabled": false,
+      "url": "https://ohmyposh.dev/api/mcp"
     }
   },
   "formatter": {
