@@ -89,3 +89,8 @@ data:
     - "helm"
     - "zsh-autosuggestions"
     - "zsh-syntax-highlighting"
+
+textconv:
+  pattern: "**/*.plist"
+  command: "plutil"
+  args ["-convert", "xml1"]
