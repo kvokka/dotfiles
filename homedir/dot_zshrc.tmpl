@@ -38,6 +38,8 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 autoload -Uz compinit
 compinit
 
+eval "$(zoxide init zsh)" # Must be after compinit
+
 source $ZSH/oh-my-zsh.sh
 
 for item in ~/.secrets/home/*(N) ~/.secrets/home/.^*(N); do [[ -e $item ]] || continue; ln -sf "$item" ~; done
