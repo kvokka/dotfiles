@@ -247,12 +247,12 @@
           },
           "reasoning": true
         },
-        "gpt-5.2-codex": {
+        "gpt-5.3-codex": {
           "limit": {
             "context": 272000,
             "output": 128000
           },
-          "name": "Quotio Gpt 5.2 Codex",
+          "name": "Quotio Gpt 5.3 Codex",
           "options": {
             "reasoningEffort": "high",
             "textVerbosity": "medium"
@@ -262,28 +262,6 @@
               "reasoningEffort": "low",
               "textVerbosity": "medium"
             },
-            "high": {
-              "reasoningEffort": "high",
-              "textVerbosity": "medium"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "textVerbosity": "medium"
-            }
-          },
-          "reasoning": true
-        },
-        "gpt-5.2-codex-max": {
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "name": "Quotio Gpt 5.2 Codex Max",
-          "options": {
-            "reasoningEffort": "xhigh",
-            "textVerbosity": "medium"
-          },
-          "variants": {
             "high": {
               "reasoningEffort": "high",
               "textVerbosity": "medium"
@@ -324,8 +302,7 @@
       },
       "whitelist": [
         "gpt-5.2",
-        "gpt-5.2-codex",
-        "gpt-5.2-codex-max",
+        "gpt-5.3-codex",
         "gpt-5.2-codex-mini",
         "gpt-oss-120b-medium"
       ]

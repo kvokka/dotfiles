@@ -33,7 +33,7 @@
       "model": "google/gemini-3-pro-preview"
     },
     "ultrabrain": {
-      "model": "openai/gpt-5.2-codex",
+      "model": "openai/gpt-5.3-codex",
       "variant": "xhigh"
     },
     "quick": {
@@ -71,8 +71,7 @@
       "google/gemini-3-pro": 10,
       "anthropic/gemini-claude-opus-4-5-thinking": 3,
       "anthropic/gemini-claude-sonnet-4-5-thinking": 3,
-      "openai/gpt-5.2-codex": 3,
-      "openai/gpt-5.2": 3
+      "openai/gpt-5.3-codex": 3
     }
   }
 }
