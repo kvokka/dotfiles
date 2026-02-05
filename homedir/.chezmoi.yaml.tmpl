@@ -91,6 +91,6 @@ data:
     - "zsh-syntax-highlighting"
 
 textconv:
-  pattern: "**/*.plist"
-  command: "plutil"
-  args ["-convert", "xml1"]
+  - pattern: "**/*.plist"
+    command: "plutil"
+    args: ["-convert", "xml1", "-o", "-", "-"]

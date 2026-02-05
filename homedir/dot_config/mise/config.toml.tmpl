@@ -53,3 +53,21 @@ yes = true
 {{ end }}
 
 idiomatic_version_file_enable_tools = ["python", "ruby"]
+
+
+{{- $paths := list }}
+
+{{- if .personal }}
+{{-   $paths = append $paths (joinPath .chezmoi.homeDir "proj/devcontainer") }}
+{{- end }}
+
+{{- if eq .chezmoi.os "linux" }}
+{{-   $paths = append $paths "/workspace" -}}
+{{- end }}
+
+trusted_config_paths = [{{ if $paths }}
+{{- range compact $paths }}
+  "{{ . }}",
+{{- end }}
+{{- end }}
+]
