@@ -22,7 +22,24 @@ email: # GitHub email, default: kvokka@yahoo.com
 * `personal` setting is responsible for extra tools installation and should be patched
 with the actual hostname
 
-* Recommended to set secrets in `~/.secrets/shared/.env` (using `~/.secrets/shared/.env.example`). To avoid GitHub rate limits only `MISE_GITHUB_TOKEN` file with the [access token](https://github.com/settings/personal-access-tokens) to public repos only is required
+### Shared secrets (optional)
+
+* Recommended to set shared with devcontainer secrets in `~/.secrets/shared/.env`
+
+```text
+# optional GitHub PAT with public access to increace download quota for packages installation
+# take from https://github.com/settings/personal-access-tokens for public repos only (minimal access)
+export MISE_GITHUB_TOKEN=github_pat...
+
+# Quotio GUI App API Key for CLI Proxy access
+export QUOTIO_PROXY_API_KEY=quotio-local-...
+
+# https://context7.com/ api key
+export CONTEXT7_API_KEY=abc...
+
+# https://brave.com/search/api/ api key
+BRAVESEARCH_API_KEY=abc...
+```
 
 ## WSL/Parallels MacOs
 
