@@ -118,6 +118,42 @@
     // Providers are the reflections of the Quotio created for compatibility with other tools
     "anthropic": {
       "models": {
+        "claude-opus-4-6-thinking": {
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "name": "Quotio Claude Opus 4 6 Thinking",
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          },
+          "options": {
+            "thinking": {
+              "budgetTokens": 16000,
+              "type": "enabled"
+            }
+          },
+          "reasoning": true
+        },
         "gemini-claude-opus-4-5-thinking": {
           "limit": {
             "context": 200000,
@@ -214,6 +250,7 @@
         "baseURL": "{env:QUOTIO_PROXY_FULL_URL}"
       },
       "whitelist": [
+        "claude-opus-4-6-thinking",
         "gemini-claude-opus-4-5-thinking",
         "gemini-claude-sonnet-4-5",
         "gemini-claude-sonnet-4-5-thinking"
