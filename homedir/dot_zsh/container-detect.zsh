@@ -1,7 +1,7 @@
 # Container name detection for Oh My Posh
 # Add this to your .zshrc BEFORE the oh-my-posh init line
 
-_omp_detect_container() {
+function set_poshcontext() {
   if [[ -f /.dockerenv || (-f /proc/self/cgroup && $(grep -q docker /proc/self/cgroup 2>/dev/null && echo "true") == "true") ]]; then
     if command -v docker >/dev/null 2>&1 && [[ -S /var/run/docker.sock ]]; then
       local container_name

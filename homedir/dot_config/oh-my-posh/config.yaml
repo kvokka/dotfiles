@@ -48,7 +48,10 @@ blocks:
         trailing_diamond: "\ue0b0"
         foreground: "p:fg-light"
         background: "p:container-bg"
-        template: "{{ if .Env.CONTAINER_NAME }} \uf308 {{ .Env.CONTAINER_NAME }} {{ end }}"
+        template: "{{ if .Env.CONTAINER_NAME }} \uf308 {{ .Env.CONTAINER_NAME }}{{ end }}"
+        options:
+          display_host: false        # disable default host rendering
+          display_user: false        # optional: hide username too
 
       - type: path
         style: powerline
