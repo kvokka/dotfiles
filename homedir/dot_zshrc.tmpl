@@ -1,5 +1,4 @@
 source ~/.zsh/homebrew.zsh
-source ~/.zsh/container-detect.zsh
 source ~/.zsh/alias_devc.zsh
 source ~/.zsh/alias_gemini_account_switcher.zsh
 
@@ -54,6 +53,7 @@ export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
 {{ end }}
 
 [[ "$TERM_PROGRAM" == "Apple_Terminal" ]] || eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/config.yaml)"
+source ~/.zsh/oh_my_zsh_context.zsh
 
 alias ll='ls -alF'
 alias la='ls -A'
