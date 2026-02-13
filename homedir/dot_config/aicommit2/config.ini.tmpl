@@ -1,7 +1,7 @@
 generate=5
 includeBody=true
 
-[TOGETHER]
+[GEMINI_COMPATIBILITY]
 compatible=true
 model=gemini-3-flash-preview
 url="${QUOTIO_PROXY_URL}"
@@ -10,6 +10,17 @@ path=/v1
 temperature=0.7
 numCtx=1000000
 topP=0.9
+
+# Uncomment when spark is avaliable on regular accounts (on ChatGPT Pro only for now)
+# [OPENAI]
+# compatible=true
+# model=gpt-5.3-codex-spark
+# url="${QUOTIO_PROXY_URL}"
+# key=${QUOTIO_PROXY_API_KEY}
+# path=/v1
+# temperature=0.7
+# numCtx=1000000
+# topP=0.9
 
 [GEMINI]
 disabled=true
