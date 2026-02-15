@@ -59,15 +59,15 @@ command -v compaudit &> /dev/null && compaudit | xargs chmod g-w
 source ~/.zsh/homebrew.zsh
 
 brew bundle --file=/dev/stdin <<EOF
-{{ range ($taps | sortAlpha | uniq) -}}
+{{ range ($taps | sortAlpha | uniq) }}
 tap "{{ . }}"
-{{ end -}}
-{{ range ($brews | sortAlpha | uniq) -}}
+{{ end }}
+{{ range ($brews | sortAlpha | uniq) }}
 brew "{{ . }}"
-{{ end -}}
-{{ if not .headless -}}
-{{ range ($casks | sortAlpha | uniq) -}}
+{{ end }}
+{{ if not .headless }}
+{{ range ($casks | sortAlpha | uniq) }}
 cask "{{ . }}"
-{{ end -}}
-{{- end }}
+{{ end }}
+{{ end }}
 EOF
