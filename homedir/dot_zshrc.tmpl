@@ -1,6 +1,18 @@
+if [[ $(date +%Y%m%d) -ge 20260308 ]]; then
+    echo -e "\033[1;31m" >&2
+    echo "┌──────────────────────────────────────┐" >&2
+    echo "│       THIS IS DEPRECATED             │" >&2
+    echo "│   STOP USING IT AFTER 7 MAR 2026     │" >&2
+    echo "│   Use new-thing instead              │" >&2
+    echo "└──────────────────────────────────────┘" >&2
+    echo -e "\033[0m" >&2
+fi
 source ~/.zsh/homebrew.zsh
 source ~/.zsh/alias_devc.zsh
 source ~/.zsh/alias_gemini_account_switcher.zsh
+# -----------------------------
+
+source ~/.config/zsh/config.zsh
 
 export ZSH="$HOME/.oh-my-zsh"
 

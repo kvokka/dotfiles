@@ -247,7 +247,7 @@
       "npm": "@ai-sdk/anthropic",
       "options": {
         "apiKey": "{env:QUOTIO_PROXY_API_KEY}",
-        "baseURL": "{env:QUOTIO_PROXY_FULL_URL}"
+        "baseURL": "{env:QUOTIO_PROXY_URL}"
       },
       "whitelist": [
         "claude-opus-4-6-thinking",
@@ -335,7 +335,7 @@
       "npm": "@ai-sdk/openai",
       "options": {
         "apiKey": "{env:QUOTIO_PROXY_API_KEY}",
-        "baseURL": "{env:QUOTIO_PROXY_FULL_URL}"
+        "baseURL": "{env:QUOTIO_PROXY_URL}"
       },
       "whitelist": [
         "gpt-5.2",
@@ -488,7 +488,7 @@
           "model": "gemini-3-flash-preview"
         },
         "apiKey": "{env:QUOTIO_PROXY_API_KEY}",
-        "baseURL": "{env:QUOTIO_PROXY_FULL_URL}"
+        "baseURL": "{env:QUOTIO_PROXY_URL}"
       },
     }
   }
