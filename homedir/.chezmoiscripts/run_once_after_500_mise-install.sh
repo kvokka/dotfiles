@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-source ~/.zsh/homebrew.zsh
+source ~/.config/zsh/config.zsh
 
 export MISE_JOBS=$(getconf _NPROCESSORS_ONLN 2>/dev/null || nproc)
 

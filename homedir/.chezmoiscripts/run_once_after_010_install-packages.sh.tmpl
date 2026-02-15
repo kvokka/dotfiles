@@ -61,7 +61,7 @@ set -eufo pipefail
 {{- end }}
 
 command -v compaudit &> /dev/null && compaudit | xargs chmod g-w
-source ~/.zsh/homebrew.zsh
+source ~/.config/zsh/config.zsh
 
 # taps are not respected in the bundle
 {{ range ($taps | sortAlpha | uniq) }}
