@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
 set -eufo pipefail
 
@@ -24,7 +24,7 @@ declare -a remove_labels=(
 	"App Store"
 )
 
-source ~/.config/zsh/config.zsh
+source ~/.config/zsh/brew.zsh
 
 for label in "${remove_labels[@]}"; do
 	dockutil --no-restart --remove "${label}" || true

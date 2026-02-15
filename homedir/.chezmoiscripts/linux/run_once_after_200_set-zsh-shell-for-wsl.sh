@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
 # 1. Exit silently if not WSL
 if ! grep -qi "microsoft" /proc/version; then

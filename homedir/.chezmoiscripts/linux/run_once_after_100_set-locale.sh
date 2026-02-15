@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
 # 2. Check if en_US.UTF-8 is already enabled in /etc/locale.gen
 if [ -f /etc/locale.gen ] && grep -q "^en_US.UTF-8 UTF-8" /etc/locale.gen; then

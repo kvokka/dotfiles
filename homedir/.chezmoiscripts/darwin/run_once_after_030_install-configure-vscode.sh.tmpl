@@ -43,7 +43,7 @@
 
 set -eufo pipefail
 
-source ~/.config/zsh/config.zsh
+source ~/.config/zsh/brew.zsh
 
 {{ range $extensions -}}
 code --force --install-extension {{ . }} || true
