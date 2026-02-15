@@ -16,6 +16,8 @@ set -eufo pipefail
   "tree"
   "diff-so-fancy"
   "tig"
+  "gnugp"
+  "make"
   "docker-credential-helper"
   "aicommit2"
 }}
@@ -37,14 +39,17 @@ set -eufo pipefail
 }}
 
 {{ if eq .chezmoi.os "darwin" -}}
-  {{ $taps := append $taps "nguyenphutrong/tap" }}
-  {{ $casks = append $casks "quotio" }}
-
   {{ $casks = append $casks "iterm2" }}
 {{- end }}
 
 {{ if .personal -}}
   {{/* $casks = append $casks "docker"; Skip install docker-desktop. TODO: Replace with podman */}}
+
+  {{ if eq .chezmoi.os "darwin" -}}
+    {{ $taps := append $taps "nguyenphutrong/tap" }}
+    {{ $casks = append $casks "quotio" }}
+  {{- end }}
+
   {{ $casks = append $casks "whatsapp" }}
   {{ $casks = append $casks "telegram" }}
   {{ $casks = append $casks "vlc" }}
@@ -58,10 +63,12 @@ set -eufo pipefail
 command -v compaudit &> /dev/null && compaudit | xargs chmod g-w
 source ~/.zsh/homebrew.zsh
 
-brew bundle --file=/dev/stdin <<EOF
+# taps are not respected in the bundle
 {{ range ($taps | sortAlpha | uniq) }}
-tap "{{ . }}"
+brew tap "{{ . }}"
 {{ end }}
+
+brew bundle --file=/dev/stdin <<EOF
 {{ range ($brews | sortAlpha | uniq) }}
 brew "{{ . }}"
 {{ end }}
