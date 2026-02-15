@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
 command -v compaudit &> /dev/null && compaudit | xargs chmod g-w
 
