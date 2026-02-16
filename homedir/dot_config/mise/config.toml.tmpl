@@ -70,7 +70,7 @@ idiomatic_version_file_enable_tools = ["python", "ruby"]
 {{- $paths := list }}
 
 {{- if .personal }}
-{{-   $paths = append $paths (joinPath .chezmoi.homeDir "proj/devcontainer") }}
+{{-   $paths = append $paths (joinPath .chezmoi.homeDir "proj/active") }}
 {{- end }}
 
 {{- if eq .chezmoi.os "linux" }}

@@ -4,4 +4,4 @@
 load_dotenv = true
 
 [whitelist]
-prefix = ["/workspace"]
+prefix = ["/workspace", "~/proj/active/sa-web", "~/proj/active/wise-generator"]
