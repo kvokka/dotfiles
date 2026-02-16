@@ -9,8 +9,9 @@ set -euo pipefail
 # Config
 # --------------------------------------------------
 GITHUB_USERNAME="${1:-kvokka}"
-LOCKFILE="$HOME/.bootstrap-in-progress.lock"
-MARKER="$HOME/.dotfiles-applied"                    # Persistent success marker
+BASE="$HOME/.local/dotfiles-bootstrap"
+LOCKFILE="$BASE/.bootstrap-in-progress.lock"
+MARKER="$BASE/.dotfiles-applied"                    # Persistent success marker
 
 # Timeout: 1800 seconds (30 minutes) by default, override via env var
 TIMEOUT="${BOOTSTRAP_TIMEOUT:-1800}"
@@ -29,6 +30,7 @@ bootstrap_with_lock() {
     exit 0
   fi
 
+  mkdir -p "$BASE"
   exec 200>"$LOCKFILE"
 
   if flock -n 200; then
