@@ -2,7 +2,7 @@
 
 set -eufo pipefail
 
-{{ $taps := list "atlassian/homebrew-acli" }}{{/* Rovodev */}}
+{{ $taps := list }}
 
 {{ $brews := list
   "git"
@@ -22,8 +22,9 @@ set -eufo pipefail
   "aicommit2"
 }}
 
-{{ $brews = append $brews "libyaml" }}{{/* implicit Ruby 3.3-3.4 dependency */}}
-{{ $brews = append $brews "atlassian/acli/acli" }}{{/* Rovodev */}}
+{{/* $taps := list "atlassian/homebrew-acli" */}}{{/* Rovodev */}}
+{{/* $brews = append $brews "libyaml" */}}{{/* implicit Ruby 3.3-3.4 dependency */}}
+{{/* $brews = append $brews "atlassian/acli/acli" */}}{{/* Rovodev */}}
 
 {{ if eq .chezmoi.os "darwin" -}}
   {{ $brews = append $brews "dockutil" }}
