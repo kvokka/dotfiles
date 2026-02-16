@@ -22,7 +22,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - run: >
-          sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary kvokka
+          sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary --branch ${{ github.ref_name }} kvokka
       - run: "tree -a -L 2 $HOME"
       - name: smoke test
         run: |

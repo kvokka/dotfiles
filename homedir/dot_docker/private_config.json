@@ -1,6 +1,9 @@
 {
 	"auths": {
-		"gcr.io": {}
+		"gcr.io": {},
+		"https://index.docker.io/v1/": {},
+		"https://index.docker.io/v1/access-token": {},
+		"https://index.docker.io/v1/refresh-token": {}
 	},
 	"credsStore": "osxkeychain",
 	"credHelpers": {
