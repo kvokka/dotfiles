@@ -5,7 +5,7 @@ Template dotfiles repository, managed with [chezmoi](https://chezmoi.io/).
 ## Installation
 
 ```bash
-bash -c "$(curl -fsLS https://raw.githubusercontent.com/kvokka/dotfiles/refs/heads/master/bootstrap.sh)"
+sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary kvokka
 ```
 
 With connected terminal in process you will be asked:
@@ -43,19 +43,11 @@ BRAVESEARCH_API_KEY=abc...
 
 ## WSL/Parallels MacOs
 
+For MacOs you might be asked for sudo pass, that is required for some casks, in
+the installation process, also it might be pre-set via
+
 ```bash
-# This is optional, some casks for macOs require that, can be entered in the installation process
 export SUDO_PASSWORD="your_password_here"
-
-bash -c "$(curl -fsLS https://raw.githubusercontent.com/kvokka/dotfiles/refs/heads/master/bootstrap.sh)"
-```
-
-### Use with another user
-
-```shell
-export GITHUB_USERNAME=my-user
-
-bash -c "$(curl -fsLS https://raw.githubusercontent.com/kvokka/dotfiles/refs/heads/master/bootstrap.sh)"
 ```
 
 ## Notes
