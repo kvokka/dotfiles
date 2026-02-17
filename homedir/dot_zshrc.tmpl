@@ -67,9 +67,3 @@ export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
 [[ "$TERM_PROGRAM" == "Apple_Terminal" ]] || \
   eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/config.yaml)" && \
   source ~/.config/oh-my-posh/set_poshcontext.zsh
-
-{{ if .ephemeral }}
-{{ if eq .chezmoi.os "linux" }}
-[[ -f /.dockerenv ]] && sudo chown $(whoami):$(whoami) /var/run/docker.sock
-{{ end }}
-{{ end }}
