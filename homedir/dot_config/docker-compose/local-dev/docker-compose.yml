@@ -129,6 +129,17 @@ services:
         bun install
         bun run dev -- --port 5373
 
+  wg-e2e-report:
+    <<: *common-base
+    command: uv run python serve.py
+    working_dir: /home/ubuntu/proj/active/wise-generator/test
+    ports:
+      - "11199:11199" # dashboard
+      - "35729:35729" # live reload
+    depends_on:
+      wait-for-ready:
+        condition: service_healthy
+
 volumes:
   postgres:
   home:
