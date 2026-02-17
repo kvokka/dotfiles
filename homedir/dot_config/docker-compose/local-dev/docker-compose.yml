@@ -113,8 +113,8 @@ services:
     <<: *common-base
     working_dir: /home/ubuntu/proj/active/sa-web/frontend
     environment:
-      VITE_PROXY_TARGET: http://backend:8200
-      VITE_BACKEND_TARGET: http://backend:8200
+      VITE_PROXY_TARGET: http://sa-backend:8200
+      VITE_BACKEND_TARGET: http://localhost:8200
       VITE_APP_NAME: Background App
       VITE_ENVIRONMENT: development
     ports:
