@@ -34,3 +34,5 @@ if [[ -d "${BREW_PREFIX}/bin" && "$PATH" != *"${BREW_PREFIX}/bin"* ]]; then
   export PATH="${BREW_PREFIX}/bin:$PATH"
 fi
 EOF
+
+chmod 755 ~/.config/zshrc.d/010-brew.zsh

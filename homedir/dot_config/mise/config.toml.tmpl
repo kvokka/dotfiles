@@ -1,10 +1,15 @@
 [env]
 
+_.path = ['{{ "{{config_root}}" }}/node_modules/.bin']
+
 [tools]
 
 nodejs = '24.13'
 biome = '2.4'
 bun = '1.3'
+
+"npm:aicommit2" = "latest"
+"npm:agent-browser" = "latest"
 
 golang = '1.26'
 
@@ -40,6 +45,10 @@ neovim = '0.11'
 # gemini = '0.28'
 # codex = '0.101'
 opencode = '1.2'
+
+{{- if eq .chezmoi.os "linux" }}
+docker-cli = '29.2'
+{{- end }}
 
 {{ if not .headless }}
 ruby = '3.4'

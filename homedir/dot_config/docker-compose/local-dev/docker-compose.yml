@@ -1,0 +1,135 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+
+name: local-dev
+
+x-common-base: &common-base
+  image: dev-image
+  user: ubuntu
+  networks:
+    - dev
+  volumes:
+    - home:/home/ubuntu:cached
+    - ~/proj/active:/home/ubuntu/proj/active:cached
+    - ~/.devcontainer/shared:/home/ubuntu/proj/active/shared:cached
+    - ~/.secrets/shared:/home/ubuntu/.secrets/shared:ro
+    - /var/run/docker.sock:/var/run/docker.sock
+    - brew:/home/linuxbrew:cached
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  stop_grace_period: 2s
+
+x-standard-env-files: &standard-env-files
+  env_file:
+    # to set mise GH PAT
+    - path: ~/.secrets/shared/.env
+      required: false
+
+networks:
+  dev:
+    driver: bridge
+    name: dev-net
+    attachable: true
+    external: false
+
+services:
+  console:
+    <<: [ *common-base, *standard-env-files ]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: tail -f /dev/null
+    ports:
+      - "8000:8000"
+      - "5173:5173"
+      - "4096:4096"
+    # # Use this block for mitmproxy, #mitmproxy
+    # environment:
+    #   - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+    #   - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
+    #   - SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+    #   - PYTHONUNBUFFERED=1
+    #   - http_proxy=http://host.docker.internal:8888
+    #   - https_proxy=http://host.docker.internal:8888
+
+  wait-for-ready:
+    image: busybox:stable # or alpine
+    volumes:
+      - home:/home/ubuntu:ro
+    command: tail -f /dev/null
+    healthcheck:
+      test: [ "CMD", "test", "-f", "/home/ubuntu/.local/.dotfiles-applied" ]
+      interval: 1s
+      timeout: 900s
+      retries: 900
+    stop_grace_period: 1s # short → forces quicker kill
+
+  opencode:
+    <<: [ *common-base, *standard-env-files ]
+    depends_on:
+      wait-for-ready:
+        condition: service_healthy
+    command: opencode serve --port 4444 --hostname 0.0.0.0
+    ports:
+      - "4444:4444"
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: development
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - dev
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 5s
+      retries: 10
+
+  sa-backend:
+    <<: *common-base
+    working_dir: /home/ubuntu/proj/active/sa-web/backend
+    environment:
+      BACKEND_CORS_ORIGINS: http://localhost:5373,http://frontend:5373,http://host.docker.internal:5373
+    ports:
+      - "8200:8200"
+    depends_on:
+      db:
+        condition: service_healthy
+      wait-for-ready:
+        condition: service_healthy
+    command:
+      - zsh
+      - -c
+      - |
+        uv run cli db create
+        uv run cli db migrate
+        uv run uvicorn src.main:app --host 0.0.0.0 --port 8200 --reload
+
+  sa-frontend:
+    <<: *common-base
+    working_dir: /home/ubuntu/proj/active/sa-web/frontend
+    environment:
+      VITE_PROXY_TARGET: http://backend:8200
+      VITE_BACKEND_TARGET: http://backend:8200
+      VITE_APP_NAME: Background App
+      VITE_ENVIRONMENT: development
+    ports:
+      - "5373:5373"
+    depends_on:
+      wait-for-ready:
+        condition: service_healthy
+    command:
+      - zsh
+      - -c
+      - |
+        bun install
+        bun run dev -- --port 5373
+
+volumes:
+  postgres:
+  home:
+  brew:

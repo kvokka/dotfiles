@@ -10,13 +10,6 @@ fi
 source ~/.zsh/homebrew.zsh
 source ~/.zsh/alias_devc.zsh
 source ~/.zsh/alias_gemini_account_switcher.zsh
-# -----------------------------
-
-source ~/.config/zshrc.d/*.zsh
-
-export ZSH="$HOME/.oh-my-zsh"
-
-eval "$(mise activate zsh)"
 
 {{ if .ephemeral }}
 {{ if eq .chezmoi.os "linux" }}
@@ -30,6 +23,13 @@ if [[ "$USER" == "vscode" ]]; then
 fi
 {{ end }}
 {{ end }}
+# -----------------------------
+
+for f (~/.config/zshrc.d/*.zsh(N)) source $f
+
+export ZSH="$HOME/.oh-my-zsh"
+
+eval "$(mise activate zsh)"
 
 if [[ "$TERM_PROGRAM" == "vscode" ]]; then
   code --version &>/dev/null && . "$(code --locate-shell-integration-path zsh)" || true
@@ -64,24 +64,6 @@ export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
 {{ end }}
 {{ end }}
 
-[[ "$TERM_PROGRAM" == "Apple_Terminal" ]] || eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/config.yaml)"
-source ~/.zsh/oh_my_zsh_context.zsh
-
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-
-alias gcane='git commit --amend --no-edit'
-
-alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true -q)'
-alias docker_clean_ps='docker rm $(docker ps --filter=status=exited --filter=status=created -q)'
-
-kill_process(){ps -aux | grep $1 | awk '{print $2}' | xargs kill -9 }
-
-alias tmp='mkdir -p tmp && cd tmp'
-
-alias gsha='git rev-parse HEAD'
-alias gcom='git checkout master'
-alias ag='aicommit2'
-
-alias brave_debug="open -a 'Brave Browser' --args --remote-debugging-port=9222"
+[[ "$TERM_PROGRAM" == "Apple_Terminal" ]] || \
+  eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/config.yaml)" && \
+  source ~/.config/oh-my-posh/set_poshcontext.zsh

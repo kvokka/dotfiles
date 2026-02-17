@@ -16,6 +16,7 @@
 .config/iterm2/com.googlecode.iterm2.plist
 Library/Preferences/**
 Library/Application\ Support/Quotio/**
+.config/local-compose
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}

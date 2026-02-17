@@ -3,6 +3,7 @@
 set -eufo pipefail
 
 {{ $taps := list }}
+{{ $casks := list }}
 
 {{ $brews := list
   "git"
@@ -19,27 +20,14 @@ set -eufo pipefail
   "gnupg"
   "make"
   "docker-credential-helper"
-  "aicommit2"
 }}
 
-{{/* $taps := list "atlassian/homebrew-acli" */}}{{/* Rovodev */}}
+{{/* $taps = append $taps "atlassian/homebrew-acli" */}}{{/* Rovodev */}}
 {{/* $brews = append $brews "libyaml" */}}{{/* implicit Ruby 3.3-3.4 dependency */}}
 {{/* $brews = append $brews "atlassian/acli/acli" */}}{{/* Rovodev */}}
 
 {{ if eq .chezmoi.os "darwin" -}}
   {{ $brews = append $brews "dockutil" }}
-{{- end }}
-
-{{/* "font-meslo-lg-nerd-font" used with from p10k, font `MesloLGM NF` */}}
-{{/* "font-fira-code-nerd-font" used with oh-my-posh, font `MesloLGM Nerd Font` */}}
-{{ $casks := list
-  "google-chrome"
-  "visual-studio-code"
-  "font-meslo-lg-nerd-font"
-  "font-fira-code-nerd-font"
-}}
-
-{{ if eq .chezmoi.os "darwin" -}}
   {{ $casks = append $casks "iterm2" }}
 {{- end }}
 
@@ -47,7 +35,7 @@ set -eufo pipefail
   {{/* $casks = append $casks "docker"; Skip install docker-desktop. TODO: Replace with podman */}}
 
   {{ if eq .chezmoi.os "darwin" -}}
-    {{ $taps := append $taps "nguyenphutrong/tap" }}
+    {{ $taps = append $taps "nguyenphutrong/tap" }}
     {{ $casks = append $casks "quotio" }}
   {{- end }}
 
@@ -58,6 +46,12 @@ set -eufo pipefail
   {{ $casks = append $casks "firefox" }}
   {{ $casks = append $casks "transmission" }}
   {{ $casks = append $casks "veracrypt" }}
+  {{ $casks = append $casks "google-chrome" }}
+  {{ $casks = append $casks "visual-studio-code" }}
+  {{/* "font-meslo-lg-nerd-font" used with from p10k, font `MesloLGM NF` */}}
+  {{/* "font-fira-code-nerd-font" used with oh-my-posh, font `MesloLGM Nerd Font` */}}
+  {{ $casks = append $casks "font-meslo-lg-nerd-font" }}
+  {{ $casks = append $casks "font-fira-code-nerd-font" }}
   {{/* $casks = append $casks "grammarly-desktop" */}}
 {{- end }}
 
