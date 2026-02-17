@@ -36,7 +36,15 @@ jobs:
           else
             echo "::notice::Running LIGHT installation (tag commit with 'full' for complete run)"
           fi
-      - run: >
+
+        # CI light mode: install only critical dependencies (brew + mise), brew allows only to skip tools
+      - name: Install
+        run: |
+          if [ "${CI_FULL}" != "true" ]; then
+            export MISE_ENABLE_TOOLS="chezmoi,oh-my-posh,zoxide"
+            export HOMEBREW_BUNDLE_BREW_SKIP="git curl wget make docker-credential-helper htop ncdu tree diff-so-fancy tig gnupg coreutils"
+          fi
+
           sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary --branch ${{ github.ref_name }} kvokka
       - run: "tree -a -L 2 $HOME"
       - name: smoke test

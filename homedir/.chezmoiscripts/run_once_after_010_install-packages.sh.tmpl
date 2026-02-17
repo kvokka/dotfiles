@@ -58,13 +58,6 @@ set -eufo pipefail
 command -v compaudit &> /dev/null && compaudit | xargs chmod g-w
 source ~/.config/zshrc.d/010-brew.zsh
 
-# CI light mode: install only critical dependencies (brew + mise)
-if [ "${CODESPACES:-}" = "true" ] && [ "${CI_FULL:-}" != "true" ]; then
-  brew install mise
-  echo ">>> Light CI: installed critical dependencies only"
-  exit 0
-fi
-
 # taps are not respected in the bundle
 {{ range ($taps | sortAlpha | uniq) }}
 brew tap "{{ . }}"

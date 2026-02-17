@@ -9,7 +9,7 @@ export QUOTIO_PROXY_HOST=http://127.0.0.1:8317
 {{- else if eq .chezmoi.os "linux" }}
 export QUOTIO_PROXY_HOST=http://host.docker.internal:8317
 
-if [[ -z $DOCKER_SOCK_OWNED && -f /.dockerenv && -S /var/run/docker.sock ]]; then
+if [[ -z $DOCKER_SOCK_OWNED && $GITHUB_ACTIONS != "true" && $CI != "true" && -f /.dockerenv && -S /var/run/docker.sock ]]; then
     sudo chown "$(whoami):$(whoami)" /var/run/docker.sock 2>/dev/null || true
     export DOCKER_SOCK_OWNED=1   # prevent repeating in subshells
 fi
