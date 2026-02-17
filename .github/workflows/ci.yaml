@@ -10,6 +10,12 @@ on:
     - .chezmoi*
     - bootstrap.sh
   pull_request:
+  workflow_dispatch:
+    inputs:
+      full:
+        description: 'Run full installation (same as tagging commit with "full")'
+        type: boolean
+        default: true
 
 jobs:
   clone-and-install:
@@ -21,10 +27,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Detect full mode
+        run: |
+          git fetch --tags --force 2>/dev/null || true
+          if [ "${{ inputs.full }}" = "true" ] || git tag --points-at HEAD | grep -q '^full$'; then
+            echo "CI_FULL=true" >> "$GITHUB_ENV"
+            echo "::notice::Running FULL installation"
+          else
+            echo "::notice::Running LIGHT installation (tag commit with 'full' for complete run)"
+          fi
       - run: >
           sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary --branch ${{ github.ref_name }} kvokka
       - run: "tree -a -L 2 $HOME"
       - name: smoke test
         run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          mise --version
           ~/.local/share/mise/shims/chezmoi --version
           ~/.local/share/mise/shims/chezmoi data

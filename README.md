@@ -50,6 +50,29 @@ the installation process, also it might be pre-set via
 export SUDO_PASSWORD="your_password_here"
 ```
 
+## CI
+
+By default CI runs in **light mode** — only brew and mise are installed, skipping
+all other packages and tool runtimes. This keeps everyday pushes fast.
+
+To run a **full installation** (identical to a real machine setup), either:
+
+* Tag the commit with `full` before pushing:
+
+```bash
+git tag full
+git push origin main --tags
+```
+
+* Or trigger manually via GitHub Actions → "Run workflow" with the `full` checkbox.
+
+After a full run you can delete the tag so it doesn't carry over:
+
+```bash
+git push origin :refs/tags/full
+git tag -d full
+```
+
 ## Notes
 
 * [fonts](https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k)
