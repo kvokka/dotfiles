@@ -1,0 +1,16 @@
+export ZSH="$HOME/.oh-my-zsh"
+
+command -v brew >/dev/null 2>&1 && FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+
+plugins+=(
+{{- range .zshPlugins }}
+  {{ . }}
+{{- end }}
+)
+
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
+autoload -Uz compinit
+compinit
+
+source $ZSH/oh-my-zsh.sh
