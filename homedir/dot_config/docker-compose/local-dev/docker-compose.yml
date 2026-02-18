@@ -107,6 +107,8 @@ services:
       - |
         uv run cli db create
         uv run cli db migrate
+        ENVIRONMENT=test uv run cli db create
+        ENVIRONMENT=test uv run cli db migrate
         uv run uvicorn src.main:app --host 0.0.0.0 --port 8200 --reload
 
   sa-frontend:
