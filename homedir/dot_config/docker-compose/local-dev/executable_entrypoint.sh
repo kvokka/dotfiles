@@ -8,9 +8,9 @@ sh -c "cd $HOME && $(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --pu
 touch "$HOME/.local/.dotfiles-applied"
 
 # Use zsh from brew
-sudo usermod -s $(which zsh) $(whoami)
-sudo usermod -s $(which zsh) root
-sudo chsh -s $(which zsh) $(whoami)
+sudo usermod -s $(which zsh) $(whoami) &>/dev/null
+sudo usermod -s $(which zsh) root &>/dev/null
+sudo chsh -s $(which zsh) $(whoami) &>/dev/null
 
 # until https://github.com/anomalyco/opencode/issues/14032
 mkdir -p ~/proj/active/opencode_worktrees
