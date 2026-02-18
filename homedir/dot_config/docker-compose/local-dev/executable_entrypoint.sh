@@ -12,6 +12,10 @@ sudo usermod -s $(which zsh) $(whoami)
 sudo usermod -s $(which zsh) root
 sudo chsh -s $(which zsh) $(whoami)
 
+# until https://github.com/anomalyco/opencode/issues/14032
+mkdir -p ~/proj/active/opencode_worktrees
+ln -sfT ~/proj/active/opencode_worktrees ~/.local/share/opencode/worktree
+
 # # Use this block for mitmproxy, #mitmproxy
 # sudo cp .devcontainer/proxy/mitmproxy/mitmproxy-ca-cert.pem /usr/local/share/ca-certificates/mitmproxy-ca-cert.crt
 # sudo update-ca-certificates
