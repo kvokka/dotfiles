@@ -1,0 +1,17 @@
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+  code --version &>/dev/null && . "$(code --locate-shell-integration-path zsh)" || true
+  cursor --version &>/dev/null && . "$(cursor --locate-shell-integration-path zsh)" || true
+fi
+
+{{ if not .headless }}
+{{ if eq .chezmoi.os "darwin" }}
+[[ "$TERM_PROGRAM" == "iTerm.app" ]] && [[ -f ~/.iterm2_shell_integration.zsh ]] && source ~/.iterm2_shell_integration.zsh
+
+export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
+{{ end }}
+{{ end }}
+
+[[ "$TERM_PROGRAM" == "Apple_Terminal" ]] || \
+  command -v oh-my-posh >/dev/null 2>&1 && \
+  eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/config.yaml)" && \
+  source ~/.config/oh-my-posh/set_poshcontext.zsh

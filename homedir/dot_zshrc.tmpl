@@ -25,16 +25,12 @@ fi
 {{ end }}
 # -----------------------------
 
+eval "$(mise activate zsh)"
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)" # Must be after compinit
+
 for f (~/.config/zshrc.d/*.zsh(N)) source $f
 
 export ZSH="$HOME/.oh-my-zsh"
-
-eval "$(mise activate zsh)"
-
-if [[ "$TERM_PROGRAM" == "vscode" ]]; then
-  code --version &>/dev/null && . "$(code --locate-shell-integration-path zsh)" || true
-  cursor --version &>/dev/null && . "$(cursor --locate-shell-integration-path zsh)" || true
-fi
 
 command -v brew >/dev/null 2>&1 && FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
@@ -49,22 +45,7 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 autoload -Uz compinit
 compinit
 
-command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)" # Must be after compinit
-
 source $ZSH/oh-my-zsh.sh
 
 for item in ~/.secrets/home/*(N) ~/.secrets/home/.^*(N); do [[ -e $item ]] || continue; ln -sf "$item" ~; done
 [ -f ~/.secrets/shared/.env ] && source ~/.secrets/shared/.env
-
-{{ if not .headless }}
-{{ if eq .chezmoi.os "darwin" }}
-[[ "$TERM_PROGRAM" == "iTerm.app" ]] && [[ -f ~/.iterm2_shell_integration.zsh ]] && source ~/.iterm2_shell_integration.zsh
-
-export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
-{{ end }}
-{{ end }}
-
-[[ "$TERM_PROGRAM" == "Apple_Terminal" ]] || \
-  command -v oh-my-posh >/dev/null 2>&1 && \
-  eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/config.yaml)" && \
-  source ~/.config/oh-my-posh/set_poshcontext.zsh
