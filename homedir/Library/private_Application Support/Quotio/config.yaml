@@ -27,6 +27,8 @@ oauth-model-alias:
       alias: gemini-3-pro-image-preview
     - name: gemini-3-pro-high
       alias: gemini-3-pro-preview
+    - name: gemini-3-1-pro
+      alias: gemini-3.1-pro-low
     - name: gemini-3-flash
       alias: gemini-3-flash-preview
     - name: claude-sonnet-4-5

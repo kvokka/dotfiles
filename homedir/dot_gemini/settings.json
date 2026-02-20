@@ -42,7 +42,7 @@
     ]
   },
   "model": {
-    "name": "gemini-3-pro-preview",
+    "name": "gemini-3.1-pro-low",
     "compressionThreshold": 0.6
   },
   "modelConfigs": {
