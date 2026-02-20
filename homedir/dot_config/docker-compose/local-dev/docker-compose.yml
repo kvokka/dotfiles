@@ -72,6 +72,20 @@ services:
     ports:
       - "4444:4444"
 
+  codenomad:
+    # access via https://localhost:9898/
+    <<: [ *common-base, *standard-env-files ]
+    depends_on:
+      wait-for-ready:
+        condition: service_healthy
+    command: npx @neuralnomads/codenomad
+    environment:
+      CLI_WORKSPACE_ROOT: ~/proj/active/opencode_worktrees
+      CODENOMAD_SKIP_AUTH: "true"
+      CLI_HOST: 0.0.0.0
+    ports:
+      - "9898:9898"
+
   db:
     image: postgres:16
     environment:

@@ -1,0 +1,19 @@
+ui:
+  theme: dark
+  settings:
+    showThinkingBlocks: true
+    showKeyboardShortcutHints: true
+    thinkingBlocksExpansion: expanded
+    showTimelineTools: true
+    promptSubmitOnEnter: false
+    diffViewMode: split
+    toolOutputExpansion: expanded
+    diagnosticsExpansion: expanded
+    showUsageMetrics: true
+    autoCleanupBlankSessions: true
+    osNotificationsEnabled: true
+    osNotificationsAllowWhenVisible: false
+    notifyOnNeedsInput: true
+    notifyOnIdle: true
+server:
+  opencodeBinary: opencode
