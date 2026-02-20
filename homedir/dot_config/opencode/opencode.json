@@ -365,6 +365,14 @@
           },
           "reasoning": true
         },
+        "gpt-5.3-codex-spark": {
+          "limit": {
+            "context": 128000,
+            "output": 32768
+          },
+          "name": "Quotio Gpt 5.3 Codex Spark",
+          "reasoning": false
+        },
         "gpt-5.2-codex-mini": {
           "limit": {
             "context": 272000,
@@ -372,9 +380,7 @@
           },
           "name": "Quotio Gpt 5.2 Codex Mini",
           "options": {
-            "reasoning": {
-              "effort": "low"
-            }
+            "reasoningEffort": "high"
           },
           "reasoning": true
         },
@@ -395,6 +401,7 @@
       "whitelist": [
         "gpt-5.2",
         "gpt-5.3-codex",
+        "gpt-5.3-codex-spark",
         "gpt-5.2-codex-mini",
         "gpt-oss-120b-medium"
       ]
