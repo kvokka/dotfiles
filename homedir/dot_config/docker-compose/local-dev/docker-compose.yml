@@ -80,7 +80,7 @@ services:
         condition: service_healthy
     command: npx @neuralnomads/codenomad
     environment:
-      CLI_WORKSPACE_ROOT: ~/proj/active/opencode_worktrees
+      # CLI_WORKSPACE_ROOT: ~/proj/active/opencode_worktrees
       CODENOMAD_SKIP_AUTH: "true"
       CLI_HOST: 0.0.0.0
     ports:
