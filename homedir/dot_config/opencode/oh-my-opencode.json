@@ -30,7 +30,7 @@
   },
   "categories": {
     "artistry": {
-      "model": "google/gemini-3.1-pro-preview"
+      "model": "google/gemini-3.1-pro-high"
     },
     "ultrabrain": {
       "model": "openai/gpt-5.3-codex",
@@ -67,7 +67,8 @@
     },
     "modelConcurrency": {
       "google/gemini-3-flash-preview": 15,
-      "google/gemini-3.1-pro-preview": 10,
+      "google/gemini-3.1-pro-high": 10,
+      "google/gemini-3.1-pro-low": 10,
       "anthropic/claude-opus-4-6-thinking": 3,
       "anthropic/claude-sonnet-4-6": 3,
       "anthropic/gemini-claude-sonnet-4-5-thinking": 3,

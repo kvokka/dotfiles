@@ -106,14 +106,14 @@
     },
     // this is used by ALL models for compaction
     "compaction": {
-      "model": "google/gemini-3.1-pro-preview",
+      "model": "google/gemini-3.1-pro-low",
       "variant": "low"
     },
     "general": {
       "model": "anthropic/claude-sonnet-4-6"
     }
   },
-  "model": "google/gemini-3.1-pro-preview",
+  "model": "anthropic/claude-sonnet-4-6",
   "small_model": "google/gemini-3-flash-preview",
   "enabled_providers": [
     "opencode",
@@ -511,7 +511,7 @@
           },
           "name": "Quotio Gemini 3 Pro Image Preview"
         },
-        "gemini-3.1-pro-preview": {
+        "gemini-3.1-pro-high": {
           "limit": {
             "context": 1048576,
             "output": 65536
@@ -530,17 +530,42 @@
             "high": {
               "thinkingLevel": "high"
             },
-            "minimal": {
-              "thinkingLevel": "minimal"
+            "medium": {
+              "thinkingLevel": "medium"
             },
+            "low": {
+              "thinkingLevel": "low"
+            }
+          },
+          "name": "Quotio Gemini 3.1 Pro High"
+        },
+        "gemini-3.1-pro-low": {
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
             "low": {
               "thinkingLevel": "low"
             },
             "medium": {
               "thinkingLevel": "medium"
+            },
+            "high": {
+              "thinkingLevel": "high"
             }
           },
-          "name": "Quotio Gemini 3.1 Pro Preview"
+          "name": "Quotio Gemini 3.1 Pro Low"
         },
       },
       "whitelist": [
@@ -548,7 +573,8 @@
         "gemini-2.5-flash-lite",
         "gemini-3-flash-preview",
         "gemini-3-pro-image-preview",
-        "gemini-3.1-pro-preview"
+        "gemini-3.1-pro-low",
+        "gemini-3.1-pro-high"
       ],
       "name": "Google",
       "npm": "@ai-sdk/openai-compatible",
