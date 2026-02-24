@@ -101,14 +101,14 @@
     },
     // this is used by ALL models for compaction
     "compaction": {
-      "model": "google/gemini-3.1-pro-high",
+      "model": "google/gemini-3.1-pro-preview",
       "variant": "low"
     },
     "general": {
       "model": "anthropic/claude-sonnet-4-6"
     }
   },
-  "model": "google/gemini-3.1-pro-high",
+  "model": "google/gemini-3.1-pro-preview",
   "small_model": "google/gemini-3-flash-preview",
   "enabled_providers": [
     "opencode",
@@ -506,7 +506,7 @@
           },
           "name": "Quotio Gemini 3 Pro Image Preview"
         },
-        "gemini-3.1-pro-high": {
+        "gemini-3.1-pro-preview": {
           "limit": {
             "context": 1048576,
             "output": 65536
@@ -535,7 +535,7 @@
               "thinkingLevel": "medium"
             }
           },
-          "name": "Quotio Gemini 3.1 Pro High"
+          "name": "Quotio Gemini 3.1 Pro Preview"
         },
       },
       "whitelist": [
@@ -543,7 +543,7 @@
         "gemini-2.5-flash-lite",
         "gemini-3-flash-preview",
         "gemini-3-pro-image-preview",
-        "gemini-3.1-pro-high"
+        "gemini-3.1-pro-preview"
       ],
       "name": "Google",
       "npm": "@ai-sdk/openai-compatible",
