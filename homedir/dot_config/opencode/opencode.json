@@ -161,43 +161,7 @@
           },
           "reasoning": true
         },
-        "gemini-claude-opus-4-5-thinking": {
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "name": "Quotio Claude Opus 4 5 Thinking",
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
-          },
-          "options": {
-            "thinking": {
-              "budgetTokens": 10000,
-              "type": "enabled"
-            }
-          },
-          "reasoning": true
-        },
-        "gemini-claude-sonnet-4-5": {
+        "claude-sonnet-4-5": {
           "limit": {
             "context": 200000,
             "output": 64000
@@ -214,7 +178,7 @@
           },
           "name": "Quotio Claude Sonnet 4 5"
         },
-        "gemini-claude-sonnet-4-5-thinking": {
+        "claude-sonnet-4-5-thinking": {
           "limit": {
             "context": 200000,
             "output": 64000
@@ -303,6 +267,21 @@
           },
           "reasoning": true
         },
+        "claude-haiku-4-5": {
+          "limit": {
+            "context": 128000,
+            "output": 32000
+          },
+          "modalities": {
+            "input": [
+              "text",
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "name": "Quotio Claude Haiku 4 5"
+        }
       },
       "npm": "@ai-sdk/anthropic",
       "options": {
@@ -310,12 +289,12 @@
         "baseURL": "{env:QUOTIO_PROXY_URL}"
       },
       "whitelist": [
+        "claude-haiku-4-5",
         "claude-opus-4-6-thinking",
-        "gemini-claude-opus-4-5-thinking",
-        "gemini-claude-sonnet-4-6",
-        "gemini-claude-sonnet-4-6-thinking",
-        "gemini-claude-sonnet-4-5",
-        "gemini-claude-sonnet-4-5-thinking"
+        "claude-sonnet-4-6",
+        "claude-sonnet-4-6-thinking",
+        "claude-sonnet-4-5",
+        "claude-sonnet-4-5-thinking"
       ]
     },
     "openai": {
