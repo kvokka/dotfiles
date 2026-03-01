@@ -229,14 +229,14 @@
               "text"
             ]
           },
-          "name": "Quotio Claude Sonnet 4 5"
+          "name": "Quotio Claude Sonnet 4 6"
         },
         "claude-sonnet-4-6-thinking": {
           "limit": {
             "context": 200000,
             "output": 64000
           },
-          "name": "Quotio Claude Sonnet 4 5 Thinking",
+          "name": "Quotio Claude Sonnet 4 6 Thinking",
           "modalities": {
             "input": [
               "text",
