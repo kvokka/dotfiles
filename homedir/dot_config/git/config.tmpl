@@ -108,13 +108,5 @@ useRelativePaths = true
     textconv = plutil -convert xml1 -o -
 {{ end }}
 
-{{ if eq .github_login "kvokka" }}
-[includeIf "gitdir:**/cat/"]
-    path = ~/.config/git/config-checkeatrade
-
-[includeIf "gitdir:**/*checkatrade*/"]
-    path = ~/.config/git/config-checkeatrade
-{{ end }}
-
 [includeIf "gitdir:{{ .chezmoi.workingTree }}/**"]
     path = ~/.config/git/config-chezmoi
