@@ -15,4 +15,6 @@ if [[ -z $DOCKER_SOCK_OWNED && $GITHUB_ACTIONS != "true" && $CI != "true" && -f 
 fi
 {{- end }}
 export QUOTIO_PROXY_URL=$QUOTIO_PROXY_HOST/v1
+export OPENAI_API_KEY=$QUOTIO_PROXY_API_KEY
+export OPENAI_BASE_URL=$QUOTIO_PROXY_URL
 export AICOMMIT_CONFIG_PATH=$HOME/.config/aicommit2/config.ini

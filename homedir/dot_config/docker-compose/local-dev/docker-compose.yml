@@ -35,7 +35,7 @@ services:
   console:
     <<: [ *common-base, *standard-env-files ]
     build:
-      context: .
+      context: $HOME/.config/docker-compose/local-dev/
       dockerfile: Dockerfile
     command: tail -f /dev/null
     ports:
