@@ -17,7 +17,7 @@ alias ag='aicommit2'
 
 alias brave_debug="open -a 'Brave Browser' --args --remote-debugging-port=9222"
 
-alias quotio_models='curl -H "Authorization: Bearer ${QUOTIO_PROXY_API_KEY}" "${QUOTIO_PROXY_URL}/models" | jq'
+alias cli_llm_proxy_models='curl -H "Authorization: Bearer ${MY_CLI_LLM_PROXY_API_KEY}" "${MY_CLI_LLM_PROXY_URL}/models" | jq'
 
 DC_FILE_LOCAL_DEV="$HOME/.config/docker-compose/local-dev/docker-compose.yml"
 

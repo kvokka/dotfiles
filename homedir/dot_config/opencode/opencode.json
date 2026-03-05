@@ -285,8 +285,8 @@
       },
       "npm": "@ai-sdk/anthropic",
       "options": {
-        "apiKey": "{env:QUOTIO_PROXY_API_KEY}",
-        "baseURL": "{env:QUOTIO_PROXY_URL}"
+        "apiKey": "{env:MY_CLI_LLM_PROXY_API_KEY}",
+        "baseURL": "{env:MY_CLI_LLM_PROXY_URL}"
       },
       "whitelist": [
         "claude-haiku-4-5",
@@ -381,8 +381,8 @@
       "name": "OpenAI",
       "npm": "@ai-sdk/openai",
       "options": {
-        "apiKey": "{env:QUOTIO_PROXY_API_KEY}",
-        "baseURL": "{env:QUOTIO_PROXY_URL}"
+        "apiKey": "{env:MY_CLI_LLM_PROXY_API_KEY}",
+        "baseURL": "{env:MY_CLI_LLM_PROXY_URL}"
       },
       "whitelist": [
         "gpt-5.2",
@@ -561,7 +561,7 @@
         "websearch_cited": {
           "model": "gemini-3-flash-preview"
         },
-        "apiKey": "{env:QUOTIO_PROXY_API_KEY}",
+        "apiKey": "{env:MY_CLI_LLM_PROXY_API_KEY}",
         "baseURL": "{env:QUOTIO_PROXY_URL}"
       },
     }
