@@ -3,6 +3,18 @@ model_reasoning_effort = "high"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
 web_search_request = true
+
+model_provider = "myproxy"
+
+[model_providers.myproxy]
+# Have to use chezmoi interpolation since it does not support it from env var
+base_url = "{{ .localLLMProxyUrl }}"
+
+name = "My Proxy for Codex"
+wire_api = "responses"
+
+env_key = "MY_CLI_LLM_PROXY_API_KEY"
+
 [history]
 persistence = "save-all"
 
@@ -13,6 +25,12 @@ trust_level = "trusted"
 # Send desktop notifications when approvals are required or a turn completes.
 # Defaults to false.
 notifications = true
+status_line = [
+  "model-with-reasoning",
+  "context-remaining",
+  "current-dir",
+  "weekly-limit",
+]
 
 [notice]
 "hide_gpt-5.1-codex-max_migration_prompt" = false
@@ -27,3 +45,7 @@ enabled = false
 
 [feedback]
 enabled = false
+
+[features]
+multi_agent = true
+search_tool = true

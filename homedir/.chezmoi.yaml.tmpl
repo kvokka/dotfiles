@@ -61,6 +61,13 @@
 {{-   writeToStdout "💡 Tip: you can re-enter your name and email with `chezmoi init --data=false`.\n" -}}
 {{- end -}}
 
+{{ $localLLMProxyHost := "" }}
+{{- if eq .chezmoi.os "darwin" }}
+{{ $localLLMProxyHost = "http://127.0.0.1:8317" }}
+{{- else if eq .chezmoi.os "linux" }}
+{{ $localLLMProxyHost = "http://host.docker.internal:8317" }}
+{{- end }}
+
 sourceDir: {{ .chezmoi.sourceDir | quote }}
 
 data:
@@ -89,6 +96,9 @@ data:
     - "helm"
     - "zsh-autosuggestions"
     - "zsh-syntax-highlighting"
+
+  localLLMProxyHost: {{ $localLLMProxyHost | quote }}
+  localLLMProxyUrl: {{ list $localLLMProxyHost "/v1" | join "" | quote }}
 
 textconv:
   - pattern: "**/*.plist"

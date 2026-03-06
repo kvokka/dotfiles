@@ -562,7 +562,7 @@
           "model": "gemini-3-flash-preview"
         },
         "apiKey": "{env:MY_CLI_LLM_PROXY_API_KEY}",
-        "baseURL": "{env:QUOTIO_PROXY_URL}"
+        "baseURL": "{env:MY_CLI_LLM_PROXY_URL}"
       },
     }
   }

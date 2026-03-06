@@ -4,19 +4,12 @@ export DISABLE_AUTO_UPDATE="true"
 export HOMEBREW_NO_ENV_HINTS=1
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
-{{ if eq .chezmoi.os "darwin" }}
-export QUOTIO_PROXY_HOST=http://127.0.0.1:8317
-{{- else if eq .chezmoi.os "linux" }}
-export QUOTIO_PROXY_HOST=http://host.docker.internal:8317
-
+{{ if eq .chezmoi.os "linux" }}
 if [[ -z $DOCKER_SOCK_OWNED && $GITHUB_ACTIONS != "true" && $CI != "true" && -f /.dockerenv && -S /var/run/docker.sock ]]; then
     sudo chown "$(whoami):$(whoami)" /var/run/docker.sock 2>/dev/null || true
     export DOCKER_SOCK_OWNED=1   # prevent repeating in subshells
 fi
 {{- end }}
-export QUOTIO_PROXY_URL=$QUOTIO_PROXY_HOST/v1
-export MY_CLI_LLM_PROXY_HOST=https://my-cli-proxy.onrender.com
+export MY_CLI_LLM_PROXY_HOST={{ .localLLMProxyHost }}
 export MY_CLI_LLM_PROXY_URL=$MY_CLI_LLM_PROXY_HOST/v1
-export OPENAI_API_KEY=$MY_CLI_LLM_PROXY_API_KEY
-export OPENAI_BASE_URL=$MY_CLI_LLM_PROXY_URL
 export AICOMMIT_CONFIG_PATH=$HOME/.config/aicommit2/config.ini
