@@ -1,31 +1,38 @@
 {
-  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/master/assets/oh-my-opencode.schema.json",
   // https://github.com/code-yeongyu/oh-my-opencode/blob/master/docs/configurations.md
   "agents": {
     "sisyphus": {
-      "model": "anthropic/claude-opus-4-6-thinking"
+      "model": "openai/openai/gpt-5.4",
+      "variant": "high"
     },
     "librarian": {
-      "model": "google/gemini-3-flash-preview"
+      "model": "openai/openai/gpt-5.4",
+      "variant": "low"
     },
     "explore": {
-      "model": "google/gemini-3-flash-preview"
+      "model": "openai/openai/gpt-5.4",
+      "variant": "low"
     },
     "multimodal-looker": {
-      "model": "google/gemini-3-flash-preview"
+      "model": "openai/openai/gpt-5.4",
+      "variant": "medium"
     },
     "prometheus": {
-      "model": "anthropic/claude-opus-4-6-thinking"
+      "model": "openai/openai/gpt-5.4",
+      "variant": "high"
     },
     "metis": {
-      "model": "anthropic/claude-sonnet-4-6"
+      "model": "openai/openai/gpt-5.4",
+      "variant": "high"
     },
     "momus": {
-      "model": "anthropic/claude-opus-4-6-thinking"
+      "model": "openai/openai/gpt-5.4",
+      "variant": "xhigh"
     },
     "atlas": {
-      // "model": "anthropic/gemini-claude-sonnet-4-5-thinking"
-      "model": "opencode/kimi-k2.5-free"
+      "model": "openai/openai/gpt-5.4",
+      "variant": "medium"
     }
   },
   "categories": {
@@ -37,22 +44,24 @@
       "variant": "xhigh"
     },
     "quick": {
-      "model": "google/gemini-3-flash-preview"
+      "model": "openai/gpt-5.3-codex",
+      "variant": "low"
     },
     "unspecified-low": {
-      "model": "anthropic/claude-sonnet-4-6"
+      "model": "openai/gpt-5.3-codex",
+      "variant": "medium"
     },
     "unspecified-high": {
-      "model": "anthropic/claude-opus-4-6-thinking",
-      "variant": "max"
+      "model": "openai/gpt-5.3-codex",
+      "variant": "high"
     },
     "writing": {
-      "model": "google/gemini-3-flash-preview"
+      "model": "openai/gpt-5.3-codex",
+      "variant": "medium"
     }
   },
   "experimental": {
-    "aggressive_truncation": true,
-    //   "auto_resume": true
+    "aggressive_truncation": true
   },
   "browser_automation_engine": {
     "provider": "agent-browser"
@@ -63,7 +72,7 @@
     "providerConcurrency": {
       "google": 20,
       "anthropic": 3,
-      "openai": 3
+      "openai": 10
     },
     "modelConcurrency": {
       "google/gemini-3-flash-preview": 15,
@@ -72,8 +81,8 @@
       "anthropic/claude-opus-4-6-thinking": 3,
       "anthropic/claude-sonnet-4-6": 3,
       "anthropic/claude-sonnet-4-5-thinking": 3,
-      "anthropic/claude-sonnet-4-5": 3,
       "anthropic/claude-haiku-4-5": 10,
+      "openai/gpt-5.4": 10,
       "openai/gpt-5.3-codex": 3
     }
   }
