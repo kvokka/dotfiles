@@ -121,6 +121,8 @@ services:
       - |
         uv run cli db create
         uv run cli db migrate
+        uv run cli db seed
+        sudo dpkg -i $(ls -v ~/proj/active/wise-generator/shared/wise-gen_*_arm64.deb | tail -1) || true
         ENVIRONMENT=test uv run cli db create
         ENVIRONMENT=test uv run cli db migrate
         uv run uvicorn src.main:app --host 0.0.0.0 --port 8200 --reload
