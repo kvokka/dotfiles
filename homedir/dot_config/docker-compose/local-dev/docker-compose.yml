@@ -86,6 +86,22 @@ services:
     ports:
       - "9898:9898"
 
+  oh-my-opencode-dashboard:
+    <<: [ *common-base, *standard-env-files ]
+    depends_on:
+      wait-for-ready:
+        condition: service_healthy
+    command:
+      - zsh
+      - -c
+      - |
+        bunx oh-my-opencode-dashboard@latest add --name "sa-web" --project ~/proj/active/sa-web
+        bunx oh-my-opencode-dashboard@latest add --name "wise-gen" --project ~/proj/active/wise-generator
+        bunx oh-my-opencode-dashboard@latest
+
+    ports:
+      - "51234:51234"
+
   db:
     image: postgres:16
     environment:

@@ -3,35 +3,39 @@
   // https://github.com/code-yeongyu/oh-my-opencode/blob/master/docs/configurations.md
   "agents": {
     "sisyphus": {
-      "model": "openai/openai/gpt-5.4",
+      "model": "openai/gpt-5.4",
+      "variant": "high"
+    },
+    "sisyphus-junior": {
+      "model": "openai/gpt-5.4",
       "variant": "high"
     },
     "librarian": {
-      "model": "openai/openai/gpt-5.4",
+      "model": "openai/gpt-5.4",
       "variant": "low"
     },
     "explore": {
-      "model": "openai/openai/gpt-5.4",
+      "model": "openai/gpt-5.4",
       "variant": "low"
     },
     "multimodal-looker": {
-      "model": "openai/openai/gpt-5.4",
+      "model": "openai/gpt-5.4",
       "variant": "medium"
     },
     "prometheus": {
-      "model": "openai/openai/gpt-5.4",
+      "model": "openai/gpt-5.4",
       "variant": "high"
     },
     "metis": {
-      "model": "openai/openai/gpt-5.4",
+      "model": "openai/gpt-5.4",
       "variant": "high"
     },
     "momus": {
-      "model": "openai/openai/gpt-5.4",
+      "model": "openai/gpt-5.4",
       "variant": "xhigh"
     },
     "atlas": {
-      "model": "openai/openai/gpt-5.4",
+      "model": "openai/gpt-5.4",
       "variant": "medium"
     }
   },
@@ -44,19 +48,19 @@
       "variant": "xhigh"
     },
     "quick": {
-      "model": "openai/gpt-5.3-codex",
+      "model": "openai/gpt-5.4",
       "variant": "low"
     },
     "unspecified-low": {
-      "model": "openai/gpt-5.3-codex",
+      "model": "openai/gpt-5.4",
       "variant": "medium"
     },
     "unspecified-high": {
-      "model": "openai/gpt-5.3-codex",
+      "model": "openai/gpt-5.4",
       "variant": "high"
     },
     "writing": {
-      "model": "openai/gpt-5.3-codex",
+      "model": "openai/gpt-5.4",
       "variant": "medium"
     }
   },
