@@ -12,3 +12,7 @@ yarn-error.log
 mise.local.toml
 **/node_modules/
 tmp/
+.codenomad/
+.sisyphus/
+.ruff_cache/
+.rumdl_cache/
