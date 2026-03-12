@@ -91,16 +91,20 @@ services:
     depends_on:
       wait-for-ready:
         condition: service_healthy
+    working_dir: /home/ubuntu/proj/active/oh-my-opencode-dashboard
     environment:
-      - OMO_DASHBOARD_HOST=localhost
+      - OMO_DASHBOARD_HOST=0.0.0.0
     command:
       - zsh
       - -c
       - |
-        bunx oh-my-opencode-dashboard@latest add --name "sa-web" --project ~/proj/active/sa-web
-        bunx oh-my-opencode-dashboard@latest add --name "wise-gen" --project ~/proj/active/wise-generator
+        # bunx oh-my-opencode-dashboard@latest add --name "sa-web" --project ~/proj/active/sa-web
+        # bunx oh-my-opencode-dashboard@latest add --name "wise-gen" --project ~/proj/active/wise-generator
         # bunx oh-my-opencode-dashboard@latest
-        bunx github:kvokka/oh-my-opencode-dashboard#configurable-host-path
+        bun run start -- add --name "sa-web" --project ~/proj/active/sa-web
+        bun run start -- add --name "wise-gen" --project ~/proj/active/wise-generator
+        bun run build
+        bun run start
 
     ports:
       - "51234:51234"
