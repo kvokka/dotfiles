@@ -94,18 +94,13 @@ services:
     working_dir: /home/ubuntu/proj/active/oh-my-opencode-dashboard
     environment:
       - OMO_DASHBOARD_HOST=0.0.0.0
+      - WORKDIR=/home/ubuntu/proj/active # remove after dockerfile rebuild
     command:
       - zsh
       - -c
       - |
-        # bunx oh-my-opencode-dashboard@latest add --name "sa-web" --project ~/proj/active/sa-web
-        # bunx oh-my-opencode-dashboard@latest add --name "wise-gen" --project ~/proj/active/wise-generator
-        # bunx oh-my-opencode-dashboard@latest
-        bun run start -- add --name "sa-web" --project ~/proj/active/sa-web
-        bun run start -- add --name "wise-gen" --project ~/proj/active/wise-generator
-        bun run build
-        bun run start
-
+        for d in $$WORKDIR/*/ ; do [ -d "$$d" ] && bunx oh-my-opencode-dashboard@latest add --name "$$(basename "$${d%/}")" --project "$$d"; done
+        bunx oh-my-opencode-dashboard@latest
     ports:
       - "51234:51234"
 
