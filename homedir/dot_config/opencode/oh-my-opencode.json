@@ -7,13 +7,7 @@
       "variant": "high"
     },
     "sisyphus-junior": {
-      "model": "openai/gpt-5.4",
-      "variant": "high",
-      "fallback_models": [
-        "openai/gpt-5.4",
-        "google/gemini-3.1-pro-preview",
-        "gpt-5.3-codex"
-      ]
+      "category": "unspecified-high"
     },
     "librarian": {
       "model": "openai/gpt-5.4",
