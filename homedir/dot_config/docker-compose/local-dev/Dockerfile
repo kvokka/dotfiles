@@ -5,7 +5,7 @@ ENV DOTFILES_GITHUB_USERNAME=${DOTFILES_GITHUB_USERNAME}
 
 # hadolint ignore=DL3004
 RUN apt-get update \
-  && apt-get install -y sudo tini zsh curl git locales \
+  && apt-get install -y sudo tini zsh curl git locales build-essential \
   && echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/ubuntu \
   && chmod 0440 /etc/sudoers.d/ubuntu \
   && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \

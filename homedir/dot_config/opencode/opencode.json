@@ -165,42 +165,6 @@
           },
           "reasoning": true
         },
-        "claude-opus-4-6": {
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "name": "Claude Opus 4-6",
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
-          },
-          "options": {
-            "thinking": {
-              "budgetTokens": 16000,
-              "type": "enabled"
-            }
-          },
-          "reasoning": true
-        },
         "claude-sonnet-4-6": {
           "limit": {
             "context": 200000,
@@ -277,7 +241,6 @@
       },
       "whitelist": [
         "claude-haiku-4-5",
-        "claude-opus-4-6",
         "claude-opus-4-6-thinking",
         "claude-sonnet-4-6",
         "claude-sonnet-4-6-thinking"
