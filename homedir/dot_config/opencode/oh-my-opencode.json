@@ -4,10 +4,15 @@
   "agents": {
     "sisyphus": {
       "model": "openai/gpt-5.4",
-      "variant": "high"
+      "variant": "high",
+      "ultrawork": {
+        "model": "openai/gpt-5.4",
+        "variant": "xhigh"
+      }
     },
     "sisyphus-junior": {
-      "category": "unspecified-high"
+      "model": "openai/gpt-5.4",
+      "variant": "medium"
     },
     "librarian": {
       "mode": "subagent",
@@ -39,14 +44,8 @@
       "variant": "xhigh"
     },
     "metis": {
-      "mode": "subagent",
       "model": "openai/gpt-5.4",
-      "variant": "high",
-      "fallback_models": [
-        "openai/gpt-5.4",
-        "gpt-5.3-codex",
-        "google/gemini-3.1-pro-preview"
-      ]
+      "variant": "high"
     },
     "momus": {
       "mode": "subagent",
