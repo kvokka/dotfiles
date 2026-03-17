@@ -95,11 +95,24 @@ services:
     environment:
       - OMO_DASHBOARD_HOST=0.0.0.0
       - WORKDIR=/home/ubuntu/proj/active # remove after dockerfile rebuild
+      - PROJECTS_REFTESH_INTERVAL=60
     command:
       - zsh
       - -c
       - |
-        for d in $$WORKDIR/*/ ; do [ -d "$$d" ] && bunx oh-my-opencode-dashboard@latest add --name "$$(basename "$${d%/}")" --project "$$d"; done
+        sync_projects() {
+          for d in $$WORKDIR/*/ ; do
+            [ -d "$$d" ] || continue
+            bunx oh-my-opencode-dashboard@latest add --name "$$(basename "$${d%/}")" --project "$$d"
+          done
+        }
+
+        sync_projects
+        while true; do
+          sleep $$PROJECTS_REFTESH_INTERVAL
+          sync_projects
+        done &
+
         bunx oh-my-opencode-dashboard@latest
     ports:
       - "51234:51234"
