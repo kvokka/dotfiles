@@ -128,112 +128,112 @@
   "provider": {
     // Providers are the reflections of the Quotio created for compatibility with other tools
     "anthropic": {
-      // "models": {
-      //   "claude-opus-4-6-thinking": {
-      //     "limit": {
-      //       "context": 200000,
-      //       "output": 64000
-      //     },
-      //     "name": "Quotio Claude Opus 4 6 Thinking",
-      //     "modalities": {
-      //       "input": [
-      //         "text",
-      //         "image",
-      //         "pdf"
-      //       ],
-      //       "output": [
-      //         "text"
-      //       ]
-      //     },
-      //     "variants": {
-      //       "low": {
-      //         "thinkingConfig": {
-      //           "thinkingBudget": 8192
-      //         }
-      //       },
-      //       "max": {
-      //         "thinkingConfig": {
-      //           "thinkingBudget": 32768
-      //         }
-      //       }
-      //     },
-      //     "options": {
-      //       "thinking": {
-      //         "budgetTokens": 16000,
-      //         "type": "enabled"
-      //       }
-      //     },
-      //     "reasoning": true
-      //   },
-      //   "claude-sonnet-4-6": {
-      //     "limit": {
-      //       "context": 200000,
-      //       "output": 64000
-      //     },
-      //     "modalities": {
-      //       "input": [
-      //         "text",
-      //         "image",
-      //         "pdf"
-      //       ],
-      //       "output": [
-      //         "text"
-      //       ]
-      //     },
-      //     "name": "Quotio Claude Sonnet 4 6"
-      //   },
-      //   "claude-sonnet-4-6-thinking": {
-      //     "limit": {
-      //       "context": 200000,
-      //       "output": 64000
-      //     },
-      //     "name": "Quotio Claude Sonnet 4 6 Thinking",
-      //     "modalities": {
-      //       "input": [
-      //         "text",
-      //         "image",
-      //         "pdf"
-      //       ],
-      //       "output": [
-      //         "text"
-      //       ]
-      //     },
-      //     "variants": {
-      //       "low": {
-      //         "thinkingConfig": {
-      //           "thinkingBudget": 8192
-      //         }
-      //       },
-      //       "max": {
-      //         "thinkingConfig": {
-      //           "thinkingBudget": 32768
-      //         }
-      //       }
-      //     },
-      //     "options": {
-      //       "thinking": {
-      //         "budgetTokens": 10000,
-      //         "type": "enabled"
-      //       }
-      //     },
-      //     "reasoning": true
-      //   },
-      //   "claude-haiku-4-5": {
-      //     "limit": {
-      //       "context": 128000,
-      //       "output": 32000
-      //     },
-      //     "modalities": {
-      //       "input": [
-      //         "text",
-      //       ],
-      //       "output": [
-      //         "text"
-      //       ]
-      //     },
-      //     "name": "Quotio Claude Haiku 4 5"
-      //   }
-      // },
+      "models": {
+        "claude-opus-4-6-thinking": {
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "name": "Quotio Claude Opus 4 6 Thinking",
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          },
+          "options": {
+            "thinking": {
+              "budgetTokens": 16000,
+              "type": "enabled"
+            }
+          },
+          "reasoning": true
+        },
+        "claude-sonnet-4-6": {
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "name": "Quotio Claude Sonnet 4 6"
+        },
+        "claude-sonnet-4-6-thinking": {
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "name": "Quotio Claude Sonnet 4 6 Thinking",
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          },
+          "options": {
+            "thinking": {
+              "budgetTokens": 10000,
+              "type": "enabled"
+            }
+          },
+          "reasoning": true
+        },
+        "claude-haiku-4-5": {
+          "limit": {
+            "context": 128000,
+            "output": 32000
+          },
+          "modalities": {
+            "input": [
+              "text",
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "name": "Quotio Claude Haiku 4 5"
+        }
+      },
       "npm": "@ai-sdk/anthropic",
       "options": {
         "apiKey": "{env:MY_CLI_LLM_PROXY_API_KEY}",
