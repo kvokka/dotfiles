@@ -15,27 +15,18 @@
       "variant": "medium"
     },
     "librarian": {
-      "mode": "subagent",
-      "model": "openai/gpt-5.4",
-      "variant": "low",
-      "fallback_models": [
-        "openai/gpt-5.4",
-        "google/gemini-3.1-pro-preview",
-        "gpt-5.3-codex"
-      ]
+      "model": "openai/gpt-5.4-mini",
+      "variant": "high"
     },
     "explore": {
-      "mode": "subagent",
-      "model": "openai/gpt-5.4",
-      "variant": "low",
+      "model": "openai/gpt-5.4-mini",
+      "variant": "high",
       "fallback_models": [
         "openai/gpt-5.4",
-        "google/gemini-3.1-pro-preview",
         "gpt-5.3-codex"
       ]
     },
     "multimodal-looker": {
-      "mode": "subagent",
       "model": "openai/gpt-5.3-codex",
       "variant": "medium"
     },
@@ -48,7 +39,6 @@
       "variant": "high"
     },
     "momus": {
-      "mode": "subagent",
       "model": "openai/gpt-5.4",
       "variant": "xhigh"
     },
@@ -59,7 +49,7 @@
   },
   "categories": {
     "artistry": {
-      "model": "google/gemini-3.1-pro-preview",
+      "model": "openai/gpt-5.4",
       "variant": "high"
     },
     "ultrabrain": {
@@ -68,11 +58,7 @@
     },
     "quick": {
       "model": "openai/gpt-5.4",
-      "variant": "low",
-      "fallback_models": [
-        "openai/gpt-5.4",
-        "google/gemini-3.1-pro-preview"
-      ]
+      "variant": "low"
     },
     "deep": {
       "model": "openai/gpt-5.3-codex",
@@ -106,14 +92,15 @@
       "openai": 10
     },
     "modelConcurrency": {
-      "google/gemini-3-flash-preview": 15,
-      "google/gemini-3.1-pro-high": 10,
-      "google/gemini-3.1-pro-low": 10,
-      "anthropic/claude-opus-4-6-thinking": 3,
-      "anthropic/claude-sonnet-4-6": 3,
-      "anthropic/claude-sonnet-4-5-thinking": 3,
-      "anthropic/claude-haiku-4-5": 10,
+      // "google/gemini-3-flash-preview": 15,
+      // "google/gemini-3.1-pro-high": 10,
+      // "google/gemini-3.1-pro-low": 10,
+      // "anthropic/claude-opus-4-6-thinking": 3,
+      // "anthropic/claude-sonnet-4-6": 3,
+      // "anthropic/claude-sonnet-4-5-thinking": 3,
+      // "anthropic/claude-haiku-4-5": 10,
       "openai/gpt-5.4": 10,
+      "openai/gpt-5.4-mini": 10,
       "openai/gpt-5.3-codex": 3
     }
   }
