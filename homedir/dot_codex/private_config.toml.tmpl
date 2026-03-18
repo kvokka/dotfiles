@@ -1,5 +1,5 @@
 model = "gpt-5.4"
-model_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
 web_search_request = true
@@ -19,6 +19,9 @@ env_key = "MY_CLI_LLM_PROXY_API_KEY"
 persistence = "save-all"
 
 [projects."/workspace"]
+trust_level = "trusted"
+
+[projects."/home/ubuntu/proj/active/"]
 trust_level = "trusted"
 
 [tui]
