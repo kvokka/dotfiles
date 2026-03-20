@@ -100,10 +100,24 @@ services:
       - zsh
       - -c
       - |
+        typeset -A synced_projects
+
+        add_project() {
+          local project_dir="$$1"
+
+          [[ -n "$${synced_projects[$$project_dir]}" ]] && return
+
+          bunx oh-my-opencode-dashboard@latest add \
+            --name "$${project_dir:t}" \
+            --project "$$project_dir" &&
+            synced_projects[$$project_dir]=1
+        }
+
         sync_projects() {
-          for d in $$WORKDIR/*/ ; do
-            [ -d "$$d" ] || continue
-            bunx oh-my-opencode-dashboard@latest add --name "$$(basename "$${d%/}")" --project "$$d"
+          local d
+
+          for d in $$WORKDIR/*(/N); do
+            add_project "$$d"
           done
         }
 
