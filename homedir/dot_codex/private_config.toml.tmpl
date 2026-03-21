@@ -2,7 +2,8 @@ model = "gpt-5.4"
 model_reasoning_effort = "xhigh"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
-web_search_request = true
+web_search = "cached"
+file_opener = "vscode"
 
 model_provider = "myproxy"
 
@@ -17,6 +18,7 @@ env_key = "MY_CLI_LLM_PROXY_API_KEY"
 
 [history]
 persistence = "save-all"
+max_bytes = 104857600 # 100 MiB
 
 [projects."/workspace"]
 trust_level = "trusted"
@@ -35,14 +37,6 @@ status_line = [
   "weekly-limit",
 ]
 
-[notice]
-"hide_gpt-5.1-codex-max_migration_prompt" = false
-hide_rate_limit_model_nudge = true
-hide_full_access_warning = true
-
-[notice.model_migrations]
-"gpt-5.2" = "gpt-5.2-codex"
-
 [analytics]
 enabled = false
 
@@ -52,3 +46,12 @@ enabled = false
 [features]
 multi_agent = true
 search_tool = true
+fast_mode = true
+
+[agents]
+max_threads = 10
+max_depth = 2
+job_max_runtime_seconds = 1800
+
+[tools]
+view_image = true
