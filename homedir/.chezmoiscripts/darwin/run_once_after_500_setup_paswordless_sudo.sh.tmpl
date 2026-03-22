@@ -4,7 +4,7 @@
 
 for f in /etc/pam.d/{sudo,sudo_local}; do
     if grep -Eq '^[[:space:]]*auth\s+sufficient\s+pam_tid\.so' "$f" 2>/dev/null; then
-        echo "→ $f : already has pam_tid"
+        # noop
     else
         echo "auth       sufficient     pam_tid.so" | sudo tee -a "$f" >/dev/null 2>&1 &&
         printf '\n' | sudo tee -a "$f" >/dev/null 2>&1 &&
