@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+
+# Allows to use touchID instead of password in terminal
+
+for f in /etc/pam.d/{sudo,sudo_local}; do
+    if grep -Eq '^[[:space:]]*auth\s+sufficient\s+pam_tid\.so' "$f" 2>/dev/null; then
+        echo "→ $f : already has pam_tid"
+    else
+        echo "auth       sufficient     pam_tid.so" | sudo tee -a "$f" >/dev/null 2>&1 &&
+        printf '\n' | sudo tee -a "$f" >/dev/null 2>&1 &&
+        echo "→ Added to $f" ||
+        echo "→ $f : needs sudo (skipped)"
+    fi
+done
