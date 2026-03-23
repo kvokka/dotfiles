@@ -13,6 +13,7 @@ x-common-base: &common-base
     - ~/.devcontainer/shared:/home/ubuntu/proj/active/shared:cached
     - ~/.secrets/shared:/home/ubuntu/.secrets/shared:ro
     - ~/.secrets/history:/home/ubuntu/.secrets/history
+    - ~/.openclaw:/home/ubuntu/.openclaw
     - /var/run/docker.sock:/var/run/docker.sock
     - brew:/home/linuxbrew:cached
   extra_hosts:
@@ -63,6 +64,17 @@ services:
       timeout: 900s
       retries: 900
     stop_grace_period: 1s # short → forces quicker kill
+
+  openclaw:
+    <<: [ *common-base, *standard-env-files ]
+    depends_on:
+      wait-for-ready:
+        condition: service_healthy
+    command: openclaw gateway
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+      - "18791:18791"
 
   opencode:
     <<: [ *common-base, *standard-env-files ]

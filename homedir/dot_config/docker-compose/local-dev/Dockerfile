@@ -3,10 +3,14 @@ FROM ubuntu:24.04
 ARG DOTFILES_GITHUB_USERNAME=kvokka
 ENV DOTFILES_GITHUB_USERNAME=${DOTFILES_GITHUB_USERNAME}
 
+ARG TZ=Asia/Bangkok
+ENV TZ=${TZ}
+
 # hadolint ignore=DL3004
-RUN apt-get update \
-  && apt-get install -y sudo tini zsh curl git locales build-essential \
-  && echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/ubuntu \
+RUN apt-get install -y --no-install-recommends sudo tini zsh curl git locales build-essential tzdata \
+  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+  && echo $TZ > /etc/timezone \
+  && dpkg-reconfigure -f noninteractive tzdata \  && echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/ubuntu \
   && chmod 0440 /etc/sudoers.d/ubuntu \
   && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
   && locale-gen en_US.UTF-8 \
