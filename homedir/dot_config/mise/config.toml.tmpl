@@ -18,6 +18,11 @@ python = '3.14'
 uv = '0.10'
 ruff = '0.15'
 ty = '0.0.24'
+pipx = '1.10'
+
+# it still uses uvx but syntax of mise if twisted
+"pipx:onnx-asr" = { version = "v0.11.0", uvx = true, uvx_args = "--python-preference=managed" }
+"pipx:parakeet-mlx" = { version = "0.5.1", uvx = true, uvx_args = "--python-preference=managed" }
 
 prek = '0.3'
 hadolint = '2.14'
@@ -75,7 +80,6 @@ helm-diff = '3'
 yes = true
 {{ end }}
 
-python.uv_venv_auto = "create|source"
 idiomatic_version_file_enable_tools = ["python", "ruby"]
 
 
@@ -92,3 +96,9 @@ trusted_config_paths = [{{ if $paths }}
 {{- end }}
 {{- end }}
 ]
+
+[settings.pipx]
+uvx = true
+
+[settings.python]
+uv_venv_auto = "create|source"
