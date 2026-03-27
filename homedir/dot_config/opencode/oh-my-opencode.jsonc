@@ -23,7 +23,7 @@
       "variant": "high",
       "fallback_models": [
         "openai/gpt-5.4",
-        "gpt-5.3-codex"
+        "openai/gpt-5.3-codex"
       ]
     },
     "multimodal-looker": {
