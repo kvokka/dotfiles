@@ -1,0 +1,52 @@
+{
+  "lightThemeId": "flexoki-light",
+  "darkThemeId": "flexoki-dark",
+  "approvedDirectories": [
+    "/home/ubuntu/proj/active",
+  ],
+  "securityScopedBookmarks": [],
+  "notifyOnSubtasks": true,
+  "notifyOnCompletion": true,
+  "notifyOnError": true,
+  "notifyOnQuestion": true,
+  "notificationTemplates": {
+    "completion": {
+      "title": "{agent_name} is ready",
+      "message": "{model_name} completed the task"
+    },
+    "error": {
+      "title": "Tool error",
+      "message": "{last_message}"
+    },
+    "question": {
+      "title": "Input needed",
+      "message": "{last_message}"
+    },
+    "subtask": {
+      "title": "{agent_name} is ready",
+      "message": "{model_name} completed the task"
+    }
+  },
+  "zenModel": "minimax-m2.5-free",
+  "homeDirectory": "/home/ubuntu/proj/active",
+  "themeId": "flexoki-dark",
+  "themeVariant": "dark",
+  "useSystemTheme": true,
+  "splashBgLight": "#FFFCF0",
+  "splashFgLight": "#100F0F",
+  "splashBgDark": "#151313",
+  "splashFgDark": "#CECDC3",
+  "pinnedDirectories": [
+    "/home/ubuntu/proj/active/sa-web",
+    "/home/ubuntu/proj/active/wise-generator",
+    "/home/ubuntu/proj/active/dotfiles"
+  ],
+  "usageDisplayMode": "usage",
+  "gitmojiEnabled": true,
+  "defaultModel": "openai/gpt-5.4",
+  "defaultAgent": "Sisyphus (Ultraworker)",
+  "nativeNotificationsEnabled": true,
+  "chatRenderMode": "live",
+  "activityRenderMode": "summary",
+  "diffLayoutPreference": "side-by-side"
+}
