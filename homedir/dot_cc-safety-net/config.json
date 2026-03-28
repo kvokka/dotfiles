@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "block-git-push-force",
+      "command": "git",
+      "subcommand": "push",
+      "block_args": [
+        "-f",
+        "--force"
+      ],
+      "reason": "'git push --force' is prohibited. Use a new branch/worktree instead"
+    }
+  ]
+}
