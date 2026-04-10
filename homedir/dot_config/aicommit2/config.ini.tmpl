@@ -1,4 +1,3 @@
-generate=3
 includeBody=true
 
 # [GEMINI_COMPATIBILITY]
@@ -13,13 +12,23 @@ includeBody=true
 
 [OPENAI_COMPATIBILITY]
 compatible=true
+generate=2
+model=gpt-5.3-codex-spark
+url="${MY_CLI_LLM_PROXY_HOST}"
+key=${MY_CLI_LLM_PROXY_API_KEY}
+path=/v1
+numCtx=100000
+topP=0.9
+
+[OPENAI2_COMPATIBILITY]
+compatible=true
+generate=2
 model=gpt-5.4-mini
 url="${MY_CLI_LLM_PROXY_HOST}"
 key=${MY_CLI_LLM_PROXY_API_KEY}
 path=/v1
 temperature=0.7
 numCtx=100000
-topP=0.9
 
 # [ANTHROPIC]
 # compatible=true

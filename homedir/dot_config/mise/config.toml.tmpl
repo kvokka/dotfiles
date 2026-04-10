@@ -10,15 +10,15 @@ bun = '1.3'
 
 "npm:aicommit2" = "latest"
 "npm:agent-browser" = "latest"
-"npm:openclaw" = "v2026.3.13"
+"npm:openclaw" = "v2026.4.9"
 
 golang = '1.26'
 
 python = '3.14'
-uv = '0.10'
+uv = '0.11'
 ruff = '0.15'
-ty = '0.0.24'
-pipx = '1.10'
+ty = '0.0.29'
+pipx = '1.11'
 
 # it still uses uvx but syntax of mise if twisted
 "pipx:onnx-asr" = { version = "v0.11.0", uvx = true, uvx_args = "--python-preference=managed" }
@@ -28,7 +28,7 @@ prek = '0.3'
 hadolint = '2.14'
 shellcheck = '0.11'
 gitleaks = '8.30'
-rumdl = '0.1.57' # too often version bumps
+rumdl = '0.1.69' # too often version bumps
 vale = '3.13'
 
 just = '1.46'
@@ -51,7 +51,7 @@ neovim = '0.11'
 
 # gemini = '0.28'
 codex = '0'
-opencode = '1.3'
+opencode = '1.4'
 
 {{- if eq .chezmoi.os "linux" }}
 docker-cli = '29.3'
