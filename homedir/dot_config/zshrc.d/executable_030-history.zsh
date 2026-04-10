@@ -6,3 +6,5 @@ setopt APPEND_HISTORY   # append instead of overwrite
 setopt INC_APPEND_HISTORY   # write to file immediately
 setopt SHARE_HISTORY        # share history between sessions
 setopt HIST_IGNORE_DUPS     # ignore duplicate commands
+setopt HIST_IGNORE_SPACE    # Don't record commands starting with space
+setopt HIST_REDUCE_BLANKS   # Remove extra blanks from commands
