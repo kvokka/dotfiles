@@ -9,8 +9,6 @@ biome = '2.4'
 bun = '1.3'
 
 "npm:aicommit2" = "latest"
-"npm:agent-browser" = "latest"
-"npm:openclaw" = "v2026.4.9"
 
 golang = '1.26'
 
@@ -19,10 +17,6 @@ uv = '0.11'
 ruff = '0.15'
 ty = '0.0.29'
 pipx = '1.11'
-
-# it still uses uvx but syntax of mise if twisted
-"pipx:onnx-asr" = { version = "v0.11.0", uvx = true, uvx_args = "--python-preference=managed" }
-"pipx:parakeet-mlx" = { version = "0.5.1", uvx = true, uvx_args = "--python-preference=managed" }
 
 prek = '0.3'
 hadolint = '2.14'
@@ -55,6 +49,12 @@ opencode = '1.4'
 
 {{- if eq .chezmoi.os "linux" }}
 docker-cli = '29.3'
+"npm:openclaw" = "v2026.4.9"
+"npm:agent-browser" = "latest"
+
+# it still uses uvx but syntax of mise if twisted
+"pipx:onnx-asr" = { version = "v0.11.0", uvx = true, uvx_args = "--python-preference=managed" }
+"pipx:parakeet-mlx" = { version = "0.5.1", uvx = true, uvx_args = "--python-preference=managed" }
 {{- end }}
 
 {{ if not .headless }}
