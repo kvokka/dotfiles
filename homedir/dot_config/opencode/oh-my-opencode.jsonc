@@ -48,6 +48,10 @@
     }
   },
   "categories": {
+    "visual-engineering": {
+      "model": "openai/gpt-5.4",
+      "variant": "high"
+    },
     "artistry": {
       "model": "openai/gpt-5.4",
       "variant": "high"
