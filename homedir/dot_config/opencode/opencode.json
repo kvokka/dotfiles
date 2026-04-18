@@ -248,6 +248,13 @@
     //     "claude-sonnet-4-6-thinking"
     //   ]
     // },
+    "opencode": {
+      "whitelist": [
+        "big-pickle",
+        "minimax-m2.5-free",
+        "nemotron-3-super-free"
+      ]
+    },
     "openai": {
       // "models": {
       //   "gpt-5.4": {
