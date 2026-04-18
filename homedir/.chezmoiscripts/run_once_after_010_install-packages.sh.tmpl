@@ -37,12 +37,13 @@ set -eufo pipefail
   {{ if eq .chezmoi.os "darwin" -}}
     {{ $taps = append $taps "nguyenphutrong/tap" }}
     {{ $casks = append $casks "quotio" }}
+
+    {{ $casks = append $casks "activitywatch" }}
   {{- end }}
 
   {{ $casks = append $casks "whatsapp" }}
   {{ $casks = append $casks "telegram" }}
   {{ $casks = append $casks "vlc" }}
-  {{ $casks = append $casks "calibre" }}
   {{ $casks = append $casks "firefox" }}
   {{ $casks = append $casks "transmission" }}
   {{ $casks = append $casks "veracrypt" }}
