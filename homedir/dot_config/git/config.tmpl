@@ -1,7 +1,8 @@
 [color]
 	ui = true
 [user]
-	name = {{ .name }}
+	name = {{ .name }}{{ if .ephemeral }}-agent{{ end }} # GIT_COMMITTER_NAME env var to override
+
 	email = {{ .email }}
 
 [apply]
@@ -110,3 +111,8 @@ useRelativePaths = true
 
 [includeIf "gitdir:{{ .chezmoi.workingTree }}/**"]
     path = ~/.config/git/config-chezmoi
+
+{{ if not .personal }}
+[url "git@github.com:kvokka-agent/"]
+	insteadOf = git@github.com:kvokka/
+{{ end }}

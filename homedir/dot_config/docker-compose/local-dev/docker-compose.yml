@@ -10,7 +10,6 @@ x-common-base: &common-base
   volumes:
     - home:/home/ubuntu:cached
     - ~/proj/active:/home/ubuntu/proj/active:cached
-    - ~/.devcontainer/shared:/home/ubuntu/proj/active/shared:cached
     - ~/.secrets/shared:/home/ubuntu/.secrets/shared:ro
     - ~/.secrets/history:/home/ubuntu/.secrets/history
     - ~/.openclaw:/home/ubuntu/.openclaw
@@ -19,6 +18,13 @@ x-common-base: &common-base
   extra_hosts:
     - "host.docker.internal:host-gateway"
   stop_grace_period: 2s
+  secrets:
+    - source: ssh_private_key
+      target: /home/ubuntu/.ssh/id_ed25519
+    - source: ssh_public_key
+      target: /home/ubuntu/.ssh/id_ed25519.pub
+    - source: ssh_known_hosts
+      target: /home/ubuntu/.ssh/known_hosts
 
 x-standard-env-files: &standard-env-files
   env_file:
@@ -247,3 +253,14 @@ volumes:
   postgres:
   home:
   brew:
+
+
+secrets:
+  ssh_private_key:
+    file: ${HOME}/.ssh/kvokka-agent
+
+  ssh_public_key:
+    file: ${HOME}/.ssh/kvokka-agent.pub
+
+  ssh_known_hosts:
+    file: ${HOME}/.ssh/known_hosts
