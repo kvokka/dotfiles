@@ -76,6 +76,7 @@ services:
     depends_on:
       wait-for-ready:
         condition: service_healthy
+    # command: openclaw gateway --verbose --raw-stream # for debugging
     command: openclaw gateway
     restart: unless-stopped
     ports:
