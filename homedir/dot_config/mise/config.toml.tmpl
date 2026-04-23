@@ -51,10 +51,6 @@ opencode = '1.14'
 docker-cli = '29.3'
 "npm:openclaw" = "latest"
 "npm:agent-browser" = "latest"
-
-# it still uses uvx but syntax of mise if twisted
-"pipx:onnx-asr" = { version = "v0.11.0", uvx = true, uvx_args = "--python-preference=managed" }
-"pipx:parakeet-mlx" = { version = "0.5.1", uvx = true, uvx_args = "--python-preference=managed" }
 {{- end }}
 
 {{ if not .headless }}
@@ -75,6 +71,8 @@ helm-diff = '3'
 # git-cliff = '2.8'
 
 [settings]
+
+npm.package_manager = "bun"
 
 {{ if .ephemeral }}
 yes = true
