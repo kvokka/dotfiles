@@ -1,7 +1,7 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
-    "oh-my-openagent@3.17.4",
+    "oh-my-openagent@3.17.5",
     "@tarquinen/opencode-dcp@v3.1.9",
     "cc-safety-net@0.8.2"
     //  "opencode-websearch-cited"
@@ -98,33 +98,32 @@
   },
   "agent": {
     "title": {
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "thinkingLevel": "high"
     },
     "summary": {
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "thinkingLevel": "medium"
     },
     "explore": {
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "thinkingLevel": "medium"
     },
     // this is used by ALL models for compaction
     "compaction": {
-      "model": "openai/gpt-5.4",
-      "thinkingLevel": "high"
+      "model": "openai/gpt-5.5",
+      "thinkingLevel": "medium"
     },
     "general": {
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "thinkingLevel": "high"
     }
   },
-  "model": "openai/gpt-5.4",
-  "small_model": "openai/gpt-5.4",
+  "model": "openai/gpt-5.5",
+  "small_model": "openai/gpt-5.5",
   "enabled_providers": [
     "opencode",
     "openai",
-    // "google",
     // "anthropic"
   ],
   "provider": {
@@ -256,86 +255,34 @@
       ]
     },
     "openai": {
-      // "models": {
-      //   "gpt-5.4": {
-      //     "limit": {
-      //       "context": 272000,
-      //       "output": 128000
-      //     },
-      //     "name": "Quotio Gpt 5.4",
-      //     "options": {
-      //       "reasoningEffort": "high",
-      //       "textVerbosity": "medium"
-      //     },
-      //     "variants": {
-      //       "medium": {
-      //         "reasoningEffort": "medium"
-      //       },
-      //       "low": {
-      //         "reasoningEffort": "low"
-      //       },
-      //       "high": {
-      //         "reasoningEffort": "high"
-      //       },
-      //       "xhigh": {
-      //         "reasoningEffort": "xhigh"
-      //       }
-      //     },
-      //     "reasoning": true
-      //   },
-      //   "gpt-5.3-codex": {
-      //     "limit": {
-      //       "context": 272000,
-      //       "output": 128000
-      //     },
-      //     "name": "Quotio Gpt 5.3 Codex",
-      //     "options": {
-      //       "reasoningEffort": "high",
-      //       "textVerbosity": "medium"
-      //     },
-      //     "variants": {
-      //       "low": {
-      //         "reasoningEffort": "low",
-      //         "textVerbosity": "medium"
-      //       },
-      //       "high": {
-      //         "reasoningEffort": "high",
-      //         "textVerbosity": "medium"
-      //       },
-      //       "xhigh": {
-      //         "reasoningEffort": "xhigh",
-      //         "textVerbosity": "medium"
-      //       }
-      //     },
-      //     "reasoning": true
-      //   },
-      //   "gpt-5.3-codex-spark": {
-      //     "limit": {
-      //       "context": 128000,
-      //       "output": 32768
-      //     },
-      //     "name": "Quotio Gpt 5.3 Codex Spark",
-      //     "reasoning": false
-      //   },
-      //   "gpt-5.2-codex-mini": {
-      //     "limit": {
-      //       "context": 272000,
-      //       "output": 128000
-      //     },
-      //     "name": "Quotio Gpt 5.2 Codex Mini",
-      //     "options": {
-      //       "reasoningEffort": "high"
-      //     },
-      //     "reasoning": true
-      //   },
-      //   "gpt-oss-120b-medium": {
-      //     "limit": {
-      //       "context": 400000,
-      //       "output": 32768
-      //     },
-      //     "name": "Quotio Gpt Oss 120B Medium"
-      //   }
-      // },
+      "models": {
+        "gpt-5.5": {
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "name": "Quotio GPT 5.5",
+          "options": {
+            "reasoningEffort": "high",
+            "textVerbosity": "medium"
+          },
+          "variants": {
+            "medium": {
+              "reasoningEffort": "medium"
+            },
+            "low": {
+              "reasoningEffort": "low"
+            },
+            "high": {
+              "reasoningEffort": "high"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh"
+            }
+          },
+          "reasoning": true
+        }
+      },
       "name": "OpenAI",
       "npm": "@ai-sdk/openai",
       "options": {
@@ -344,187 +291,12 @@
       },
       "whitelist": [
         "gpt-5.4",
+        "gpt-5.5",
         "gpt-5.4-mini",
-        // "gpt-5.4-nano",
+        "gpt-image-2",
         "gpt-5.3-codex",
-        "gpt-5.3-codex-spark",
-        "gpt-oss-120b-medium"
+        "gpt-5.3-codex-spark"
       ]
-    },
-    // "google": {
-    //   // "models": {
-    //   //   "gemini-2.5-flash": {
-    //   //     "limit": {
-    //   //       "context": 1048576,
-    //   //       "output": 65536
-    //   //     },
-    //   //     "modalities": {
-    //   //       "input": [
-    //   //         "text",
-    //   //         "image",
-    //   //         "pdf"
-    //   //       ],
-    //   //       "output": [
-    //   //         "text"
-    //   //       ]
-    //   //     },
-    //   //     "name": "Quotio Gemini 2.5 Flash"
-    //   //   },
-    //   //   "gemini-2.5-flash-lite": {
-    //   //     "limit": {
-    //   //       "context": 1048576,
-    //   //       "output": 65536
-    //   //     },
-    //   //     "modalities": {
-    //   //       "input": [
-    //   //         "text",
-    //   //         "image",
-    //   //         "pdf"
-    //   //       ],
-    //   //       "output": [
-    //   //         "text"
-    //   //       ]
-    //   //     },
-    //   //     "name": "Quotio Gemini 2.5 Flash Lite"
-    //   //   },
-    //   //   "gemini-3-flash-preview": {
-    //   //     "limit": {
-    //   //       "context": 1048576,
-    //   //       "output": 65536
-    //   //     },
-    //   //     "modalities": {
-    //   //       "input": [
-    //   //         "text",
-    //   //         "image",
-    //   //         "pdf"
-    //   //       ],
-    //   //       "output": [
-    //   //         "text"
-    //   //       ]
-    //   //     },
-    //   //     "variants": {
-    //   //       "high": {
-    //   //         "thinkingLevel": "high"
-    //   //       },
-    //   //       "minimal": {
-    //   //         "thinkingLevel": "minimal"
-    //   //       },
-    //   //       "low": {
-    //   //         "thinkingLevel": "low"
-    //   //       },
-    //   //       "medium": {
-    //   //         "thinkingLevel": "medium"
-    //   //       }
-    //   //     },
-    //   //     "name": "Quotio Gemini 3 Flash Preview"
-    //   //   },
-    //   //   "gemini-3-pro-image-preview": {
-    //   //     "limit": {
-    //   //       "context": 1048576,
-    //   //       "output": 65536
-    //   //     },
-    //   //     "modalities": {
-    //   //       "input": [
-    //   //         "text",
-    //   //         "image",
-    //   //         "pdf"
-    //   //       ],
-    //   //       "output": [
-    //   //         "text"
-    //   //       ]
-    //   //     },
-    //   //     "variants": {
-    //   //       "high": {
-    //   //         "thinkingLevel": "high"
-    //   //       },
-    //   //       "minimal": {
-    //   //         "thinkingLevel": "minimal"
-    //   //       },
-    //   //       "low": {
-    //   //         "thinkingLevel": "low"
-    //   //       },
-    //   //       "medium": {
-    //   //         "thinkingLevel": "medium"
-    //   //       }
-    //   //     },
-    //   //     "name": "Quotio Gemini 3 Pro Image Preview"
-    //   //   },
-    //   //   "gemini-3.1-pro-high": {
-    //   //     "limit": {
-    //   //       "context": 1048576,
-    //   //       "output": 65536
-    //   //     },
-    //   //     "modalities": {
-    //   //       "input": [
-    //   //         "text",
-    //   //         "image",
-    //   //         "pdf"
-    //   //       ],
-    //   //       "output": [
-    //   //         "text"
-    //   //       ]
-    //   //     },
-    //   //     "variants": {
-    //   //       "high": {
-    //   //         "thinkingLevel": "high"
-    //   //       },
-    //   //       "medium": {
-    //   //         "thinkingLevel": "medium"
-    //   //       },
-    //   //       "low": {
-    //   //         "thinkingLevel": "low"
-    //   //       }
-    //   //     },
-    //   //     "name": "Quotio Gemini 3.1 Pro High"
-    //   //   },
-    //   //   "gemini-3.1-pro-low": {
-    //   //     "limit": {
-    //   //       "context": 1048576,
-    //   //       "output": 65536
-    //   //     },
-    //   //     "modalities": {
-    //   //       "input": [
-    //   //         "text",
-    //   //         "image",
-    //   //         "pdf"
-    //   //       ],
-    //   //       "output": [
-    //   //         "text"
-    //   //       ]
-    //   //     },
-    //   //     "variants": {
-    //   //       "low": {
-    //   //         "thinkingLevel": "low"
-    //   //       },
-    //   //       "medium": {
-    //   //         "thinkingLevel": "medium"
-    //   //       },
-    //   //       "high": {
-    //   //         "thinkingLevel": "high"
-    //   //       }
-    //   //     },
-    //   //     "name": "Quotio Gemini 3.1 Pro Low"
-    //   //   },
-    //   // },
-    //   "whitelist": [
-    //     // "gemini-2.5-flash",
-    //     // "gemini-2.5-flash-lite",
-    //     "gemini-3-flash-preview",
-    //     "gemini-3-pro-image-preview",
-    //     "gemini-3.1-pro-preview",
-    //     "gemini-3.1-flash-lite-preview",
-    //     "gemini-3.1-pro-low",
-    //     "gemini-3.1-pro-high"
-    //   ],
-    //   "name": "Google",
-    //   "npm": "@ai-sdk/openai-compatible",
-    //   "options": {
-    //     "websearch_cited": {
-    //       "model": "gemini-3-flash-preview"
-    //     },
-    //     "apiKey": "{env:MY_CLI_LLM_PROXY_API_KEY}",
-    //     "baseURL": "{env:MY_CLI_LLM_PROXY_URL}"
-    //   },
-    // }
+    }
   }
 }
