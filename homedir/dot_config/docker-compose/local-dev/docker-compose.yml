@@ -76,8 +76,18 @@ services:
     depends_on:
       wait-for-ready:
         condition: service_healthy
-    # command: openclaw gateway --verbose --raw-stream # for debugging
-    command: openclaw gateway
+    ## for debugging
+    # command: openclaw gateway --verbose --raw-stream
+    ## for local dev
+    # command: bun run start gateway
+    # working_dir: /home/ubuntu/proj/active/openclaw
+    command:
+      - zsh
+      - -c
+      - |
+        openclaw config schema > ~/.openclaw/openclaw_schema.json &
+        openclaw gateway
+
     restart: unless-stopped
     ports:
       - "18789:18789"
@@ -254,7 +264,6 @@ volumes:
   postgres:
   home:
   brew:
-
 
 secrets:
   ssh_private_key:
