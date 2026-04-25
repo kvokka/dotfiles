@@ -1,0 +1,590 @@
+{
+  "$schema": "~/.openclaw/openclaw_schema.json",
+  "meta": {
+    "lastTouchedVersion": "2026.4.21",
+    "lastTouchedAt": "2026-04-24T04:26:48.343Z"
+  },
+  "env": {
+    "shellEnv": {
+      "enabled": true
+    }
+  },
+  "secrets": {
+    "providers": {
+      "default": {
+        "source": "env"
+      }
+    }
+  },
+  "wizard": {
+    "lastRunAt": "2026-03-22T22:41:29.653Z",
+    "lastRunVersion": "2026.3.13",
+    "lastRunCommand": "onboard",
+    "lastRunMode": "local"
+  },
+  "diagnostics": {
+    "otel": {
+      "enabled": false
+    }
+  },
+  "logging": {
+    "maxFileBytes": 100000000,
+    "consoleStyle": "pretty"
+  },
+  "update": {
+    "channel": "stable",
+    "auto": {
+      "enabled": false
+    }
+  },
+  "browser": {
+    "headless": true,
+    "ssrfPolicy": {
+      "dangerouslyAllowPrivateNetwork": true // require for image gen over the proxy
+    }
+  },
+  "auth": {
+    "profiles": {},
+    "order": {}
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "openai": {
+        "baseUrl": "http://host.docker.internal:8317/v1",
+        "apiKey": {
+          "source": "env",
+          "provider": "default",
+          "id": "MY_CLI_LLM_PROXY_API_KEY"
+        },
+        "auth": "api-key",
+        "request": {
+          "allowPrivateNetwork": true
+        },
+        "api": "openai-codex-responses",
+        "models": []
+      },
+      "cli-proxy": {
+        "baseUrl": "http://host.docker.internal:8317/v1",
+        "apiKey": {
+          "source": "env",
+          "provider": "default",
+          "id": "MY_CLI_LLM_PROXY_API_KEY"
+        },
+        "auth": "api-key",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "gpt-5.5",
+            "name": "gpt-5.5",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 5,
+              "output": 30,
+              "cacheRead": 0.5,
+              "cacheWrite": 0
+            },
+            "contextWindow": 272000,
+            "maxTokens": 128000,
+            "compat": {
+              "supportsStore": true,
+              "supportsReasoningEffort": true,
+              "supportsUsageInStreaming": true,
+              "supportsTools": true,
+              "supportsStrictMode": true,
+              "maxTokensField": "max_completion_tokens",
+              "thinkingFormat": "openai",
+              "requiresOpenAiAnthropicToolPayload": false
+            }
+          },
+          {
+            "id": "gpt-5.3-codex",
+            "name": "gpt-5.3-codex",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 2.5,
+              "output": 15,
+              "cacheRead": 0.25,
+              "cacheWrite": 0
+            },
+            "contextWindow": 272000,
+            "maxTokens": 128000,
+            "compat": {
+              "supportsStore": true,
+              "supportsReasoningEffort": true,
+              "supportsUsageInStreaming": true,
+              "supportsTools": true,
+              "supportsStrictMode": true,
+              "maxTokensField": "max_tokens",
+              "thinkingFormat": "openai",
+              "requiresOpenAiAnthropicToolPayload": false
+            }
+          },
+          {
+            "id": "gpt-5.3-codex-spark",
+            "name": "gpt-5.3-codex-spark",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 128000,
+            "maxTokens": 32768,
+            "compat": {
+              "supportsStore": true,
+              "supportsReasoningEffort": true,
+              "supportsUsageInStreaming": true,
+              "supportsTools": true,
+              "supportsStrictMode": true,
+              "maxTokensField": "max_tokens",
+              "thinkingFormat": "openai",
+              "requiresOpenAiAnthropicToolPayload": false
+            }
+          },
+          {
+            "id": "gpt-5.4-mini",
+            "name": "gpt-5.4-mini",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0.75,
+              "output": 4.5,
+              "cacheRead": 0.075,
+              "cacheWrite": 0
+            },
+            "contextWindow": 272000,
+            "maxTokens": 128000,
+            "compat": {
+              "supportsStore": true,
+              "supportsReasoningEffort": true,
+              "supportsUsageInStreaming": true,
+              "supportsTools": true,
+              "supportsStrictMode": true,
+              "maxTokensField": "max_tokens",
+              "thinkingFormat": "openai",
+              "requiresOpenAiAnthropicToolPayload": false
+            }
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "timeoutSeconds": 180,
+      "model": {
+        "primary": "cli-proxy/gpt-5.5"
+      },
+      "models": {
+        "cli-proxy/gpt-5.5": {
+          "alias": "gpt-5.5",
+          "streaming": true,
+          "params": {
+            "reasoningEffort": "medium",
+            "responsesServerCompaction": true,
+            "responsesCompactThreshold": 180000
+          }
+        },
+        "cli-proxy/gpt-5.4-mini": {
+          "alias": "gpt-5.4-mini",
+          "streaming": true
+        },
+        "cli-proxy/gpt-5.3-codex": {
+          "alias": "gpt-5.3-codex"
+        },
+        "cli-proxy/gpt-5.3-codex-spark": {
+          "alias": "gpt-5.3-codex-spark"
+        }
+      },
+      "workspace": "/home/ubuntu/.openclaw/workspace",
+      "cliBackends": {},
+      "compaction": {
+        "mode": "safeguard",
+        "reserveTokens": 24000,
+        "keepRecentTokens": 32000,
+        "reserveTokensFloor": 96000,
+        "identifierPolicy": "strict",
+        "model": "cli-proxy/gpt-5.5",
+        "timeoutSeconds": 300,
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 40000
+        }
+      },
+      "thinkingDefault": "medium",
+      "heartbeat": {
+        "every": "60m",
+        "model": "cli-proxy/gpt-5.3-codex-spark",
+        "includeReasoning": false,
+        "target": "last",
+        "lightContext": true,
+        "isolatedSession": false
+      },
+      "maxConcurrent": 5,
+      "imageGenerationModel": {
+        "primary": "openai/gpt-image-2"
+      },
+      "videoGenerationModel": {
+        "primary": "openai/sora-2"
+      },
+      "embeddedHarness": {
+        "runtime": "auto",
+        "fallback": "pi"
+      },
+      "memorySearch": {
+        "provider": "gemini",
+        "model": "gemini-embedding-2-preview",
+        "outputDimensionality": 1536,
+        "enabled": true,
+        "cache": {
+          "maxEntries": 1000,
+          "enabled": true
+        },
+        "fallback": "none"
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "model": "cli-proxy/gpt-5.5",
+        "params": {
+          "reasoningEffort": "medium",
+          "textVerbosity": "low"
+        },
+        "tools": {
+          "profile": "full"
+        }
+      },
+      {
+        "id": "fast",
+        "model": "cli-proxy/gpt-5.5",
+        "params": {
+          "reasoningEffort": "low"
+        }
+      }
+    ]
+  },
+  "tools": {
+    "profile": "full",
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "brave"
+      }
+    },
+    "loopDetection": {
+      "enabled": true
+    },
+    "media": {
+      "audio": {
+        "enabled": true,
+        "models": [
+          {
+            "provider": "groq",
+            "model": "whisper-large-v3"
+          },
+          {
+            "provider": "google",
+            "model": "gemini-3-flash-preview"
+          },
+          {
+            "type": "provider",
+            "provider": "openai",
+            "model": "gpt-4o-transcribe"
+          }
+        ]
+      }
+    }
+  },
+  "messages": {
+    "statusReactions": {
+      "enabled": true
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "config": true,
+    "restart": true,
+    "ownerDisplay": "raw",
+    "allowFrom": {
+      "telegram": [
+        "${OPENCLAW_TELEGRAM_OWNER_ID}"
+      ]
+    }
+  },
+  "session": {
+    "scope": "per-sender",
+    "dmScope": "per-channel-peer"
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "boot-md": {
+          "enabled": true
+        },
+        "command-logger": {
+          "enabled": true
+        },
+        "session-memory": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "channels": {
+    "modelByChannel": {
+      "$include": "./private/model-by-channel.json5"
+    },
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "allowlist",
+      "botToken": {
+        "source": "env",
+        "provider": "default",
+        "id": "OPENCLAW_TELEGRAM_BOT_TOKEN"
+      },
+      "allowFrom": [
+        "${OPENCLAW_TELEGRAM_OWNER_ID}"
+      ],
+      "groupPolicy": "allowlist",
+      "streaming": {
+        "mode": "block"
+      },
+      "retry": {
+        "attempts": 3,
+        "minDelayMs": 400,
+        "maxDelayMs": 30000,
+        "jitter": 0.1
+      },
+      "actions": {
+        "reactions": true,
+        "sendMessage": true,
+        "poll": true,
+        "sticker": true
+      }
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "lan",
+    "controlUi": {
+      "allowedOrigins": [
+        "http://localhost:18789",
+        "http://127.0.0.1:18789"
+      ]
+    },
+    "auth": {
+      "mode": "token",
+      "token": {
+        "source": "env",
+        "provider": "default",
+        "id": "OPENCLAW_TOKEN"
+      }
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.snap",
+        "camera.clip",
+        "screen.record",
+        "contacts.add",
+        "calendar.add",
+        "reminders.add",
+        "sms.send"
+      ]
+    }
+  },
+  "memory": {
+    "backend": "builtin"
+  },
+  "skills": {
+    "load": {
+      "watch": true
+    },
+    "install": {
+      "nodeManager": "bun"
+    },
+    "entries": {}
+  },
+  "plugins": {
+    "allow": [
+      "context-meter",
+      "telegram",
+      "browser",
+      "brave",
+      "groq",
+      "memory-core",
+      "openai"
+    ],
+    "load": {
+      "paths": [
+        "/home/ubuntu/.openclaw/extensions"
+      ]
+    },
+    "entries": {
+      "telegram": {
+        "enabled": true
+      },
+      "brave": {
+        "enabled": true,
+        "config": {
+          "webSearch": {
+            "apiKey": {
+              "source": "env",
+              "provider": "default",
+              "id": "BRAVE_API_KEY"
+            }
+          }
+        }
+      },
+      "openai": {
+        "enabled": true
+      },
+      "browser": {
+        "enabled": true
+      },
+      "context-meter": {
+        "enabled": true
+      },
+      "zai": {
+        "enabled": false
+      },
+      "xai": {
+        "enabled": false
+      },
+      "xiaomi": {
+        "enabled": false
+      },
+      "moonshot": {
+        "enabled": false
+      },
+      "mistral": {
+        "enabled": false
+      },
+      "microsoft": {
+        "enabled": false
+      },
+      "microsoft-foundry": {
+        "enabled": false
+      },
+      "nvidia": {
+        "enabled": false
+      },
+      "litellm": {
+        "enabled": false
+      },
+      "minimax": {
+        "enabled": false
+      },
+      "qianfan": {
+        "enabled": false
+      },
+      "qwen": {
+        "enabled": false
+      },
+      "sglang": {
+        "enabled": false
+      },
+      "stepfun": {
+        "enabled": false
+      },
+      "synthetic": {
+        "enabled": false
+      },
+      "volcengine": {
+        "enabled": false
+      },
+      "lmstudio": {
+        "enabled": false
+      },
+      "ollama": {
+        "enabled": false
+      },
+      "kilocode": {
+        "enabled": false
+      },
+      "kimi": {
+        "enabled": false
+      },
+      "huggingface": {
+        "enabled": false
+      },
+      "github-copilot": {
+        "enabled": false
+      },
+      "fal": {
+        "enabled": false
+      },
+      "deepseek": {
+        "enabled": false
+      },
+      "copilot-proxy": {
+        "enabled": false
+      },
+      "comfy": {
+        "enabled": false
+      },
+      "alibaba": {
+        "enabled": false
+      },
+      "amazon-bedrock": {
+        "enabled": false
+      },
+      "amazon-bedrock-mantle": {
+        "enabled": false
+      },
+      "anthropic": {
+        "enabled": false
+      },
+      "anthropic-vertex": {
+        "enabled": false
+      },
+      "arcee": {
+        "enabled": false
+      },
+      "byteplus": {
+        "enabled": false
+      },
+      "chutes": {
+        "enabled": false
+      },
+      "together": {
+        "enabled": false
+      },
+      "venice": {
+        "enabled": false
+      },
+      "vllm": {
+        "enabled": false
+      },
+      "bluebubbles": {
+        "enabled": false
+      },
+      "vydra": {
+        "enabled": false
+      }
+    }
+  }
+}
