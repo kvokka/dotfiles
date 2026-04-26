@@ -272,12 +272,19 @@
         }
       },
       {
-        "id": "fast",
+        "id": "ops",
+        "name": "Operations",
         "model": "cli-proxy/gpt-5.5",
         "params": {
           "reasoningEffort": "low",
           "textVerbosity": "low"
-        }
+        },
+        "tools": {
+          "profile": "full"
+        },
+        "skills": [
+          "telegram-topics"
+        ]
       },
       {
         "id": "opencode",
@@ -323,7 +330,7 @@
       }
     },
     {
-      "agentId": "fast",
+      "agentId": "ops",
       "match": {
         "channel": "telegram",
         "accountId": "group",
@@ -478,7 +485,7 @@
                   "agentId": "main"
                 },
                 "7": {
-                  "agentId": "fast"
+                  "agentId": "ops"
                 }
               }
             }
