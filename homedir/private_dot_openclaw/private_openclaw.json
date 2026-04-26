@@ -275,11 +275,42 @@
         "id": "fast",
         "model": "cli-proxy/gpt-5.5",
         "params": {
-          "reasoningEffort": "low"
+          "reasoningEffort": "medium",
+          "textVerbosity": "low"
+        }
+      },
+      {
+        "id": "opencode",
+        "name": "OpenCode",
+        "workspace": "/home/ubuntu/.openclaw/workspaces/opencode",
+        "runtime": {
+          "type": "acp",
+          "acp": {
+            "agent": "opencode",
+            "backend": "acpx",
+            "mode": "persistent"
+          }
         }
       }
     ]
   },
+  "acp": {
+    "enabled": true,
+    "backend": "acpx",
+    "defaultAgent": "opencode",
+    "allowedAgents": [
+      "opencode"
+    ],
+    "maxConcurrentSessions": 5,
+    "stream": {
+      "deliveryMode": "final_only",
+      "repeatSuppression": true
+    },
+    "runtime": {
+      "ttlMinutes": 240
+    }
+  },
+  "bindings": [],
   "tools": {
     "profile": "full",
     "web": {
@@ -366,8 +397,10 @@
       ],
       "groupPolicy": "allowlist",
       "streaming": {
-        "mode": "block"
+        "mode": "partial"
       },
+      "replyToMode": "off",
+      "linkPreview": false,
       "retry": {
         "attempts": 3,
         "minDelayMs": 400,
@@ -378,8 +411,43 @@
         "reactions": true,
         "sendMessage": true,
         "poll": true,
-        "sticker": true
-      }
+        "sticker": true,
+        "deleteMessage": true,
+        "editMessage": true,
+        "createForumTopic": true,
+        "editForumTopic": true
+      },
+      "threadBindings": {
+        "enabled": true,
+        "idleHours": 240,
+        "spawnAcpSessions": true
+      },
+      "accounts": {
+        "direct": {
+          "name": "Direct Telegram bot",
+          "enabled": true,
+          "dmPolicy": "allowlist",
+          "botToken": {
+            "source": "env",
+            "provider": "default",
+            "id": "OPENCLAW_TELEGRAM_BOT_TOKEN"
+          },
+          "groupPolicy": "allowlist"
+        },
+        "group": {
+          "name": "Telegram forum group bot",
+          "botToken": {
+            "source": "env",
+            "provider": "default",
+            "id": "OPENCLAW_TELEGRAM_GROUP_BOT_TOKEN"
+          },
+          "enabled": false,
+          "dmPolicy": "disabled",
+          "groupPolicy": "allowlist",
+          "groups": {}
+        }
+      },
+      "defaultAccount": "direct"
     }
   },
   "gateway": {
@@ -436,6 +504,7 @@
       "brave",
       "groq",
       "memory-core",
+      "acpx",
       "openai"
     ],
     "load": {
@@ -461,6 +530,16 @@
       },
       "openai": {
         "enabled": true
+      },
+      "acpx": {
+        "enabled": true,
+        "config": {
+          "agents": {
+            "opencode": {
+              "command": "opencode acp"
+            }
+          }
+        }
       },
       "browser": {
         "enabled": true
