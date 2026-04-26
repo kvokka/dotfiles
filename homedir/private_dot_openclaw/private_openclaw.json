@@ -216,9 +216,9 @@
       "cliBackends": {},
       "compaction": {
         "mode": "safeguard",
-        "reserveTokens": 24000,
-        "keepRecentTokens": 32000,
-        "reserveTokensFloor": 96000,
+        "reserveTokens": 35000,
+        "keepRecentTokens": 24000,
+        "reserveTokensFloor": 50000,
         "identifierPolicy": "strict",
         "model": "cli-proxy/gpt-5.5",
         "timeoutSeconds": 300,
