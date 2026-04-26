@@ -81,12 +81,7 @@ services:
     ## for local dev
     # command: bun run start gateway
     # working_dir: /home/ubuntu/proj/active/openclaw
-    command:
-      - zsh
-      - -c
-      - |
-        openclaw config schema > ~/.openclaw/openclaw_schema.json &
-        openclaw gateway
+    command: openclaw gateway
 
     restart: unless-stopped
     ports:
