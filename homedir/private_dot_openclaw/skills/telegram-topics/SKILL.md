@@ -19,7 +19,12 @@ Topic kinds:
 3. Add the returned `topicId` to config routing:
    - `channels.telegram.accounts.<accountId>.groups.<chatId>.topics.<topicId> = { "agentId": "<agentId>" }`
    - add matching binding: peer id `<chatId>:topic:<topicId>`.
-4. Restart/reload OpenClaw after editing config.
+4. Restart/reload OpenClaw after editing config when possible. If restart/reload fails, still report that the Telegram topic was created and config was updated, but routing may require a manual gateway restart.
+5. Final user-facing reply must be a short success/failure note. On success include topic name, topic id, agent id, and model under the hood. Example:
+   - `Created tg topic: <name> (topicId <id>) → agent <agentId>, model <model>.`
+   If routing/restart is incomplete, append one short caveat.
+
+To find the model: read `agents.list[]` in the OpenClaw config for the chosen `agentId`; if absent, use `agents.defaults.model.primary`. If you cannot determine it, write `model unknown` rather than omitting it.
 
 Helper: `scripts/topic_config.py add <topicId> --agent <agentId> [--account group] [--chat <chatId>]`.
 
@@ -29,6 +34,9 @@ OpenClaw exposes create/edit topic actions, not a first-class delete-topic tool.
 
 1. Delete the topic in Telegram UI, or call Telegram Bot API `deleteForumTopic` with the same bot/account token.
 2. Remove that `topicId` from `channels.telegram.accounts.<accountId>.groups.<chatId>.topics` and matching `bindings` peer id.
-3. Restart/reload OpenClaw after editing config.
+3. Restart/reload OpenClaw after editing config when possible. If restart/reload fails, still report that the Telegram topic was deleted and config was cleaned, but the running gateway may retain stale routing until restart.
+4. Final user-facing reply must be a short success/failure note. For delete, do not explain or preserve what was routed before. Example:
+   - `Removed tg topic: <name/topicId>. Config cleared.`
+   If Telegram deletion fails but config cleanup succeeds, say so plainly in one sentence.
 
 Helper: `scripts/topic_config.py remove <topicId> [--account group] [--chat <chatId>]` cleans config only.
