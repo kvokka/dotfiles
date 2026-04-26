@@ -275,7 +275,7 @@
         "id": "fast",
         "model": "cli-proxy/gpt-5.5",
         "params": {
-          "reasoningEffort": "medium",
+          "reasoningEffort": "low",
           "textVerbosity": "low"
         }
       },
@@ -310,7 +310,30 @@
       "ttlMinutes": 240
     }
   },
-  "bindings": [],
+  "bindings": [
+    {
+      "agentId": "main",
+      "match": {
+        "channel": "telegram",
+        "accountId": "group",
+        "peer": {
+          "kind": "group",
+          "id": "-1003708292952:topic:1"
+        }
+      }
+    },
+    {
+      "agentId": "fast",
+      "match": {
+        "channel": "telegram",
+        "accountId": "group",
+        "peer": {
+          "kind": "group",
+          "id": "-1003708292952:topic:7"
+        }
+      }
+    }
+  ],
   "tools": {
     "profile": "full",
     "web": {
@@ -445,9 +468,21 @@
           "dmPolicy": "disabled",
           "groupPolicy": "allowlist",
           "groupAllowFrom": [
-            "${OPENCLAW_TELEGRAM_GROUP_ID}"
+            "${OPENCLAW_TELEGRAM_OWNER_ID}"
           ],
-          "groups": {}
+          "groups": {
+            "-1003708292952": {
+              "requireMention": false,
+              "topics": {
+                "1": {
+                  "agentId": "main"
+                },
+                "7": {
+                  "agentId": "fast"
+                }
+              }
+            }
+          }
         }
       },
       "defaultAccount": "direct"
