@@ -50,7 +50,7 @@ opencode = '1.14'
 
 {{- if eq .chezmoi.os "linux" }}
 docker-cli = '29.3'
-"npm:openclaw" = "latest"
+# "npm:openclaw" = "latest" # use npm for now, since with bun it fails
 "npm:agent-browser" = "latest"
 {{- end }}
 
