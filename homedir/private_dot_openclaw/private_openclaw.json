@@ -441,9 +441,12 @@
             "provider": "default",
             "id": "OPENCLAW_TELEGRAM_GROUP_BOT_TOKEN"
           },
-          "enabled": false,
+          "enabled": true,
           "dmPolicy": "disabled",
           "groupPolicy": "allowlist",
+          "groupAllowFrom": [
+            "${OPENCLAW_TELEGRAM_GROUP_ID}"
+          ],
           "groups": {}
         }
       },
