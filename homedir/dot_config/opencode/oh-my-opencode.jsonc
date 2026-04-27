@@ -1,6 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/master/assets/oh-my-opencode.schema.json",
   // https://github.com/code-yeongyu/oh-my-opencode/blob/master/docs/configurations.md
+  "default_run_agent": "sisyphus",
   "agents": {
     "sisyphus": {
       "model": "openai/gpt-5.5",

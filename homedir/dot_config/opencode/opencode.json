@@ -107,12 +107,12 @@
     },
     "explore": {
       "model": "openai/gpt-5.5",
-      "thinkingLevel": "medium"
+      "thinkingLevel": "low"
     },
     // this is used by ALL models for compaction
     "compaction": {
       "model": "openai/gpt-5.5",
-      "thinkingLevel": "medium"
+      "thinkingLevel": "low"
     },
     "general": {
       "model": "openai/gpt-5.5",
