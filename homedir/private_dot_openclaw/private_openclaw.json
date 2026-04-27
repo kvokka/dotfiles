@@ -262,6 +262,7 @@
     "list": [
       {
         "id": "main",
+        "workspace": "/home/ubuntu/.openclaw/workspaces/main",
         "model": "cli-proxy/gpt-5.5",
         "params": {
           "reasoningEffort": "medium",
@@ -273,6 +274,7 @@
       },
       {
         "id": "ops",
+        "workspace": "/home/ubuntu/.openclaw/workspaces/ops",
         "name": "Operations",
         "model": "cli-proxy/gpt-5.5",
         "params": {
@@ -427,12 +429,12 @@
       ],
       "groupPolicy": "allowlist",
       "streaming": {
-        "mode": "partial"
+        "mode": "block"
       },
       "replyToMode": "off",
       "linkPreview": false,
       "retry": {
-        "attempts": 3,
+        "attempts": 5,
         "minDelayMs": 400,
         "maxDelayMs": 30000,
         "jitter": 0.1
