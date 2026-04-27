@@ -187,7 +187,7 @@
   },
   "agents": {
     "defaults": {
-      "timeoutSeconds": 180,
+      "timeoutSeconds": 240,
       "model": {
         "primary": "cli-proxy/gpt-5.5"
       },
@@ -262,7 +262,7 @@
     "list": [
       {
         "id": "main",
-        "workspace": "/home/ubuntu/.openclaw/workspaces/main",
+        "workspace": "/home/ubuntu/.openclaw/workspace/main",
         "model": "cli-proxy/gpt-5.5",
         "params": {
           "reasoningEffort": "medium",
@@ -274,7 +274,7 @@
       },
       {
         "id": "ops",
-        "workspace": "/home/ubuntu/.openclaw/workspaces/ops",
+        "workspace": "/home/ubuntu/.openclaw/workspace/ops",
         "name": "Operations",
         "model": "cli-proxy/gpt-5.5",
         "params": {
@@ -291,7 +291,7 @@
       {
         "id": "opencode",
         "name": "OpenCode",
-        "workspace": "/home/ubuntu/.openclaw/workspaces/opencode",
+        "workspace": "/home/ubuntu/.openclaw/workspace/opencode",
         "runtime": {
           "type": "acp",
           "acp": {
