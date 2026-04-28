@@ -537,10 +537,8 @@ def upsert_topic_config(
     topic_cfg: dict[str, Any] = {}
     if agent:
         topic_cfg["agentId"] = agent
-    if name:
-        topic_cfg["name"] = name
-    elif topic == GENERAL_TOPIC_ID:
-        topic_cfg["name"] = "General"
+    # Topic entries are schema-restricted routing options; do not store
+    # human-readable names here. Use Telegram topic names and ACP binding labels.
     current = group.setdefault("topics", {}).get(topic)
     if isinstance(current, dict):
         current.update(topic_cfg)
@@ -680,7 +678,7 @@ def main() -> None:
     add_parser = sub.add_parser("add", parents=[common_edit_args])
     add_parser.add_argument("topic_id", type=int)
     add_parser.add_argument("--agent", default="main", help="agent id to route this topic to")
-    add_parser.add_argument("--name", help="optional human-readable topic name stored in config")
+    add_parser.add_argument("--name", help="optional human-readable topic label/name for output and ACP binding label; not stored under topics.*")
     add_parser.add_argument("--kind", choices=["route", "acp"], default="route", help="route = normal OpenClaw topic; acp = persistent ACP/OpenCode topic")
     add_parser.add_argument("--project", help="project name to resolve under $WORKDIR for ACP cwd")
     add_parser.add_argument("--cwd", help="explicit ACP working directory")
@@ -728,7 +726,7 @@ def main() -> None:
                 raise SystemExit("ACP topic requires --project <name> resolvable under $WORKDIR or explicit --cwd <path>.")
             topic_name = build_acp_topic_name(cfg, account, chat, topic, args.name, args.project, cwd, args.task)
             label = args.label or topic_name
-            upsert_topic_config(cfg, account, chat, topic, None, topic_name, clear_agent=True)
+            upsert_topic_config(cfg, account, chat, topic, None, None, clear_agent=True)
             upsert_acp_binding(cfg, account, chat, topic, agent_id, cwd, label, args.mode, args.backend)
             save_config(args.config, cfg)
             print_json({
@@ -747,7 +745,7 @@ def main() -> None:
         upsert_topic_config(cfg, account, chat, topic, args.agent, args.name)
         upsert_route_binding(cfg, account, chat, topic, args.agent)
         save_config(args.config, cfg)
-        print_json({"action": "add", "kind": "route", "accountId": account, "chatId": chat, "topicId": topic, "name": args.name or topic_display_name(topic, None), "agentId": args.agent})
+        print_json({"action": "add", "kind": "route", "accountId": account, "chatId": chat, "topicId": topic, "label": args.name or topic_display_name(topic, None), "agentId": args.agent})
         return
 
     if args.cmd in {"delete", "remove"}:

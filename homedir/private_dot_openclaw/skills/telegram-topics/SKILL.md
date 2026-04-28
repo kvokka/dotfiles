@@ -19,7 +19,7 @@ Config map:
 
 - `agents.list`: available agents and models/skills.
 - `agents.list[].runtime.type="acp"`: ACP/OpenCode-capable configured agents, e.g. `opencode`.
-- `channels.telegram.accounts.<account>.groups.<forumId>`: configured forum group and `topics`; topic keys are Telegram `message_thread_id` strings.
+- `channels.telegram.accounts.<account>.groups.<forumId>`: configured forum group and `topics`; topic keys are Telegram `message_thread_id` strings. Topic entries are schema-restricted routing options only; `name` is not a valid key there.
 - `bindings`: route peer `<forumId>:topic:<topicId>` to an agent. `bindings[].type="acp"` creates persistent ACP/OpenCode conversation bindings.
 - Telegram forum group id is `-100{peerID}`.
 
@@ -78,7 +78,7 @@ For normal OpenClaw topics:
 1. Create the topic through OpenClaw, preferably via `ops`:
    `message` tool with `action="topic-create"`, `channel="telegram"`, `accountId`, `chatId`, `name`.
 2. Route returned `topicId`:
-   `scripts/topic_config.py add <topicId> --agent <agentId> --name <topicName> [--account ...] [--chat ...]`.
+   `scripts/topic_config.py add <topicId> --agent <agentId> [--name <topicName>] [--account ...] [--chat ...]`. `--name` is only used for command output/labels; it must not be written under `topics.<topicId>`.
 3. Restart/reload OpenClaw after config edits when possible.
 4. Reply with topic name/id and agent id.
 
@@ -133,7 +133,7 @@ This writes a top-level binding shaped like:
 }
 ```
 
-The topic config entry should keep a readable `name`; it must not keep normal `agentId: main` routing for ACP topics because the persistent ACP binding owns that conversation. When converting an already-created OpenClaw topic to ACP, remove the stale normal route binding for the same peer and clear `topics.<topicId>.agentId`.
+Do not store a readable `name` under `topics.<topicId>`: the Telegram topic entry schema rejects it and OpenClaw may clobber/rollback the config. For ACP topics, keep the human-readable text in Telegram's topic title and the ACP binding `acp.label`; the `topics.<topicId>` entry should usually be absent unless schema-approved per-topic options are needed. When converting an already-created OpenClaw topic to ACP, remove the stale normal route binding for the same peer and clear `topics.<topicId>.agentId`.
 
 ### Delete topic + routing
 
@@ -177,7 +177,9 @@ If `check` reports `probeErrorsNotTouched`, do not edit config from that result;
 
 ### OpenCode / oh-my-opencode agent selection
 
-For coding ACP topics in this setup, the ACP harness id is still `opencode`, but the internal opencode agent must be `sisyphus`. Do not change the OpenClaw `agentId` to `sisyphus`; instead ensure the acpx command override is:
+For coding ACP topics in this setup, the ACP harness id remains `opencode`; do **not** change the OpenClaw `agentId` to `sisyphus`. `sisyphus` is an internal opencode/oh-my-opencode agent.
+
+Do **not** set the acpx command to `opencode --agent=sisyphus acp`: current opencode exposes `--agent` for normal/run/TUI flows, but `opencode acp` has its own option parser and does not accept that flag. Keep the ACP command override as:
 
 ```json
 {
@@ -187,7 +189,7 @@ For coding ACP topics in this setup, the ACP harness id is still `opencode`, but
         "config": {
           "agents": {
             "opencode": {
-              "command": "opencode --agent=sisyphus acp"
+              "command": "env OPENCODE_DEFAULT_AGENT=sisyphus opencode acp"
             }
           }
         }
@@ -197,4 +199,4 @@ For coding ACP topics in this setup, the ACP harness id is still `opencode`, but
 }
 ```
 
-`opencode acp` itself does not expose `--agent` in subcommand help, but the top-level `opencode --agent=sisyphus acp` form is accepted and affects the ACP server before connection.
+Agent selection for ACP should be forced with the environment variable consumed by oh-my-opencode runtime resolution: `OPENCODE_DEFAULT_AGENT=sisyphus`. Keep `opencode.json` `default_agent` and oh-my-opencode `default_run_agent` as `sisyphus` too, but do not rely on CLI `--agent` for ACP.

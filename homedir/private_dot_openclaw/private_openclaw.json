@@ -583,7 +583,7 @@
         "config": {
           "agents": {
             "opencode": {
-              "command": "opencode --agent=sisyphus acp"
+              "command": "env OPENCODE_DEFAULT_AGENT=sisyphus opencode acp"
             }
           }
         }
