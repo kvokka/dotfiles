@@ -21,5 +21,5 @@ Notes:
 - Topic `1` is Telegram's built-in General/root topic; it is protected and cannot be deleted.
 - `check` never changes config. Use it first, ask for explicit confirmation, then run `delete` for stale non-General topics only.
 - OpenCode topics use top-level `bindings[].type="acp"` with `peer.id="<chatId>:topic:<topicId>"` and `acp.cwd` set to a project directory under `$WORKDIR` or an explicit `--cwd`.
-- OpenCode topic names are `<project> - <suffix>` unless `--name` is explicit. `--task` supplies a short suffix; without it the helper generates an adjective+noun suffix like `my-awesome-project - red coon` so one project can have multiple unique topics.
+- OpenCode topic names are `<project> - <suffix>` unless `--name` is explicit. `--task` supplies a short suffix; without it the helper generates an adjective+noun suffix like `солянка - рыжий бобёр` so one project can have multiple unique topics.
 - Converting a just-created OpenClaw topic to ACP clears stale `agentId: main` from topic config and removes normal route bindings for the same peer; the ACP binding must own that conversation.

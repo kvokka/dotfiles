@@ -663,17 +663,16 @@ def print_json(data: Any) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=Path, default=CFG)
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     common_edit_args = argparse.ArgumentParser(add_help=False)
     common_edit_args.add_argument("--account")
     common_edit_args.add_argument("--chat")
-    common_edit_args.add_argument("--config", type=Path, default=CFG)
 
     check_parser = sub.add_parser("check")
     check_parser.add_argument("--account")
     check_parser.add_argument("--chat")
-    check_parser.add_argument("--config", type=Path, default=CFG)
     check_parser.add_argument("--token-env")
     check_parser.add_argument("--token")
     check_parser.add_argument("--topic", dest="topics", action="append", type=int, help="check only this topic id; repeatable")

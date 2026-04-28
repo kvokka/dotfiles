@@ -40,7 +40,7 @@
   "browser": {
     "headless": true,
     "ssrfPolicy": {
-      "dangerouslyAllowPrivateNetwork": true // require for image gen over the proxy
+      "dangerouslyAllowPrivateNetwork": true
     }
   },
   "auth": {
@@ -583,7 +583,7 @@
         "config": {
           "agents": {
             "opencode": {
-              "command": "opencode acp"
+              "command": "opencode --agent=sisyphus acp"
             }
           }
         }

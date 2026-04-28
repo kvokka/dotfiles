@@ -105,7 +105,7 @@ Naming rule for ACP/OpenCode project topics:
 - If user supplied an explicit topic name, use it.
 - Otherwise use `<project> - <suffix>`.
 - If a task/issue is provided, make the suffix a short task phrase, e.g. `solyanka - fix auth race`.
-- If no task is provided, generate a stable short “adjective noun” suffix, e.g. `my-project - red coon`, so multiple topics for one project do not collide.
+- If no task is provided, generate a stable short “adjective noun” suffix, e.g. `солянка - рыжий бобёр`, so multiple topics for one project do not collide.
 - If the generated/stated name already exists in config, append the topic id to keep it unique.
 
 If project resolution is ambiguous or no project matches, ask the user. With an explicit choice/path, rerun:
@@ -172,3 +172,29 @@ There is no automatic `cleanup` command. Cleanup is a human-confirmed workflow:
 Do not delete topic `1`. If `check` reports topic `1` under `protectedGeneralTopicNotTouched`, treat that as a probe/config oddity, not as cleanup input.
 
 If `check` reports `probeErrorsNotTouched`, do not edit config from that result; investigate the Telegram/API error first.
+
+- `delete/remove` deletes non-General configured topics from Telegram first via Bot API `deleteForumTopic`; only after Telegram reports success or already-missing does it remove the topic route/bindings from `openclaw.json`. If Telegram deletion fails, config must remain untouched and the result must say `telegram_delete_failed`.
+
+### OpenCode / oh-my-opencode agent selection
+
+For coding ACP topics in this setup, the ACP harness id is still `opencode`, but the internal opencode agent must be `sisyphus`. Do not change the OpenClaw `agentId` to `sisyphus`; instead ensure the acpx command override is:
+
+```json
+{
+  "plugins": {
+    "entries": {
+      "acpx": {
+        "config": {
+          "agents": {
+            "opencode": {
+              "command": "opencode --agent=sisyphus acp"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+`opencode acp` itself does not expose `--agent` in subcommand help, but the top-level `opencode --agent=sisyphus acp` form is accepted and affects the ACP server before connection.
