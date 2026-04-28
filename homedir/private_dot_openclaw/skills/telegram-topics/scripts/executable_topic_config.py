@@ -18,6 +18,7 @@ import hashlib
 import urllib.error
 import urllib.parse
 import urllib.request
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -26,13 +27,20 @@ GENERAL_TOPIC_ID = "1"
 DEFAULT_ACP_AGENT_ID = "opencode"
 API_TIMEOUT_SECONDS = 15
 SUFFIX_ADJECTIVES = [
-    "рыжий", "сонный", "хитрый", "бодрый", "мятный", "дикий", "ламповый", "шустрый",
-    "важный", "кривой", "чумной", "уютный", "острый", "пыльный", "лунный", "жадный",
+    "red", "sleepy", "clever", "brisk", "mint", "wild", "cozy", "quick",
+    "bold", "crooked", "lunar", "sharp", "dusty", "bright", "silent", "fuzzy",
 ]
 SUFFIX_NOUNS = [
-    "бобёр", "барсук", "енот", "тюлень", "ёж", "кабан", "хомяк", "пингвин",
-    "гусь", "кот", "краб", "сом", "жук", "вомбат", "суслик", "лосось",
+    "beaver", "badger", "raccoon", "seal", "hedgehog", "boar", "hamster", "penguin",
+    "goose", "cat", "crab", "catfish", "beetle", "wombat", "gopher", "salmon",
 ]
+CYRILLIC_TRANSLIT = {
+    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", "ж": "zh", "з": "z",
+    "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o", "п": "p", "р": "r",
+    "с": "s", "т": "t", "у": "u", "ф": "f", "х": "h", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sch",
+    "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
+}
+
 
 TopicKey = tuple[str, str, str]  # accountId, chatId, topicId
 
@@ -190,7 +198,133 @@ def parse_topic_ids(raw: str) -> list[str]:
 
 
 def normalize_project_query(value: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "", value.casefold())
+    return re.sub(r"[^a-z0-9]+", "", transliterate(value).casefold())
+
+
+def transliterate(value: str) -> str:
+    out: list[str] = []
+    for char in value.casefold():
+        out.append(CYRILLIC_TRANSLIT.get(char, char))
+    return "".join(out)
+
+
+def slugify(value: str) -> str:
+    raw = transliterate(value)
+    slug = re.sub(r"[^a-z0-9]+", "-", raw.casefold()).strip("-")
+    slug = re.sub(r"-+", "-", slug)
+    return slug or "task"
+
+
+def run_git(args: list[str], cwd: str | Path) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(["git", *args], cwd=str(cwd), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+
+
+def git_output(args: list[str], cwd: str | Path) -> str:
+    result = run_git(args, cwd)
+    if result.returncode != 0:
+        raise SystemExit(f"git {' '.join(args)} failed in {cwd}: {result.stderr.strip() or result.stdout.strip()}")
+    return result.stdout.strip()
+
+
+def git_root(path: str | Path) -> Path:
+    root = git_output(["rev-parse", "--show-toplevel"], path)
+    return Path(root).resolve()
+
+
+def default_branch(repo: str | Path) -> str:
+    for args in (["symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD"], ["branch", "--show-current"]):
+        result = run_git(list(args), repo)
+        if result.returncode == 0 and result.stdout.strip():
+            value = result.stdout.strip()
+            return value.removeprefix("origin/")
+    for candidate in ("main", "master"):
+        if run_git(["rev-parse", "--verify", candidate], repo).returncode == 0:
+            return candidate
+        if run_git(["rev-parse", "--verify", f"origin/{candidate}"], repo).returncode == 0:
+            return candidate
+    raise SystemExit(f"Cannot detect main branch in {repo}; pass --base-branch.")
+
+
+def worktree_root_for_project(project_root: Path) -> Path:
+    roots = [root for root in workdir_roots() if root.is_dir()]
+    for root in roots:
+        try:
+            project_root.relative_to(root.resolve())
+            return root.resolve()
+        except ValueError:
+            continue
+    if roots:
+        return roots[0].resolve()
+    return project_root.parent.resolve()
+
+
+def create_git_worktree(source_cwd: str, topic_name: str, branch: str | None, base_branch: str | None) -> dict[str, Any]:
+    project_root = git_root(source_cwd)
+    project_name = project_root.name
+    suffix = slugify(branch or topic_name)
+    project_slug = slugify(project_name)
+    full_slug = suffix if suffix == project_slug or suffix.startswith(f"{project_slug}-") else slugify(f"{project_slug}-{suffix}")
+    branch_name = full_slug
+    worktree_path = worktree_root_for_project(project_root) / full_slug
+    base = base_branch or default_branch(project_root)
+    base_ref = f"origin/{base}" if run_git(["rev-parse", "--verify", f"origin/{base}"], project_root).returncode == 0 else base
+
+    if worktree_path.exists():
+        existing_root = git_root(worktree_path)
+        existing_branch = git_output(["branch", "--show-current"], existing_root)
+        if existing_branch != branch_name:
+            raise SystemExit(f"Worktree path exists with branch {existing_branch!r}, expected {branch_name!r}: {worktree_path}")
+        return {"source": str(project_root), "cwd": str(worktree_path), "branch": branch_name, "baseBranch": base, "created": False, "alreadyExisted": True}
+
+    branch_exists = run_git(["rev-parse", "--verify", branch_name], project_root).returncode == 0
+    args = ["worktree", "add"]
+    if branch_exists:
+        args += [str(worktree_path), branch_name]
+    else:
+        args += ["-b", branch_name, str(worktree_path), base_ref]
+    result = run_git(args, project_root)
+    if result.returncode != 0:
+        raise SystemExit(f"git {' '.join(args)} failed in {project_root}: {result.stderr.strip() or result.stdout.strip()}")
+    return {"source": str(project_root), "cwd": str(worktree_path), "branch": branch_name, "baseBranch": base, "created": True, "alreadyExisted": False}
+
+
+def remove_git_worktree(cwd: str, branch: str | None = None, delete_branch: bool = True) -> dict[str, Any]:
+    path = Path(cwd).expanduser().resolve()
+    out: dict[str, Any] = {"cwd": str(path), "worktreeRemoved": False, "worktreeAlreadyMissing": False, "branchDeleted": False}
+    if path.exists():
+        repo_root = git_root(path)
+        branch_name = branch or git_output(["branch", "--show-current"], repo_root)
+        out["branch"] = branch_name
+        common_dir = Path(git_output(["rev-parse", "--git-common-dir"], repo_root)).resolve()
+        main_repo = common_dir.parent if common_dir.name == ".git" else common_dir
+        result = run_git(["worktree", "remove", str(path)], main_repo)
+        if result.returncode != 0:
+            raise SystemExit(f"git worktree remove {path} failed: {result.stderr.strip() or result.stdout.strip()}")
+        out["worktreeRemoved"] = True
+        if delete_branch and branch_name:
+            result = run_git(["branch", "-d", branch_name], main_repo)
+            if result.returncode == 0:
+                out["branchDeleted"] = True
+            else:
+                out["branchDeleteSkipped"] = result.stderr.strip() or result.stdout.strip()
+        return out
+
+    out["worktreeAlreadyMissing"] = True
+    if branch:
+        out["branch"] = branch
+        roots = [root for root in workdir_roots() if root.is_dir()]
+        for root in roots:
+            for child in root.iterdir():
+                if not (child / ".git").exists():
+                    continue
+                if run_git(["rev-parse", "--verify", branch], child).returncode == 0:
+                    result = run_git(["branch", "-d", branch], child)
+                    if result.returncode == 0:
+                        out["branchDeleted"] = True
+                    else:
+                        out["branchDeleteSkipped"] = result.stderr.strip() or result.stdout.strip()
+                    return out
+    return out
 
 
 def workdir_roots() -> list[Path]:
@@ -280,11 +414,11 @@ def topic_display_name(topic_id: str, topic_cfg: Any) -> str:
 
 
 def short_task_suffix(task: str) -> str:
-    words = re.findall(r"[\wа-яА-ЯёЁ-]+", task.casefold(), flags=re.UNICODE)
+    words = re.findall(r"[a-z0-9]+", slugify(task))
     if not words:
-        return "задача"
-    suffix = " ".join(words[:4])
-    return suffix[:48].strip(" -_") or "задача"
+        return "task"
+    suffix = "-".join(words[:4])
+    return suffix[:48].strip("-_") or "task"
 
 
 def adjective_noun_suffix(seed: str) -> str:
@@ -341,11 +475,14 @@ def build_acp_topic_name(
     cwd: str,
     task: str | None,
 ) -> str:
+    project_name = slugify(project_display_name(project, cwd))
     if explicit_name:
-        return unique_topic_name(cfg, account, chat, explicit_name, topic)
-    project_name = project_display_name(project, cwd)
-    suffix = short_task_suffix(task) if task else adjective_noun_suffix(f"{project_name}:{cwd}:{topic}")
-    return unique_topic_name(cfg, account, chat, f"{project_name} - {suffix}", topic)
+        explicit_slug = slugify(explicit_name)
+        base = explicit_slug if explicit_slug == project_name or explicit_slug.startswith(f"{project_name}-") else f"{project_name}-{explicit_slug}"
+        return unique_topic_name(cfg, account, chat, base, topic)
+    suffix = short_task_suffix(task) if task else slugify(adjective_noun_suffix(f"{project_name}:{cwd}:{topic}"))
+    base = suffix if suffix == project_name or suffix.startswith(f"{project_name}-") else f"{project_name}-{suffix}"
+    return unique_topic_name(cfg, account, chat, base, topic)
 
 
 def configured_topics(
@@ -636,12 +773,26 @@ def delete_topics(cfg: dict[str, Any], account: str, chat: str, topics: list[str
         group_topics.pop(topic, None)
 
     peer_ids = {f"{chat}:topic:{topic}" for topic in topics}
-    cfg["bindings"] = [
+    removed_bindings = [
         binding for binding in cfg.get("bindings", []) or []
-        if not (
+        if (
             (binding.get("match", {}) or {}).get("accountId") == account
             and ((binding.get("match", {}) or {}).get("peer", {}) or {}).get("id") in peer_ids
         )
+    ]
+    worktrees: dict[str, dict[str, Any]] = {}
+    for binding in removed_bindings:
+        if binding.get("type") != "acp":
+            continue
+        acp = binding.get("acp") or {}
+        cwd = acp.get("cwd")
+        if cwd:
+            topic_id = str(((binding.get("match", {}) or {}).get("peer", {}) or {}).get("id", "")).rsplit(":topic:", 1)[-1]
+            worktrees[topic_id] = remove_git_worktree(str(cwd), None, delete_branch=True)
+
+    cfg["bindings"] = [
+        binding for binding in cfg.get("bindings", []) or []
+        if binding not in removed_bindings
     ]
 
     return [
@@ -650,6 +801,7 @@ def delete_topics(cfg: dict[str, Any], account: str, chat: str, topics: list[str
             "chatId": chat,
             "topicId": topic,
             "name": configured_before.get((account, chat, topic), {}).get("name") or topic_display_name(topic, None),
+            **({"worktree": worktrees[topic]} if topic in worktrees else {}),
         }
         for topic in topics
     ]
@@ -686,6 +838,9 @@ def main() -> None:
     add_parser.add_argument("--task", help="short task description used as topic-name suffix for ACP topics")
     add_parser.add_argument("--mode", choices=["persistent", "oneshot"], default="persistent", help="ACP session mode")
     add_parser.add_argument("--backend", help="optional ACP backend override")
+    add_parser.add_argument("--branch", help="branch/worktree slug; defaults to topic name slug")
+    add_parser.add_argument("--base-branch", help="main branch to base the coding worktree on; autodetected by default")
+    add_parser.add_argument("--no-worktree", action="store_true", help="do not create a git worktree for ACP cwd (exceptional/debug use only)")
 
     delete_parser = sub.add_parser("delete", parents=[common_edit_args], aliases=["remove"])
     delete_parser.add_argument("topic_ids", help="comma-separated topic ids, e.g. 7 or 7,58,67")
@@ -724,10 +879,15 @@ def main() -> None:
                 raise SystemExit(3)
             if not cwd:
                 raise SystemExit("ACP topic requires --project <name> resolvable under $WORKDIR or explicit --cwd <path>.")
-            topic_name = build_acp_topic_name(cfg, account, chat, topic, args.name, args.project, cwd, args.task)
+            topic_name = build_acp_topic_name(cfg, account, chat, topic, args.name or args.branch, args.project, cwd, args.task)
             label = args.label or topic_name
+            worktree: dict[str, Any] | None = None
+            acp_cwd = cwd
+            if not args.no_worktree:
+                worktree = create_git_worktree(cwd, topic_name, args.branch, args.base_branch)
+                acp_cwd = str(worktree["cwd"])
             upsert_topic_config(cfg, account, chat, topic, None, None, clear_agent=True)
-            upsert_acp_binding(cfg, account, chat, topic, agent_id, cwd, label, args.mode, args.backend)
+            upsert_acp_binding(cfg, account, chat, topic, agent_id, acp_cwd, label, args.mode, args.backend)
             save_config(args.config, cfg)
             print_json({
                 "action": "add",
@@ -737,7 +897,8 @@ def main() -> None:
                 "topicId": topic,
                 "name": topic_name,
                 "agentId": agent_id,
-                "acp": {"mode": args.mode, "cwd": cwd, "label": label, **({"backend": args.backend} if args.backend else {})},
+                "acp": {"mode": args.mode, "cwd": acp_cwd, "label": label, **({"backend": args.backend} if args.backend else {})},
+                **({"worktree": worktree} if worktree else {}),
             })
             return
 

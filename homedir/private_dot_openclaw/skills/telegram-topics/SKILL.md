@@ -86,35 +86,31 @@ For normal OpenClaw topics:
 
 Use this when the user asks for an OpenCode/coding agent topic for a project.
 
-1. Identify the project directory:
+1. Identify the source project directory:
    - If the user gives an explicit path, use it as `--cwd` after verifying it exists.
    - If the user names a project, search immediate child directories under `$WORKDIR`.
    - Match exact normalized directory names first; fuzzy substring matches are acceptable only when unique.
    - If nothing matches or multiple projects match, ask the user to choose. Do not guess.
-2. Ensure `agents.list[]` contains the requested ACP agent, normally `opencode`.
-3. Create the Telegram forum topic through OpenClaw:
+2. Pick one ASCII slug that will be used consistently as Telegram topic name, git branch name, and worktree directory suffix:
+   - If the user provided a topic name or branch/worktree name, treat it as the common name for all three.
+   - Transliterate Cyrillic and slugify to lowercase ASCII with hyphens, e.g. project `foo` + `белый лис` → `foo-beliy-lis`.
+   - If no name/task is provided, generate an English slug; do not generate Russian defaults.
+3. Create a git worktree from the source project main branch under `$WORKDIR` named `<project-name>-<topic-slug>`; do **not** work in the source project directory.
+4. Create the Telegram forum topic using the same slug as its name:
    `message` tool with `action="topic-create"`, `channel="telegram"`, `accountId`, `chatId`, `name`.
-4. Add persistent ACP binding for the returned topic id:
+5. Add persistent ACP binding for the returned topic id. The ACP `cwd` must point at the worktree, not the source project:
 
 ```bash
-scripts/topic_config.py add <topicId> --kind acp --agent opencode --project <projectName> [--task <shortTask>] [--name <topicName>]
+scripts/topic_config.py add <topicId> --kind acp --agent opencode --project <projectName> [--task <shortTask>] [--name <topicOrBranchSlug>]
 ```
-
-Naming rule for ACP/OpenCode project topics:
-
-- If user supplied an explicit topic name, use it.
-- Otherwise use `<project> - <suffix>`.
-- If a task/issue is provided, make the suffix a short task phrase, e.g. `solyanka - fix auth race`.
-- If no task is provided, generate a stable short “adjective noun” suffix, e.g. `солянка - рыжий бобёр`, so multiple topics for one project do not collide.
-- If the generated/stated name already exists in config, append the topic id to keep it unique.
 
 If project resolution is ambiguous or no project matches, ask the user. With an explicit choice/path, rerun:
 
 ```bash
-scripts/topic_config.py add <topicId> --kind acp --agent opencode --cwd /abs/path/to/project [--task <shortTask>] [--name <topicName>]
+scripts/topic_config.py add <topicId> --kind acp --agent opencode --cwd /abs/path/to/source-project [--task <shortTask>] [--name <topicOrBranchSlug>]
 ```
 
-For ACP topics, the required config change is only a top-level binding shaped like:
+For ACP topics, the required config change is a top-level binding shaped like this. Keep it schema-valid: `acp` may contain `mode`, `cwd`, `label`, and optionally `backend` only.
 
 ```json5
 {
@@ -127,8 +123,8 @@ For ACP topics, the required config change is only a top-level binding shaped li
   },
   acp: {
     mode: "persistent",
-    cwd: "/path/from/WORKDIR/project",
-    label: "project-or-topic-name"
+    cwd: "/path/from/WORKDIR/project-topic-slug",
+    label: "project-topic-slug"
   }
 }
 ```
@@ -139,10 +135,13 @@ When converting an already-created normal OpenClaw topic to ACP, remove any stal
 
 Topic `1` is Telegram's built-in General/root topic. It always exists in a forum group and cannot be deleted. Never suggest deleting topic `1`, never call `delete 1`, and never let cleanup remove its OpenClaw routing even if a probe looks odd.
 
-When the user asks to delete a topic, the intended final state is **both**:
+When the user asks to delete a topic, the intended final state is:
 
-- the Telegram forum topic is deleted/closed in Telegram; and
-- OpenClaw config routing/bindings for that topic are removed.
+- the Telegram forum topic is deleted/closed in Telegram;
+- OpenClaw config routing/bindings for that topic are removed; and
+- if the topic has an ACP worktree binding, remove that git worktree and then delete its local branch when safe.
+
+Never delete the source project directory. Only remove the worktree path recorded in the ACP binding `acp.cwd`; infer the branch from that live worktree when it still exists. If the worktree was already removed earlier, that is OK; still remove the Telegram topic and config binding. In the final reply, say what was deleted: Telegram topic only, config binding, worktree, and/or branch.
 
 Do not treat config-only deletion as complete for an explicit user delete request. For non-General topics, first delete the topic in Telegram via the Telegram UI or Bot API `deleteForumTopic`, then remove OpenClaw routing/bindings explicitly:
 
