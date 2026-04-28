@@ -19,8 +19,8 @@ Config map:
 
 - `agents.list`: available agents and models/skills.
 - `agents.list[].runtime.type="acp"`: ACP/OpenCode-capable configured agents, e.g. `opencode`.
-- `channels.telegram.accounts.<account>.groups.<forumId>`: configured forum group and `topics`; topic keys are Telegram `message_thread_id` strings. Topic entries are schema-restricted routing options only; `name` is not a valid key there.
-- `bindings`: route peer `<forumId>:topic:<topicId>` to an agent. `bindings[].type="acp"` creates persistent ACP/OpenCode conversation bindings.
+- `channels.telegram.accounts.<account>.groups.<forumId>`: configured forum group and `topics`; topic keys are Telegram `message_thread_id` strings. Topic entries are schema-restricted routing options only; do not add descriptive fields there.
+- `bindings`: route peer `<forumId>:topic:<topicId>` to an agent. `bindings[].type="acp"` creates persistent ACP/OpenCode conversation bindings; this top-level binding is sufficient for ACP topics.
 - Telegram forum group id is `-100{peerID}`.
 
 Topic kinds:
@@ -78,7 +78,7 @@ For normal OpenClaw topics:
 1. Create the topic through OpenClaw, preferably via `ops`:
    `message` tool with `action="topic-create"`, `channel="telegram"`, `accountId`, `chatId`, `name`.
 2. Route returned `topicId`:
-   `scripts/topic_config.py add <topicId> --agent <agentId> [--name <topicName>] [--account ...] [--chat ...]`. `--name` is only used for command output/labels; it must not be written under `topics.<topicId>`.
+   `scripts/topic_config.py add <topicId> --agent <agentId> [--name <topicName>] [--account ...] [--chat ...]`.
 3. Restart/reload OpenClaw after config edits when possible.
 4. Reply with topic name/id and agent id.
 
@@ -114,7 +114,7 @@ If project resolution is ambiguous or no project matches, ask the user. With an 
 scripts/topic_config.py add <topicId> --kind acp --agent opencode --cwd /abs/path/to/project [--task <shortTask>] [--name <topicName>]
 ```
 
-This writes a top-level binding shaped like:
+For ACP topics, the required config change is only a top-level binding shaped like:
 
 ```json5
 {
@@ -133,7 +133,7 @@ This writes a top-level binding shaped like:
 }
 ```
 
-Do not store a readable `name` under `topics.<topicId>`: the Telegram topic entry schema rejects it and OpenClaw may clobber/rollback the config. For ACP topics, keep the human-readable text in Telegram's topic title and the ACP binding `acp.label`; the `topics.<topicId>` entry should usually be absent unless schema-approved per-topic options are needed. When converting an already-created OpenClaw topic to ACP, remove the stale normal route binding for the same peer and clear `topics.<topicId>.agentId`.
+When converting an already-created normal OpenClaw topic to ACP, remove any stale normal route binding for the same peer and clear/remove the normal `topics.<topicId>.agentId` route; the ACP binding owns that conversation.
 
 ### Delete topic + routing
 
