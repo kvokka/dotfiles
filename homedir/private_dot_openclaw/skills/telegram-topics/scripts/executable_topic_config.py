@@ -2,8 +2,8 @@
 """Manage OpenClaw Telegram forum topic routing using config + live Telegram API only.
 
 Commands:
-- add: add/update one configured topic route.
-- delete: remove one or more non-General topic routes from config.
+- add: add/update one configured topic route or ACP/OpenCode topic binding.
+- delete: delete one or more non-General forum topics in Telegram, then remove their routes/bindings from config.
 - check: probe configured topics in Telegram without changing config.
 """
 from __future__ import annotations
@@ -11,8 +11,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import time
+import hashlib
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -21,7 +23,16 @@ from typing import Any
 
 CFG = Path.home() / ".openclaw" / "openclaw.json"
 GENERAL_TOPIC_ID = "1"
+DEFAULT_ACP_AGENT_ID = "opencode"
 API_TIMEOUT_SECONDS = 15
+SUFFIX_ADJECTIVES = [
+    "рыжий", "сонный", "хитрый", "бодрый", "мятный", "дикий", "ламповый", "шустрый",
+    "важный", "кривой", "чумной", "уютный", "острый", "пыльный", "лунный", "жадный",
+]
+SUFFIX_NOUNS = [
+    "бобёр", "барсук", "енот", "тюлень", "ёж", "кабан", "хомяк", "пингвин",
+    "гусь", "кот", "краб", "сом", "жук", "вомбат", "суслик", "лосось",
+]
 
 TopicKey = tuple[str, str, str]  # accountId, chatId, topicId
 
@@ -119,10 +130,19 @@ def agents(cfg: dict[str, Any]) -> dict[str, dict[str, Any]]:
         agent.get("id"): {
             "model": agent.get("model") or default_model,
             "skills": agent.get("skills"),
+            "runtime": agent.get("runtime"),
         }
         for agent in cfg.get("agents", {}).get("list", [])
         if agent.get("id")
     }
+
+
+def require_agent(cfg: dict[str, Any], agent_id: str, acp: bool = False) -> None:
+    agent = agents(cfg).get(agent_id)
+    if not agent:
+        raise SystemExit(f"Agent {agent_id!r} is not present in agents.list[].")
+    if acp and (agent.get("runtime") or {}).get("type") != "acp":
+        raise SystemExit(f"Agent {agent_id!r} exists but is not runtime.type=acp.")
 
 
 def groups(cfg: dict[str, Any]):
@@ -169,20 +189,83 @@ def parse_topic_ids(raw: str) -> list[str]:
     return unique
 
 
-def binding_map(cfg: dict[str, Any], account: str | None = None, chat: str | None = None) -> dict[TopicKey, str | None]:
-    out: dict[TopicKey, str | None] = {}
+def normalize_project_query(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", value.casefold())
+
+
+def workdir_roots() -> list[Path]:
+    value = os.environ.get("WORKDIR")
+    if not value:
+        return []
+    return [Path(part).expanduser() for part in value.split(os.pathsep) if part.strip()]
+
+
+def resolve_project_path(project: str | None, cwd: str | None) -> tuple[str | None, list[str]]:
+    if cwd:
+        path = Path(cwd).expanduser().resolve()
+        if not path.is_dir():
+            raise SystemExit(f"ACP cwd does not exist or is not a directory: {path}")
+        return str(path), []
+    if not project:
+        return None, []
+    roots = [root for root in workdir_roots() if root.is_dir()]
+    if not roots:
+        raise SystemExit("$WORKDIR is empty/unset or has no readable directories; pass --cwd explicitly.")
+    query = normalize_project_query(project)
+    exact: list[Path] = []
+    fuzzy: list[Path] = []
+    for root in roots:
+        for child in root.iterdir():
+            if not child.is_dir():
+                continue
+            normalized = normalize_project_query(child.name)
+            if normalized == query:
+                exact.append(child.resolve())
+            elif query in normalized or normalized in query:
+                fuzzy.append(child.resolve())
+    matches = exact or fuzzy
+    unique = sorted({str(path) for path in matches})
+    if len(unique) == 1:
+        return unique[0], []
+    return None, unique
+
+
+def binding_topic_key(binding: dict[str, Any]) -> TopicKey | None:
+    match = binding.get("match", {}) or {}
+    peer = match.get("peer", {}) or {}
+    peer_id = str(peer.get("id", ""))
+    if match.get("channel") != "telegram" or peer.get("kind") != "group" or ":topic:" not in peer_id:
+        return None
+    chat_id, topic_id = peer_id.rsplit(":topic:", 1)
+    return str(match.get("accountId", "")), chat_id, topic_id
+
+
+def binding_matches_topic(binding: dict[str, Any], account: str, chat: str, topic: str) -> bool:
+    return binding_topic_key(binding) == (account, chat, topic)
+
+
+def topic_bindings(cfg: dict[str, Any], account: str | None = None, chat: str | None = None) -> dict[TopicKey, list[dict[str, Any]]]:
+    out: dict[TopicKey, list[dict[str, Any]]] = {}
     for binding in cfg.get("bindings", []) or []:
-        match = binding.get("match", {}) or {}
-        peer = match.get("peer", {}) or {}
-        peer_id = str(peer.get("id", ""))
-        account_id = str(match.get("accountId", ""))
-        if match.get("channel") != "telegram" or peer.get("kind") != "group" or ":topic:" not in peer_id:
+        key = binding_topic_key(binding)
+        if not key:
             continue
-        chat_id, topic_id = peer_id.rsplit(":topic:", 1)
-        if (account and account_id != account) or (chat and chat_id != chat):
+        if (account and key[0] != account) or (chat and key[1] != chat):
             continue
-        out[(account_id, chat_id, topic_id)] = binding.get("agentId")
+        out.setdefault(key, []).append(binding)
     return out
+
+
+def summarize_bindings(bindings: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        {
+            "type": binding.get("type") or "route",
+            "agentId": binding.get("agentId"),
+            **({"acp": binding.get("acp")} if binding.get("acp") else {}),
+            **({"comment": binding.get("comment")} if binding.get("comment") else {}),
+        }
+        for binding in bindings
+    ]
 
 
 def topic_display_name(topic_id: str, topic_cfg: Any) -> str:
@@ -196,13 +279,82 @@ def topic_display_name(topic_id: str, topic_cfg: Any) -> str:
     return f"topic {topic_id}"
 
 
+def short_task_suffix(task: str) -> str:
+    words = re.findall(r"[\wа-яА-ЯёЁ-]+", task.casefold(), flags=re.UNICODE)
+    if not words:
+        return "задача"
+    suffix = " ".join(words[:4])
+    return suffix[:48].strip(" -_") or "задача"
+
+
+def adjective_noun_suffix(seed: str) -> str:
+    digest = hashlib.sha256(seed.encode()).digest()
+    adjective = SUFFIX_ADJECTIVES[digest[0] % len(SUFFIX_ADJECTIVES)]
+    noun = SUFFIX_NOUNS[digest[1] % len(SUFFIX_NOUNS)]
+    return f"{adjective} {noun}"
+
+
+def project_display_name(project: str | None, cwd: str | None) -> str:
+    if project:
+        return Path(project).name
+    if cwd:
+        return Path(cwd).expanduser().resolve().name
+    return "project"
+
+
+def configured_topic_names(cfg: dict[str, Any], account: str, chat: str) -> set[str]:
+    names: set[str] = set()
+    group_topics = (
+        cfg.get("channels", {})
+        .get("telegram", {})
+        .get("accounts", {})
+        .get(account, {})
+        .get("groups", {})
+        .get(chat, {})
+        .get("topics", {})
+    )
+    for topic_id, topic_cfg in (group_topics or {}).items():
+        names.add(topic_display_name(str(topic_id), topic_cfg))
+    return names
+
+
+def unique_topic_name(cfg: dict[str, Any], account: str, chat: str, base: str, topic: str) -> str:
+    existing = configured_topic_names(cfg, account, chat)
+    if base not in existing:
+        return base
+    candidate = f"{base} #{topic}"
+    if candidate not in existing:
+        return candidate
+    i = 2
+    while f"{candidate}-{i}" in existing:
+        i += 1
+    return f"{candidate}-{i}"
+
+
+def build_acp_topic_name(
+    cfg: dict[str, Any],
+    account: str,
+    chat: str,
+    topic: str,
+    explicit_name: str | None,
+    project: str | None,
+    cwd: str,
+    task: str | None,
+) -> str:
+    if explicit_name:
+        return unique_topic_name(cfg, account, chat, explicit_name, topic)
+    project_name = project_display_name(project, cwd)
+    suffix = short_task_suffix(task) if task else adjective_noun_suffix(f"{project_name}:{cwd}:{topic}")
+    return unique_topic_name(cfg, account, chat, f"{project_name} - {suffix}", topic)
+
+
 def configured_topics(
     cfg: dict[str, Any],
     account: str | None = None,
     chat: str | None = None,
     only_topics: set[str] | None = None,
 ) -> dict[TopicKey, dict[str, Any]]:
-    bindings = binding_map(cfg, account, chat)
+    bindings = topic_bindings(cfg, account, chat)
     out: dict[TopicKey, dict[str, Any]] = {}
     for account_id, chat_id, group_cfg in groups(cfg):
         if (account and account_id != account) or (chat and chat_id != chat):
@@ -215,12 +367,12 @@ def configured_topics(
             out[key] = {
                 "name": topic_display_name(topic_id, topic_cfg),
                 "agentId": (topic_cfg or {}).get("agentId") if isinstance(topic_cfg, dict) else None,
-                "bindingAgentId": bindings.get(key),
+                "bindings": summarize_bindings(bindings.get(key, [])),
             }
-    for key, agent_id in bindings.items():
+    for key, key_bindings in bindings.items():
         if only_topics and key[2] not in only_topics:
             continue
-        out.setdefault(key, {"name": topic_display_name(key[2], None), "agentId": None, "bindingAgentId": agent_id})
+        out.setdefault(key, {"name": topic_display_name(key[2], None), "agentId": None, "bindings": summarize_bindings(key_bindings)})
     return out
 
 
@@ -276,6 +428,38 @@ def live_probe_configured(
     token_value = bot_token(cfg, account, token_env, token)
     configured = configured_topics(cfg, account, chat, only_topics)
     return {key: probe_topic(token_value, key[1], key[2]) for key in sorted(configured)}
+
+
+def delete_forum_topic(token: str, chat: str, topic: str) -> dict[str, Any]:
+    """Delete a Telegram forum topic.
+
+    If Telegram already reports the topic as missing, treat the Telegram-side
+    final state as satisfied so config cleanup can still complete.
+    """
+    result = api_call(token, "deleteForumTopic", {
+        "chat_id": chat,
+        "message_thread_id": int(topic),
+    })
+    description = str(result.get("description") or "")
+    if result.get("ok"):
+        return {"topicId": topic, "ok": True, "deletedInTelegram": True, "alreadyMissing": False}
+    if is_missing_topic_error(description):
+        return {"topicId": topic, "ok": True, "deletedInTelegram": False, "alreadyMissing": True, "description": description}
+    return {"topicId": topic, "ok": False, "description": description or None, "raw": result}
+
+
+def delete_forum_topics(token: str, chat: str, topics: list[str]) -> list[dict[str, Any]]:
+    results = [delete_forum_topic(token, chat, topic) for topic in topics]
+    failures = [item for item in results if not item.get("ok")]
+    if failures:
+        print_json({
+            "action": "delete",
+            "error": "telegram_delete_failed",
+            "message": "Telegram topic deletion failed; config was not changed.",
+            "telegram": results,
+        })
+        raise SystemExit(4)
+    return results
 
 
 def check_report(
@@ -339,23 +523,46 @@ def topic_group(cfg: dict[str, Any], account: str, chat: str) -> dict[str, Any]:
     )
 
 
-def upsert_topic(cfg: dict[str, Any], account: str, chat: str, topic: str, agent: str, name: str | None = None) -> None:
+def upsert_topic_config(
+    cfg: dict[str, Any],
+    account: str,
+    chat: str,
+    topic: str,
+    agent: str | None,
+    name: str | None,
+    *,
+    clear_agent: bool = False,
+) -> None:
     group = topic_group(cfg, account, chat)
-    topic_cfg: dict[str, Any] = {"agentId": agent}
+    topic_cfg: dict[str, Any] = {}
+    if agent:
+        topic_cfg["agentId"] = agent
     if name:
         topic_cfg["name"] = name
     elif topic == GENERAL_TOPIC_ID:
         topic_cfg["name"] = "General"
-    group.setdefault("topics", {})[topic] = topic_cfg
+    current = group.setdefault("topics", {}).get(topic)
+    if isinstance(current, dict):
+        current.update(topic_cfg)
+        if clear_agent:
+            current.pop("agentId", None)
+        group["topics"][topic] = current
+    else:
+        if clear_agent:
+            topic_cfg.pop("agentId", None)
+        group.setdefault("topics", {})[topic] = topic_cfg
 
+
+def upsert_route_binding(cfg: dict[str, Any], account: str, chat: str, topic: str, agent: str) -> None:
     peer_id = f"{chat}:topic:{topic}"
     bindings = cfg.setdefault("bindings", [])
     for binding in bindings:
-        match = binding.get("match", {}) or {}
-        if match.get("accountId") == account and (match.get("peer") or {}).get("id") == peer_id:
+        if binding_matches_topic(binding, account, chat, topic) and (binding.get("type") or "route") == "route":
             binding["agentId"] = agent
+            binding.pop("acp", None)
             return
     bindings.append({
+        "type": "route",
         "agentId": agent,
         "match": {
             "channel": "telegram",
@@ -365,9 +572,56 @@ def upsert_topic(cfg: dict[str, Any], account: str, chat: str, topic: str, agent
     })
 
 
+def remove_route_bindings_for_topic(cfg: dict[str, Any], account: str, chat: str, topic: str) -> None:
+    cfg["bindings"] = [
+        binding for binding in cfg.get("bindings", []) or []
+        if not (binding_matches_topic(binding, account, chat, topic) and (binding.get("type") or "route") == "route")
+    ]
+
+
+def upsert_acp_binding(
+    cfg: dict[str, Any],
+    account: str,
+    chat: str,
+    topic: str,
+    agent: str,
+    cwd: str,
+    label: str,
+    mode: str,
+    backend: str | None,
+) -> None:
+    peer_id = f"{chat}:topic:{topic}"
+    acp_cfg: dict[str, Any] = {"mode": mode, "cwd": cwd, "label": label}
+    if backend:
+        acp_cfg["backend"] = backend
+
+    # Topic creation through OpenClaw may have created a normal main/route binding first.
+    # ACP topics must be owned by the ACP binding, so delete stale route bindings for
+    # the same peer before adding/updating the acp binding.
+    remove_route_bindings_for_topic(cfg, account, chat, topic)
+
+    bindings = cfg.setdefault("bindings", [])
+    for binding in bindings:
+        if binding_matches_topic(binding, account, chat, topic) and binding.get("type") == "acp":
+            binding["agentId"] = agent
+            binding["acp"] = acp_cfg
+            binding["comment"] = f"Telegram topic {topic} persistent ACP binding"
+            return
+    bindings.append({
+        "type": "acp",
+        "agentId": agent,
+        "comment": f"Telegram topic {topic} persistent ACP binding",
+        "match": {
+            "channel": "telegram",
+            "accountId": account,
+            "peer": {"kind": "group", "id": peer_id},
+        },
+        "acp": acp_cfg,
+    })
+
+
 def delete_topics(cfg: dict[str, Any], account: str, chat: str, topics: list[str]) -> list[dict[str, Any]]:
-    protected = [topic for topic in topics if topic == GENERAL_TOPIC_ID]
-    if protected:
+    if GENERAL_TOPIC_ID in topics:
         raise SystemExit("Refusing to delete Telegram General topic 1: it is intrinsic, always present, and cannot be deleted.")
 
     configured_before = configured_topics(cfg, account, chat, set(topics))
@@ -428,9 +682,18 @@ def main() -> None:
     add_parser.add_argument("topic_id", type=int)
     add_parser.add_argument("--agent", default="main", help="agent id to route this topic to")
     add_parser.add_argument("--name", help="optional human-readable topic name stored in config")
+    add_parser.add_argument("--kind", choices=["route", "acp"], default="route", help="route = normal OpenClaw topic; acp = persistent ACP/OpenCode topic")
+    add_parser.add_argument("--project", help="project name to resolve under $WORKDIR for ACP cwd")
+    add_parser.add_argument("--cwd", help="explicit ACP working directory")
+    add_parser.add_argument("--label", help="ACP session label; defaults to generated topic name")
+    add_parser.add_argument("--task", help="short task description used as topic-name suffix for ACP topics")
+    add_parser.add_argument("--mode", choices=["persistent", "oneshot"], default="persistent", help="ACP session mode")
+    add_parser.add_argument("--backend", help="optional ACP backend override")
 
     delete_parser = sub.add_parser("delete", parents=[common_edit_args], aliases=["remove"])
     delete_parser.add_argument("topic_ids", help="comma-separated topic ids, e.g. 7 or 7,58,67")
+    delete_parser.add_argument("--token-env")
+    delete_parser.add_argument("--token")
 
     args = parser.parse_args()
     cfg = load_jsonc(args.config)
@@ -450,16 +713,53 @@ def main() -> None:
         topic = str(args.topic_id)
         if int(topic) <= 0:
             raise SystemExit(f"Invalid topic id: {topic!r}")
-        upsert_topic(cfg, account, chat, topic, args.agent, args.name)
+        if args.kind == "acp":
+            agent_id = args.agent if args.agent != "main" else DEFAULT_ACP_AGENT_ID
+            require_agent(cfg, agent_id, acp=True)
+            cwd, candidates = resolve_project_path(args.project, args.cwd)
+            if candidates:
+                print_json({
+                    "error": "ambiguous_project",
+                    "project": args.project,
+                    "candidates": candidates,
+                    "message": "More than one project matched under $WORKDIR; ask the user to choose one and rerun with --cwd.",
+                })
+                raise SystemExit(3)
+            if not cwd:
+                raise SystemExit("ACP topic requires --project <name> resolvable under $WORKDIR or explicit --cwd <path>.")
+            topic_name = build_acp_topic_name(cfg, account, chat, topic, args.name, args.project, cwd, args.task)
+            label = args.label or topic_name
+            upsert_topic_config(cfg, account, chat, topic, None, topic_name, clear_agent=True)
+            upsert_acp_binding(cfg, account, chat, topic, agent_id, cwd, label, args.mode, args.backend)
+            save_config(args.config, cfg)
+            print_json({
+                "action": "add",
+                "kind": "acp",
+                "accountId": account,
+                "chatId": chat,
+                "topicId": topic,
+                "name": topic_name,
+                "agentId": agent_id,
+                "acp": {"mode": args.mode, "cwd": cwd, "label": label, **({"backend": args.backend} if args.backend else {})},
+            })
+            return
+
+        require_agent(cfg, args.agent)
+        upsert_topic_config(cfg, account, chat, topic, args.agent, args.name)
+        upsert_route_binding(cfg, account, chat, topic, args.agent)
         save_config(args.config, cfg)
-        print_json({"action": "add", "accountId": account, "chatId": chat, "topicId": topic, "name": args.name or topic_display_name(topic, None), "agentId": args.agent})
+        print_json({"action": "add", "kind": "route", "accountId": account, "chatId": chat, "topicId": topic, "name": args.name or topic_display_name(topic, None), "agentId": args.agent})
         return
 
     if args.cmd in {"delete", "remove"}:
         topics = parse_topic_ids(args.topic_ids)
+        if GENERAL_TOPIC_ID in topics:
+            raise SystemExit("Refusing to delete Telegram General topic 1: it is intrinsic, always present, and cannot be deleted.")
+        token_value = bot_token(cfg, account, args.token_env, args.token)
+        telegram_deleted = delete_forum_topics(token_value, chat, topics)
         deleted = delete_topics(cfg, account, chat, topics)
         save_config(args.config, cfg)
-        print_json({"action": "delete", "deleted": deleted})
+        print_json({"action": "delete", "telegram": telegram_deleted, "deleted": deleted})
         return
 
 
