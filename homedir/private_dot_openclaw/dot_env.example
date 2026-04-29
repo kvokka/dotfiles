@@ -14,5 +14,8 @@ export OPENCLAW_TELEGRAM_BOT_TOKEN=
 export OPENCLAW_TELEGRAM_OWNER_ID=
 export OPENCLAW_TELEGRAM_GROUP_BOT_TOKEN=
 
+# github PAT
+export GITHUB_TOKEN=
+
 # the folder with the projects
 export WORKDIR=
