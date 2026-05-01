@@ -210,5 +210,13 @@
     "surveyPromptIgnoredCount": 1
   },
   "scm.repositories.explorer": true,
+  "json.schemaDownload.trustedDomains": {
+    "https://raw.githubusercontent.com/DavidAnson/markdownlint/": true,
+    "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/": true,
+    "https://raw.githubusercontent.com/Opencode-DCP/opencode-dynamic-context-pruning/": true,
+    "https://raw.githubusercontent.com/compose-spec/compose-spec/": true,
+    "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/": true,
+    "https://opencode.ai/": true,
+  },
   "scm.repositories.selectionMode": "single"
 }
