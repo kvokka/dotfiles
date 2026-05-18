@@ -3,7 +3,10 @@
   // https://github.com/code-yeongyu/oh-my-opencode/blob/master/docs/configurations.md
   "default_run_agent": "sisyphus",
   "team_mode": {
-    "enabled": true
+    "enabled": true,
+    "max_parallel_members": 4,
+    "max_members": 8,
+    "tmux_visualization": false
   },
   "agents": {
     "sisyphus": {
