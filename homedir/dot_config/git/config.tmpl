@@ -116,3 +116,11 @@ useRelativePaths = true
 [url "git@github.com:kvokka-agent/"]
 	insteadOf = git@github.com:kvokka/
 {{ end }}
+
+{{ if eq .github_login "kvokka" }}
+[includeIf "gitdir:**/cat/"]
+    path = ~/.config/git/config-checkeatrade
+
+[includeIf "gitdir:**/*checkatrade*/"]
+    path = ~/.config/git/config-checkeatrade
+{{ end }}
