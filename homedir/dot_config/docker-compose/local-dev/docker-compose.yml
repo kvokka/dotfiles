@@ -20,16 +20,16 @@ x-common-base: &common-base
   stop_grace_period: 2s
   secrets:
     - source: ssh_private_key
-      target: /home/ubuntu/.ssh/id_ed25519
+      target: /home/ubuntu/.secrets/ssh/id_ed25519
     - source: ssh_public_key
-      target: /home/ubuntu/.ssh/id_ed25519.pub
+      target: /home/ubuntu/.secrets/ssh/id_ed25519.pub
     - source: cat_private_key
-      target: /home/ubuntu/.ssh/cat
+      target: /home/ubuntu/.secrets/ssh/cat
     - source: cat_public_key
-      target: /home/ubuntu/.ssh/cat.pub
+      target: /home/ubuntu/.secrets/ssh/cat.pub
 
     - source: ssh_known_hosts
-      target: /home/ubuntu/.ssh/known_hosts
+      target: /home/ubuntu/.secrets/ssh/known_hosts
 
 x-standard-env-files: &standard-env-files
   env_file:
@@ -267,16 +267,16 @@ volumes:
 
 secrets:
   ssh_private_key:
-    file: ${HOME}/.ssh/kvokka-agent
+    file: ${HOME}/.secrets/ssh/kvokka-agent
 
   ssh_public_key:
-    file: ${HOME}/.ssh/kvokka-agent.pub
+    file: ${HOME}/.secrets/ssh/kvokka-agent.pub
 
   ssh_known_hosts:
-    file: ${HOME}/.ssh/known_hosts
+    file: ${HOME}/.secrets/ssh/known_hosts
 
   cat_private_key:
-    file: ${HOME}/.ssh/cat
+    file: ${HOME}/.secrets/ssh/cat
 
   cat_public_key:
-    file: ${HOME}/.ssh/cat.pub
+    file: ${HOME}/.secrets/ssh/cat.pub

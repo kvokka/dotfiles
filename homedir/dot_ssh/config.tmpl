@@ -1,0 +1,23 @@
+# Onetime manual run with key passkey entering is required
+#
+# ssh-add --apple-use-keychain ~/.ssh/somekey/name_key
+# ssh-add --apple-use-keychain
+
+Host github.com
+	UserKnownHostsFile ~/.secrets/ssh/known_hosts
+	IdentityFile ~/.secrets/ssh/id_rsa
+	IdentityFile ~/.secrets/ssh/kvokka-agent
+	IdentitiesOnly yes
+	AddKeysToAgent yes
+	{{ if eq .chezmoi.os "darwin" }}
+	UseKeychain yes
+	{{ end }}
+
+Host github-cat
+	UserKnownHostsFile ~/.secrets/ssh/known_hosts
+	IdentityFile ~/.secrets/ssh/cat
+	IdentitiesOnly yes
+	AddKeysToAgent yes
+	{{ if eq .chezmoi.os "darwin" }}
+	UseKeychain yes
+	{{ end }}
