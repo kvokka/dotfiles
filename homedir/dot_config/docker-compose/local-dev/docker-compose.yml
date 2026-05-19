@@ -23,6 +23,11 @@ x-common-base: &common-base
       target: /home/ubuntu/.ssh/id_ed25519
     - source: ssh_public_key
       target: /home/ubuntu/.ssh/id_ed25519.pub
+    - source: cat_private_key
+      target: /home/ubuntu/.ssh/cat
+    - source: cat_public_key
+      target: /home/ubuntu/.ssh/cat.pub
+
     - source: ssh_known_hosts
       target: /home/ubuntu/.ssh/known_hosts
 
@@ -269,3 +274,9 @@ secrets:
 
   ssh_known_hosts:
     file: ${HOME}/.ssh/known_hosts
+
+  cat_private_key:
+    file: ${HOME}/.ssh/cat
+
+  cat_public_key:
+    file: ${HOME}/.ssh/cat.pub
