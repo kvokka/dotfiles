@@ -1,3 +1,6 @@
 [user]
     name = Mikhail Beliakov
     email = mikhail.beliakov@checkatrade.com
+
+[core]
+    sshCommand = "ssh -i ~/.secrets/ssh/cat -o IdentitiesOnly=yes"
