@@ -16,3 +16,5 @@ tmp/
 .sisyphus/
 .ruff_cache/
 .rumdl_cache/
+.omo/
+.fallow/
