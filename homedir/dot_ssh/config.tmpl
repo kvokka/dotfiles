@@ -5,8 +5,11 @@
 
 Host github.com
 	UserKnownHostsFile ~/.secrets/ssh/known_hosts
+	{{ if .personal }}
 	IdentityFile ~/.secrets/ssh/id_rsa
+	{{ else }}
 	IdentityFile ~/.secrets/ssh/kvokka-agent
+	{{ end }}
 	IdentitiesOnly yes
 	AddKeysToAgent yes
 	{{ if eq .chezmoi.os "darwin" }}
