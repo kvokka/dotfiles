@@ -19,13 +19,13 @@ x-common-base: &common-base
     - "host.docker.internal:host-gateway"
   stop_grace_period: 2s
   secrets:
-    - source: ssh_private_key
-      target: /home/ubuntu/.secrets/ssh/id_ed25519
-    - source: ssh_public_key
-      target: /home/ubuntu/.secrets/ssh/id_ed25519.pub
-    - source: cat_private_key
+    - source: ssh_agent_private_key
+      target: /home/ubuntu/.secrets/ssh/kvokka-agent
+    - source: ssh_agent_public_key
+      target: /home/ubuntu/.secrets/ssh/kvokka-agent.pub
+    - source: ssh_cat_private_key
       target: /home/ubuntu/.secrets/ssh/cat
-    - source: cat_public_key
+    - source: ssh_cat_public_key
       target: /home/ubuntu/.secrets/ssh/cat.pub
 
     - source: ssh_known_hosts
@@ -266,17 +266,17 @@ volumes:
   brew:
 
 secrets:
-  ssh_private_key:
+  ssh_agent_private_key:
     file: ${HOME}/.secrets/ssh/kvokka-agent
 
-  ssh_public_key:
+  ssh_agent_public_key:
     file: ${HOME}/.secrets/ssh/kvokka-agent.pub
 
   ssh_known_hosts:
     file: ${HOME}/.secrets/ssh/known_hosts
 
-  cat_private_key:
+  ssh_cat_private_key:
     file: ${HOME}/.secrets/ssh/cat
 
-  cat_public_key:
+  ssh_cat_public_key:
     file: ${HOME}/.secrets/ssh/cat.pub
