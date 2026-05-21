@@ -15,5 +15,10 @@ ui:
     osNotificationsAllowWhenVisible: false
     notifyOnNeedsInput: true
     notifyOnIdle: true
+    showMessageTimeline: true
+    holdLongAssistantReplies: true
+    showPromptVoiceInput: true
+    toolInputsVisibility: collapsed
+    keepUnseenSubagentIdleStatus: false
 server:
   opencodeBinary: opencode
