@@ -7,7 +7,7 @@ Host github.com
 	UserKnownHostsFile ~/.secrets/ssh/known_hosts
 	{{ if .personal }}
 	IdentityFile ~/.secrets/ssh/id_rsa
-	{{ else }}
+	{{ else if and (.headless) (or (eq .github_login "kvokka") ((eq .github_login "kvokka-agent")) ) }}
 	IdentityFile ~/.secrets/ssh/kvokka-agent
 	{{ end }}
 	IdentitiesOnly yes
