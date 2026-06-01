@@ -4,44 +4,44 @@ _.path = ['{{ "{{config_root}}" }}/node_modules/.bin']
 
 [tools]
 
-nodejs = '24.13'
+nodejs = '26.2'
 biome = '2.4'
 bun = '1.3'
 
 "npm:aicommit2" = "latest"
-"npm:fallow" = "v2.76"
+"npm:fallow" = "v2.85"
 
 golang = '1.26'
 
 python = '3.14'
 uv = '0.11'
 ruff = '0.15'
-ty = '0.0.35'
-pipx = '1.11'
+ty = '0.0.40'
+pipx = '1.13'
 
 prek = '0.4'
 hadolint = '2.14'
 shellcheck = '0.11'
 gitleaks = '8.30'
-rumdl = '0.1.92' # too often version bumps
+rumdl = '0.2.4' # too often version bumps
 vale = '3.14'
 
 just = '1.51'
 chezmoi = '2.70'
 bat = '0.26'
-fzf = '0.72'
+fzf = '0.73'
 fd = '10.4'
 jq = '1.8'
 yq = '4.53'
 ripgrep = '15.1'
 direnv = '2.37'
 zoxide = '0.9'
-gh = '2.92'
-oxlint = '1.64'
+gh = '2.93'
+oxlint = '1.67'
 
 oras = '1.3'
 
-oh-my-posh = '29.13'
+oh-my-posh = '29.14'
 
 neovim = '0.12'
 
@@ -51,7 +51,7 @@ opencode = '1.15'
 claude = '2.1'
 
 {{- if eq .chezmoi.os "linux" }}
-docker-cli = '29.3'
+docker-cli = '29.5'
 # "npm:openclaw" = "latest" # use npm for now, since with bun it fails
 "npm:agent-browser" = "latest"
 {{- end }}
