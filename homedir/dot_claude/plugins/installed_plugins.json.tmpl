@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "plugins": {
+    {{ if eq .github_login "kvokka" }}
+    "llm-docs-bootstrap@llm-docs-bootstrap-local": [
+      {
+        "scope": "user",
+         "installPath": {{ joinPath .chezmoi.homeDir ".claude/plugins/cache/llm-docs-bootstrap-local/llm-docs-bootstrap/0.1.0" | quote }},
+        "installedAt": "2026-06-02T11:56:08.553Z",
+        "lastUpdated": "2026-06-02T11:56:08.553Z"
+      }
+    ]
+    {{ end }}
+  }
+}

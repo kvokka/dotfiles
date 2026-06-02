@@ -1,0 +1,18 @@
+{
+  "claude-plugins-official": {
+    "source": {
+      "source": "github",
+      "repo": "anthropics/claude-plugins-official"
+    },
+    "installLocation": {{ joinPath .chezmoi.homeDir ".claude/plugins/marketplaces/claude-plugins-official" | quote }},
+    "lastUpdated": "2026-06-02T11:38:34.810Z"
+  }{{ if eq .github_login "kvokka" }},
+  "llm-docs-bootstrap-local": {
+    "source": {
+      "source": "directory",
+      "path": {{ joinPath .chezmoi.homeDir "proj/active/cat/claude_code_plugins/llm-docs-bootstrap-local" | quote }}
+    },
+    "installLocation": {{ joinPath .chezmoi.homeDir ".claude/plugins/marketplaces/llm-docs-bootstrap-local" | quote }},
+    "lastUpdated": "2026-06-02T11:40:38.000Z"
+  }{{ end }}
+}
