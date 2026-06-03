@@ -112,6 +112,11 @@ useRelativePaths = true
 [includeIf "gitdir:{{ .chezmoi.workingTree }}/**"]
     path = ~/.config/git/config-chezmoi
 
+[credential "https://github.com"]
+    helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+    helper = !gh auth git-credential
+
 {{ if not .personal }}
 [url "git@github.com:kvokka-agent/"]
 	insteadOf = git@github.com:kvokka/
