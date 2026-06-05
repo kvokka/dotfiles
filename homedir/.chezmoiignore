@@ -17,7 +17,7 @@
 Library/Preferences/**
 Library/Application\ Support/Quotio/**
 .config/local-compose
-{{ if .personal }}
+{{ if not .personal }}
 .config/gh/hosts.yml
 {{ end }}
 {{ end }}
