@@ -17,6 +17,9 @@
 Library/Preferences/**
 Library/Application\ Support/Quotio/**
 .config/local-compose
+{{ if .personal }}
+.config/gh/hosts.yml
+{{ end }}
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
@@ -24,8 +27,5 @@ Library/Application\ Support/Quotio/**
 {{ end }}
 
 {{ if ne .github_login "kvokka" }}
-{{ if not .personal }}
 .config/git/config-checkeatrade
-.config/gh/hosts.yml
-{{ end }}
 {{ end }}
