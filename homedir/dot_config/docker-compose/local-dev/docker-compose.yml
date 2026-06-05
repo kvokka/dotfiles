@@ -36,6 +36,8 @@ x-standard-env-files: &standard-env-files
     # to set mise GH PAT
     - path: ~/.secrets/shared/.env
       required: false
+    - path: ~/.secrets/agent/.env
+      required: false
 
 networks:
   dev:

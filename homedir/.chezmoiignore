@@ -24,5 +24,8 @@ Library/Application\ Support/Quotio/**
 {{ end }}
 
 {{ if ne .github_login "kvokka" }}
+{{ if not .personal }}
 .config/git/config-checkeatrade
+.config/gh/hosts.yml
+{{ end }}
 {{ end }}

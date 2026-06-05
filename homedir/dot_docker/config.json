@@ -17,6 +17,9 @@
 		"ai": {
 			"hooks": "build,buildx build,run,compose"
 		},
+		"compose": {
+			"hooks": "logs,compose logs,compose attach,compose up"
+		},
 		"debug": {
 			"hooks": "exec"
 		},
