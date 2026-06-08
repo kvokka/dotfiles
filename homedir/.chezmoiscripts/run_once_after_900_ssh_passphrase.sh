@@ -1,11 +1,11 @@
 #!/usr/bin/env zsh
 
 
-if [ -f ~/.ssh/cat ]; then
+if [ -f ~/.secrets/ssh/cat ]; then
   echo "Enter CAT SSH key passphrase"
   if [ "$OS" = "darwin" ]; then
-    ssh-add --apple-use-keychain ~/.ssh/cat
+    ssh-add --apple-use-keychain ~/.secrets/ssh/cat
   else
-    eval $(keychain --eval --agents ssh cat)
+    ssh-add -l | grep -q "$(ssh-keygen -lf ~/.secrets/ssh/cat | awk '{print $2}')" || ssh-add ~/.secrets/ssh/cat
   fi
 fi

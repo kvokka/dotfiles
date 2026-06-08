@@ -12,6 +12,8 @@ sudo usermod -s $(which zsh) $(whoami) &>/dev/null
 sudo usermod -s $(which zsh) root &>/dev/null
 sudo chsh -s $(which zsh) $(whoami) &>/dev/null
 
+eval "$(ssh-agent -s)"
+
 # until https://github.com/anomalyco/opencode/issues/14032
 mkdir -p ~/proj/active/opencode_worktrees
 ln -sfT ~/proj/active/opencode_worktrees ~/.local/share/opencode/worktree
