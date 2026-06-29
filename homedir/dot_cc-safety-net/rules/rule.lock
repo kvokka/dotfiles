@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "rulebooks": [
+    {
+      "spec": "user-rules",
+      "kind": "local-directory",
+      "path": "user-rules",
+      "name": "user-rules",
+      "version": "1.0.0",
+      "digest": "sha256:aa17448c2ab5a6df2b7891f505624cf8eae3aef70ae9e9fe023a858f3ea83233"
+    }
+  ]
+}

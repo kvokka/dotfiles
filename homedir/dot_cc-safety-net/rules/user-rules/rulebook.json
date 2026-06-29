@@ -1,0 +1,30 @@
+{
+  "rulebook_version": 1,
+  "name": "user-rules",
+  "version": "1.0.0",
+  "description": "Migrated CC Safety Net rules.",
+  "author": "project",
+  "migrated_from": "~/.cc-safety-net/config.json",
+  "allowed_commands": [
+    "git"
+  ],
+  "rules": [
+    {
+      "name": "block-git-push-force",
+      "command": "git",
+      "subcommand": "push",
+      "block_args": [
+        "-f",
+        "--force"
+      ],
+      "reason": "'git push --force' is prohibited. Use a new branch/worktree instead"
+    }
+  ],
+  "tests": [
+    {
+      "command": "git push -f",
+      "expect": "blocked",
+      "rule": "block-git-push-force"
+    }
+  ]
+}
