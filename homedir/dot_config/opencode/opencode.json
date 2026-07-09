@@ -124,6 +124,7 @@
   "enabled_providers": [
     "opencode",
     "openai",
+    "codex"
     // "anthropic"
   ],
   "provider": {
