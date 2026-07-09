@@ -127,240 +127,21 @@
     // "anthropic"
   ],
   "provider": {
-    // Providers are the reflections of the Quotio created for compatibility with other tools
     // "anthropic": {
-    //   "models": {
-    //     "claude-opus-4-6-thinking": {
-    //       "limit": {
-    //         "context": 200000,
-    //         "output": 64000
-    //       },
-    //       "name": "Claude Opus 4-6 Thinking",
-    //       "modalities": {
-    //         "input": [
-    //           "text",
-    //           "image",
-    //           "pdf"
-    //         ],
-    //         "output": [
-    //           "text"
-    //         ]
-    //       },
-    //       "variants": {
-    //         "low": {
-    //           "thinkingConfig": {
-    //             "thinkingBudget": 8192
-    //           }
-    //         },
-    //         "max": {
-    //           "thinkingConfig": {
-    //             "thinkingBudget": 32768
-    //           }
-    //         }
-    //       },
-    //       "options": {
-    //         "thinking": {
-    //           "budgetTokens": 16000,
-    //           "type": "enabled"
-    //         }
-    //       },
-    //       "reasoning": true
-    //     },
-    //     "claude-sonnet-4-6": {
-    //       "limit": {
-    //         "context": 200000,
-    //         "output": 64000
-    //       },
-    //       "modalities": {
-    //         "input": [
-    //           "text",
-    //           "image",
-    //           "pdf"
-    //         ],
-    //         "output": [
-    //           "text"
-    //         ]
-    //       },
-    //       "name": "Claude Sonnet 4-6"
-    //     },
-    //     "claude-sonnet-4-6-thinking": {
-    //       "limit": {
-    //         "context": 200000,
-    //         "output": 64000
-    //       },
-    //       "name": "Claude Sonnet 4-6 Thinking",
-    //       "modalities": {
-    //         "input": [
-    //           "text",
-    //           "image",
-    //           "pdf"
-    //         ],
-    //         "output": [
-    //           "text"
-    //         ]
-    //       },
-    //       "variants": {
-    //         "low": {
-    //           "thinkingConfig": {
-    //             "thinkingBudget": 8192
-    //           }
-    //         },
-    //         "max": {
-    //           "thinkingConfig": {
-    //             "thinkingBudget": 32768
-    //           }
-    //         }
-    //       },
-    //       "options": {
-    //         "thinking": {
-    //           "budgetTokens": 10000,
-    //           "type": "enabled"
-    //         }
-    //       },
-    //       "reasoning": true
-    //     },
-    //     "claude-haiku-4-5": {
-    //       "limit": {
-    //         "context": 128000,
-    //         "output": 32000
-    //       },
-    //       "modalities": {
-    //         "input": [
-    //           "text",
-    //         ],
-    //         "output": [
-    //           "text"
-    //         ]
-    //       },
-    //       "name": "Claude Haiku 4-5"
-    //     }
-    //   },
     //   "npm": "@ai-sdk/anthropic",
     //   "options": {
     //     "apiKey": "{env:MY_CLI_LLM_PROXY_API_KEY}",
     //     "baseURL": "{env:MY_CLI_LLM_PROXY_URL}"
     //   },
-    //   "whitelist": [
-    //     "claude-haiku-4-5",
-    //     "claude-opus-4-6-thinking",
-    //     "claude-sonnet-4-6",
-    //     "claude-sonnet-4-6-thinking"
-    //   ]
     // },
     "opencode": {
-      "whitelist": [
-        "big-pickle",
-        "minimax-m2.5-free",
-        "nemotron-3-super-free"
-      ]
+      // "whitelist": [
+      //   "big-pickle",
+      //   "minimax-m2.5-free",
+      //   "nemotron-3-super-free"
+      // ]
     },
     "openai": {
-      "models": {
-        "gpt-5.6-sol": {
-          "limit": {
-            "context": 258000,
-            "output": 128000
-          },
-          "name": "GPT 5.6 Sol",
-          "options": {
-            "reasoningEffort": "high",
-            "textVerbosity": "medium"
-          },
-          "variants": {
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            }
-          },
-          "reasoning": true
-        },
-        "gpt-5.6-terra": {
-          "limit": {
-            "context": 258000,
-            "output": 128000
-          },
-          "name": "GPT 5.6 terra",
-          "options": {
-            "reasoningEffort": "high",
-            "textVerbosity": "medium"
-          },
-          "variants": {
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            }
-          },
-          "reasoning": true
-        },
-        "gpt-5.6-luna": {
-          "limit": {
-            "context": 258000,
-            "output": 128000
-          },
-          "name": "GPT 5.6 luna",
-          "options": {
-            "reasoningEffort": "high",
-            "textVerbosity": "medium"
-          },
-          "variants": {
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            }
-          },
-          "reasoning": true
-        },
-        "gpt-5.5": {
-          "limit": {
-            "context": 258000,
-            "output": 128000
-          },
-          "name": "GPT 5.5",
-          "options": {
-            "reasoningEffort": "high",
-            "textVerbosity": "medium"
-          },
-          "variants": {
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            }
-          },
-          "reasoning": true
-        }
-      },
       "name": "OpenAI",
       "npm": "@ai-sdk/openai",
       "options": {
@@ -369,8 +150,14 @@
       },
       "whitelist": [
         "gpt-5.6-sol",
+        "gpt-5.6-sol-pro",
+        "gpt-5.6-sol-fast",
         "gpt-5.6-terra",
+        "gpt-5.6-terra-pro",
+        "gpt-5.6-terra-fast",
         "gpt-5.6-luna",
+        "gpt-5.6-luna-pro",
+        "gpt-5.6-luna-fast",
         "gpt-5.4",
         "gpt-5.5",
         "gpt-5.4-mini",
