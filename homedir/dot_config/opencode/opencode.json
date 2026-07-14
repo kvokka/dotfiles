@@ -1,7 +1,7 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
-    "oh-my-openagent@4.16.3",
+    "oh-my-openagent@4.18.1",
     // "@tarquinen/opencode-dcp@v3.1.14",
     "cc-safety-net@1.0.6"
   ],
@@ -101,20 +101,20 @@
       "thinkingLevel": "high"
     },
     "summary": {
-      "model": "openai/gpt-5.6-terra",
+      "model": "openai/gpt-5.6-sol",
       "thinkingLevel": "medium"
     },
     "explore": {
       "model": "openai/gpt-5.6-luna",
-      "thinkingLevel": "low"
+      "thinkingLevel": "high"
     },
     // this is used by ALL models for compaction
     "compaction": {
-      "model": "openai/gpt-5.6-terra",
+      "model": "openai/gpt-5.6-sol",
       "thinkingLevel": "high"
     },
     "general": {
-      "model": "openai/gpt-5.6-terra",
+      "model": "openai/gpt-5.6-sol",
       "thinkingLevel": "high"
     }
   },
