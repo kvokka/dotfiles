@@ -25,6 +25,10 @@
       "model": "openai/gpt-5.6-sol",
       "variant": "medium"
     },
+    "oracle": {
+      "model": "openai/gpt-5.6-sol",
+      "variant": "xhigh"
+    },
     "sisyphus-junior": {
       "model": "openai/gpt-5.6-luna",
       "variant": "xhigh"
