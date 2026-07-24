@@ -7,7 +7,19 @@ ARG TZ=Asia/Bangkok
 ENV TZ=${TZ}
 
 # hadolint ignore=DL3004
-RUN apt-get install -y --no-install-recommends sudo tini zsh curl git locales build-essential tzdata keychain \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  sudo tini zsh curl git locales build-essential tzdata keychain \
+  # set up libasound2t64 for agent-browser as a spike for linux
+  libasound2t64 \
+  # required for jpackage
+  binutils \
+  fakeroot \
+  libc6 \
+  imagemagick \
+  gcc \
+  # claude sandbox
+  bubblewrap \
+  socat \
   && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
   && echo $TZ > /etc/timezone \
   && dpkg-reconfigure -f noninteractive tzdata \  && echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/ubuntu \
@@ -17,17 +29,6 @@ RUN apt-get install -y --no-install-recommends sudo tini zsh curl git locales bu
   && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
-
-# shared deps
-RUN apt-get update && apt-get install -y \
-  # set up libasound2t64 for agent-browser as a spike for linux
-  libasound2t64 \
-  # required for jpackage
-  binutils \
-  fakeroot \
-  libc6 \
-  imagemagick \
-  gcc
 
 ENV LANG=en_US.UTF-8 \
   LC_ALL=en_US.UTF-8 \
