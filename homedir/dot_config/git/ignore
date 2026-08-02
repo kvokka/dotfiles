@@ -18,3 +18,4 @@ tmp/
 .rumdl_cache/
 .omo/
 .fallow/
+**/.claude/settings.local.json
