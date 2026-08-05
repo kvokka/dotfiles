@@ -1,4 +1,3 @@
-export EDITOR="code -w"
 export HOMEBREW_NO_AUTO_UPDATE=1
 export DISABLE_AUTO_UPDATE="true"
 export HOMEBREW_NO_ENV_HINTS=1
@@ -9,6 +8,9 @@ if [[ -z $DOCKER_SOCK_OWNED && $GITHUB_ACTIONS != "true" && $CI != "true" && -f 
     sudo chown "$(whoami):$(whoami)" /var/run/docker.sock 2>/dev/null || true
     export DOCKER_SOCK_OWNED=1   # prevent repeating in subshells
 fi
+export EDITOR="nvim"
+{{- else }}
+export EDITOR="code -w"
 {{- end }}
 export MY_CLI_LLM_PROXY_HOST={{ .localLLMProxyHost }}
 export MY_CLI_LLM_PROXY_URL=$MY_CLI_LLM_PROXY_HOST/v1
