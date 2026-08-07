@@ -62,5 +62,5 @@
 ## Secrets And Sensitive Files
 
 - README recommends shared secrets in `~/.secrets/shared/.env`; mention env var names only, never real values.
-- Treat Quotio, OpenClaw, kube, Telegram, and `private_` configs as sensitive. Do not quote secrets in docs, logs, prompts, or commits.
+- Treat OpenClaw, kube, Telegram, and `private_` configs as sensitive. Do not quote secrets in docs, logs, prompts, or commits.
 - `homedir/dot_config/zshrc.d/executable_800-secrets.zsh` sources shared secrets and symlinks `~/.secrets/home/*` into `$HOME`; changing it affects login shells.

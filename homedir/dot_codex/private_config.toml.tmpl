@@ -9,7 +9,7 @@ model_provider = "myproxy"
 
 [model_providers.myproxy]
 # Have to use chezmoi interpolation since it does not support it from env var
-base_url = "{{ .localLLMProxyUrl }}"
+base_url = "{{ env "MY_CLI_LLM_PROXY_URL" }}"
 
 name = "My Proxy for Codex"
 wire_api = "responses"

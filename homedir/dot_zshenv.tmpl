@@ -12,6 +12,6 @@ export EDITOR="nvim"
 {{- else }}
 export EDITOR="code -w"
 {{- end }}
-export MY_CLI_LLM_PROXY_HOST={{ .localLLMProxyHost }}
+export MY_CLI_LLM_PROXY_HOST=https://p01--cpa--vyz4vtzxq2zw.code.run
 export MY_CLI_LLM_PROXY_URL=$MY_CLI_LLM_PROXY_HOST/v1
 export AICOMMIT_CONFIG_PATH=$HOME/.config/aicommit2/config.ini

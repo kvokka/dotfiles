@@ -51,7 +51,7 @@
     "mode": "merge",
     "providers": {
       "openai": {
-        "baseUrl": "http://host.docker.internal:8317/v1",
+        "baseUrl": "https://p01--cpa--vyz4vtzxq2zw.code.run/v1",
         "apiKey": {
           "source": "env",
           "provider": "default",
@@ -65,7 +65,7 @@
         "models": []
       },
       "cli-proxy": {
-        "baseUrl": "http://host.docker.internal:8317/v1",
+        "baseUrl": "https://p01--cpa--vyz4vtzxq2zw.code.run/v1",
         "apiKey": {
           "source": "env",
           "provider": "default",

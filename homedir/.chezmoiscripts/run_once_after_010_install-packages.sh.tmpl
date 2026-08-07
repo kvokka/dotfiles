@@ -36,7 +36,6 @@ set -eufo pipefail
 
   {{ if eq .chezmoi.os "darwin" -}}
     {{ $taps = append $taps "nguyenphutrong/tap" }}
-    {{ $casks = append $casks "quotio" }}
 
     {{ $casks = append $casks "activitywatch" }}
   {{- end }}

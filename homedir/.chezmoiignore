@@ -15,7 +15,6 @@
 .docker/config.json
 .config/iterm2/com.googlecode.iterm2.plist
 Library/Preferences/**
-Library/Application\ Support/Quotio/**
 .config/local-compose
 {{ if not .personal }}
 .config/gh/hosts.yml
