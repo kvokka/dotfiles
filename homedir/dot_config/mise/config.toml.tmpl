@@ -9,44 +9,44 @@ biome = '2.5'
 bun = '1.3'
 
 "npm:aicommit2" = "latest"
-"npm:fallow" = "v3.9.1"
+"npm:fallow" = "v3.14"
 
 golang = '1.26'
 
 python = '3.14'
-uv = '0.11'
+uv = '0.12'
 ruff = '0.15'
-ty = '0.0.63'
+ty = '0.0.69'
 pipx = '1.16'
 
 "pipx:hf" = "1.26"
 
 prek = '0.4'
-hadolint = '2.14'
+hadolint = '2.15'
 shellcheck = '0.11'
 gitleaks = '8.30'
-rumdl = '0.2.43' # too often version bumps
+rumdl = '0.2.52' # too often version bumps
 vale = '3.14'
 
-just = '1.57'
-chezmoi = '2.71'
+just = '1.58'
+chezmoi = '2.72'
 bat = '0.26'
 fzf = '0.74'
 fd = '10.4'
 jq = '1.8'
 yq = '4.53'
-ripgrep = '15.1'
+ripgrep = '15.2'
 direnv = '2.37'
 zoxide = '0.10'
-gh = '2.96'
-oxlint = '1.75'
+gh = '2.97'
+oxlint = '1.77'
 
 oras = '1.3'
 
 sops = '3.13'
 age = '1.3'
 
-oh-my-posh = '29.36.0'
+oh-my-posh = '30.6'
 
 neovim = '0.12'
 
@@ -56,7 +56,7 @@ claude = '2.1'
 gcloud = 'latest'
 
 {{- if eq .chezmoi.os "linux" }}
-docker-cli = '29.6'
+docker-cli = '29.7'
 # "npm:openclaw" = "latest" # use npm for now, since with bun it fails
 "npm:agent-browser" = "latest"
 {{- end }}
