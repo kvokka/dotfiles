@@ -80,6 +80,7 @@ services:
 
   openclaw:
     <<: [ *common-base, *standard-env-files ]
+    profiles: [ "claw" ]
     depends_on:
       wait-for-ready:
         condition: service_healthy
@@ -97,6 +98,7 @@ services:
 
   opencode:
     <<: [ *common-base, *standard-env-files ]
+    profiles: [ "agent" ]
     depends_on:
       wait-for-ready:
         condition: service_healthy
@@ -112,6 +114,7 @@ services:
 
   openchamber-web:
     <<: [ *common-base, *standard-env-files ]
+    profiles: [ "agent" ]
     depends_on:
       opencode:
         condition: service_healthy
@@ -133,6 +136,7 @@ services:
   codenomad:
     # access via https://localhost:9898/
     <<: [ *common-base, *standard-env-files ]
+    profiles: [ "agent" ]
     depends_on:
       wait-for-ready:
         condition: service_healthy
@@ -146,6 +150,7 @@ services:
 
   oh-my-opencode-dashboard:
     <<: [ *common-base, *standard-env-files ]
+    profiles: [ "agent" ]
     depends_on:
       wait-for-ready:
         condition: service_healthy
@@ -190,6 +195,7 @@ services:
       - "51234:51234"
 
   db:
+    profiles: [ "sa" ]
     image: postgres:16
     environment:
       POSTGRES_USER: postgres
@@ -208,6 +214,7 @@ services:
 
   sa-backend:
     <<: *common-base
+    profiles: [ "sa" ]
     working_dir: /home/ubuntu/proj/active/sa-web/backend
     environment:
       BACKEND_CORS_ORIGINS: http://localhost:5373,http://frontend:5373,http://host.docker.internal:5373
@@ -233,6 +240,7 @@ services:
 
   sa-frontend:
     <<: *common-base
+    profiles: [ "sa" ]
     working_dir: /home/ubuntu/proj/active/sa-web/frontend
     environment:
       VITE_PROXY_TARGET: http://sa-backend:8200
@@ -253,6 +261,7 @@ services:
 
   wg-e2e-report:
     <<: *common-base
+    profiles: [ "sa" ]
     command: uv run python serve.py
     working_dir: /home/ubuntu/proj/active/wise-generator/test
     ports:
