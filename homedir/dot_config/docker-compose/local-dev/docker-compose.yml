@@ -31,14 +31,6 @@ x-common-base: &common-base
     - source: ssh_known_hosts
       target: /home/ubuntu/.secrets/ssh/known_hosts
 
-x-standard-env-files: &standard-env-files
-  env_file:
-    # to set mise GH PAT
-    - path: ~/.secrets/shared/.env
-      required: false
-    - path: ~/.secrets/agent/.env
-      required: false
-
 networks:
   dev:
     driver: bridge
@@ -48,7 +40,7 @@ networks:
 
 services:
   console:
-    <<: [ *common-base, *standard-env-files ]
+    <<: [ *common-base ]
     build:
       context: $HOME/.config/docker-compose/local-dev/
       dockerfile: Dockerfile
@@ -79,7 +71,7 @@ services:
     stop_grace_period: 1s # short → forces quicker kill
 
   openclaw:
-    <<: [ *common-base, *standard-env-files ]
+    <<: [ *common-base ]
     profiles: [ "claw" ]
     depends_on:
       wait-for-ready:
@@ -97,7 +89,7 @@ services:
       - "18791:18791"
 
   opencode:
-    <<: [ *common-base, *standard-env-files ]
+    <<: [ *common-base ]
     profiles: [ "agent" ]
     depends_on:
       wait-for-ready:
@@ -113,7 +105,7 @@ services:
       - "4444:4444"
 
   openchamber-web:
-    <<: [ *common-base, *standard-env-files ]
+    <<: [ *common-base ]
     profiles: [ "agent" ]
     depends_on:
       opencode:
@@ -135,7 +127,7 @@ services:
 
   codenomad:
     # access via https://localhost:9898/
-    <<: [ *common-base, *standard-env-files ]
+    <<: [ *common-base ]
     profiles: [ "agent" ]
     depends_on:
       wait-for-ready:
@@ -149,7 +141,7 @@ services:
       - "9898:9898"
 
   oh-my-opencode-dashboard:
-    <<: [ *common-base, *standard-env-files ]
+    <<: [ *common-base ]
     profiles: [ "agent" ]
     depends_on:
       wait-for-ready:

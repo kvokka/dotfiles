@@ -19,3 +19,4 @@ tmp/
 .omo/
 .fallow/
 **/.claude/settings.local.json
+**/fnox.local.toml
