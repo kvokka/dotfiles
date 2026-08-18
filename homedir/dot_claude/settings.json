@@ -3,19 +3,26 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "opus",
+  "model": "opus[1m]",
   "worktree": {
     "baseRef": "fresh"
   },
   "enabledPlugins": {
     "siam-orchestration@siam": true,
-    "frontend-design@claude-plugins-official": false
+    "frontend-design@claude-plugins-official": false,
+    "pohuy@pohuy": true
   },
   "extraKnownMarketplaces": {
     "siam": {
       "source": {
         "source": "github",
         "repo": "umum-ai/siam-plugins"
+      }
+    },
+    "pohuy": {
+      "source": {
+        "source": "github",
+        "repo": "smixs/pohuy"
       }
     }
   },
