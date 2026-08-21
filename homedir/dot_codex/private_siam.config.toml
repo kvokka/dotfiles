@@ -1,0 +1,11 @@
+[marketplaces.siam]
+source_type = "git"
+source = "https://github.com/umum-ai/siam-plugins.git"
+
+[plugins."siam-orchestration@siam"]
+enabled = true
+
+# With codex 0.149.0 this DOES NOT override global config because of codex bug!
+# kept itjust to make it explisit. Edit global codex config instead!
+[plugins."engineering@siam"]
+enabled = true

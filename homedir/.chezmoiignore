@@ -27,4 +27,5 @@ Library/Preferences/**
 
 {{ if ne .github_login "kvokka" }}
 .config/git/config-checkeatrade
+.codex/siam.config.toml
 {{ end }}
