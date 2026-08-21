@@ -235,10 +235,10 @@ services:
     profiles: [ "sa" ]
     working_dir: /home/ubuntu/proj/active/sa-web/frontend
     environment:
-      VITE_PROXY_TARGET: http://sa-backend:8200
-      VITE_BACKEND_TARGET: http://localhost:8200
-      VITE_APP_NAME: Background App
-      VITE_ENVIRONMENT: development
+      APP_PROXY_TARGET: http://sa-backend:8200
+      APP_BACKEND_TARGET: http://localhost:8200
+      APP_APP_NAME: Background App
+      APP_ENVIRONMENT: development
     ports:
       - "5373:5373"
     depends_on:
