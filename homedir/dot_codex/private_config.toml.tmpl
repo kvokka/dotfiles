@@ -61,3 +61,12 @@ job_max_runtime_seconds = 1800
 
 [tools]
 view_image = true
+
+{{ if or (eq .github_login "kvokka") (eq .github_login "kvokka-agent")  }}
+[marketplaces.siam]
+source_type = "git"
+source = "https://github.com/umum-ai/siam-plugins.git"
+
+[plugins."engineering@siam"]
+enabled = true
+{{ end }}
