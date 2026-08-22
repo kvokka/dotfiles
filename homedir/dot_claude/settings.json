@@ -9,6 +9,7 @@
   },
   "enabledPlugins": {
     "siam-orchestration@siam": true,
+    "engineering@siam": true,
     "frontend-design@claude-plugins-official": false,
     "pohuy@pohuy": true
   },
@@ -27,8 +28,9 @@
     }
   },
   "language": "Русский",
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "askUserQuestionTimeout": "never",
+  "autoMemoryEnabled": false,
   "skipWorkflowUsageWarning": true,
   "theme": "dark-ansi",
   "remoteControlAtStartup": false,
