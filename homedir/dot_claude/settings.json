@@ -42,6 +42,9 @@
       "effortLevel": "xhigh"
     }
   },
+  "env": {
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "3" // starting from level 0
+  },
   "language": "Русский",
   "effortLevel": "high",
   "askUserQuestionTimeout": "never",
