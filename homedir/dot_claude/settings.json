@@ -11,6 +11,7 @@
     "siam-orchestration@siam": true,
     "engineering@siam": true,
     "frontend-design@claude-plugins-official": false,
+    "codex@openai-codex": true,
     "pohuy@pohuy": true
   },
   "extraKnownMarketplaces": {
@@ -20,6 +21,12 @@
         "repo": "umum-ai/siam-plugins"
       }
     },
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    },
     "pohuy": {
       "source": {
         "source": "github",
@@ -27,8 +34,16 @@
       }
     }
   },
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "high"
+    },
+    "claude-fable-5": {
+      "effortLevel": "xhigh"
+    }
+  },
   "language": "Русский",
-  "effortLevel": "xhigh",
+  "effortLevel": "high",
   "askUserQuestionTimeout": "never",
   "autoMemoryEnabled": false,
   "skipWorkflowUsageWarning": true,
