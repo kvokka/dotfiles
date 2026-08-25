@@ -8,7 +8,7 @@
     "baseRef": "fresh"
   },
   "enabledPlugins": {
-    "siam-orchestration@siam": true,
+    "siam-orchestration@siam": true, // TODO: move it on the project lvl
     "engineering@siam": true,
     "frontend-design@claude-plugins-official": false,
     "pohuy@pohuy": true

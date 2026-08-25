@@ -49,6 +49,7 @@ services:
       - "8000:8000"
       - "5173:5173"
       - "4096:4096"
+      - "2222:22" # compatibility with ssh-agent forwarding
     # # Use this block for mitmproxy, #mitmproxy
     # environment:
     #   - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
