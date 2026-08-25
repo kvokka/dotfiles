@@ -1,5 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "//": "TODO: move siam-orchestration@siam to the project level",
   "permissions": {
     "defaultMode": "auto"
   },
@@ -8,7 +9,7 @@
     "baseRef": "fresh"
   },
   "enabledPlugins": {
-    "siam-orchestration@siam": true, // TODO: move it on the project lvl
+    "siam-orchestration@siam": true,
     "engineering@siam": true,
     "frontend-design@claude-plugins-official": false,
     "pohuy@pohuy": true
