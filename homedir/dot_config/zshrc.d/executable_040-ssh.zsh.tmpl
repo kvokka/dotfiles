@@ -1,3 +1,5 @@
 {{ if eq .chezmoi.os "linux" }}
-[[ -z $SSH_AUTH_SOCK || ! kill -0 $SSH_AGENT_PID 2>/dev/null ]] && eval "$(ssh-agent -s)" 1> /dev/null
+if [[ -z "$SSH_AUTH_SOCK" ]] || ! kill -0 "$SSH_AGENT_PID" 2>/dev/null; then
+  eval "$(ssh-agent -s)" >/dev/null
+fi
 {{ end }}
