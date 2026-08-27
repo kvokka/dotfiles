@@ -19,7 +19,8 @@
       "source": {
         "source": "github",
         "repo": "umum-ai/siam-plugins"
-      }
+      },
+      "autoUpdate": true
     },
     "pohuy": {
       "source": {
