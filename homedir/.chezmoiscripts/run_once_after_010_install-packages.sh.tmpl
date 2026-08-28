@@ -22,10 +22,6 @@ set -eufo pipefail
   "docker-credential-helper"
 }}
 
-{{/* $taps = append $taps "atlassian/homebrew-acli" */}}{{/* Rovodev */}}
-{{/* $brews = append $brews "libyaml" */}}{{/* implicit Ruby 3.3-3.4 dependency */}}
-{{/* $brews = append $brews "atlassian/acli/acli" */}}{{/* Rovodev */}}
-
 {{ if eq .chezmoi.os "darwin" -}}
   {{ $brews = append $brews "dockutil" }}
   {{ $casks = append $casks "iterm2" }}
@@ -33,12 +29,6 @@ set -eufo pipefail
 
 {{ if .personal -}}
   {{/* $casks = append $casks "docker"; Skip install docker-desktop. TODO: Replace with podman */}}
-
-  {{ if eq .chezmoi.os "darwin" -}}
-    {{ $taps = append $taps "nguyenphutrong/tap" }}
-
-    {{ $casks = append $casks "activitywatch" }}
-  {{- end }}
 
   {{ $casks = append $casks "whatsapp" }}
   {{ $casks = append $casks "telegram" }}
@@ -48,10 +38,8 @@ set -eufo pipefail
   {{ $casks = append $casks "veracrypt" }}
   {{ $casks = append $casks "google-chrome" }}
   {{ $casks = append $casks "visual-studio-code" }}
-  {{/* "font-meslo-lg-nerd-font" used with from p10k, font `MesloLGM NF` */}}
-  {{/* "font-fira-code-nerd-font" used with oh-my-posh, font `MesloLGM Nerd Font` */}}
+  {{ $casks = append $casks "ghostty" }}
   {{ $casks = append $casks "font-meslo-lg-nerd-font" }}
-  {{ $casks = append $casks "font-fira-code-nerd-font" }}
   {{/* $casks = append $casks "grammarly-desktop" */}}
 {{- end }}
 
