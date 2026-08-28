@@ -1,0 +1,102 @@
+# -----------------------------------------------------------------------------
+# Font Settings
+# -----------------------------------------------------------------------------
+font-family = "MesloLGS NF"
+font-size = 23
+
+# -----------------------------------------------------------------------------
+# Cursor Settings
+# -----------------------------------------------------------------------------
+cursor-style = block
+cursor-style-blink = true
+
+# -----------------------------------------------------------------------------
+# Window & Appearance
+# -----------------------------------------------------------------------------
+background-opacity = 0.9
+background-blur = 4
+
+# -----------------------------------------------------------------------------
+# Theme - Light/Dark Mode Support
+# Using inline colors (matches your iTerm2 light/dark separation)
+# -----------------------------------------------------------------------------
+# For automatic light/dark switching, use: theme = light:iterm-light,dark:iterm-dark
+# Or use the colors below for dark mode (most common)
+# Dark Mode Colors (default)
+background = #15191F
+foreground = #DCDCDC
+# Cursor
+cursor-color = #FFFFFF
+cursor-text = #000000
+# Selection
+selection-background = #B3D7FF
+selection-foreground = #000000
+# -----------------------------------------------------------------------------
+# 16-Color Palette (ANSI Colors from iTerm2)
+# -----------------------------------------------------------------------------
+# Black
+palette = 0=#14191E
+palette = 8=#686868
+# Red
+palette = 1=#B43C2A
+palette = 9=#DD7975
+# Green
+palette = 2=#00C200
+palette = 10=#58E790
+# Yellow
+palette = 3=#C7C400
+palette = 11=#ECE100
+# Blue
+palette = 4=#2744C7
+palette = 12=#A7ABF2
+# Magenta
+palette = 5=#C040BE
+palette = 13=#E17EE1
+# Cyan
+palette = 6=#00C5C7
+palette = 14=#60FDFF
+# White
+palette = 7=#C7C7C7
+palette = 15=#FFFFFF
+
+# -----------------------------------------------------------------------------
+# Link Color
+
+# -----------------------------------------------------------------------------
+
+
+# Option+Delete = delete word backward (sends ESC + DEL)
+keybind = alt+backspace=text:\x1b\x7f
+
+# Cmd+Delete = delete line (sends Ctrl+U)
+keybind = super+backspace=text:\x15
+
+# Option+Left Arrow = move word left (sends ESC+b)
+keybind = alt+left=text:\x1bb
+# Option+Right Arrow = move word right (sends ESC+f)
+keybind = alt+right=text:\x1bf
+
+keybind = super+left=previous_tab
+keybind = super+right=next_tab
+
+# Move tabs (reorder)
+keybind = super+shift+left=move_tab:-1
+keybind = super+shift+right=move_tab:+1
+
+# -----------------------------------------------------------------------------
+# Shell Integration
+# -----------------------------------------------------------------------------
+
+shell-integration = detect
+
+# -----------------------------------------------------------------------------
+# Mouse
+# -----------------------------------------------------------------------------
+
+mouse-hide-while-typing = true
+
+# -----------------------------------------------------------------------------
+# Link
+# -----------------------------------------------------------------------------
+
+link-url = true
