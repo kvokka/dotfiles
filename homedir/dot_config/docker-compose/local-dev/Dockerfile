@@ -22,18 +22,11 @@ RUN apt update \
   && dpkg-reconfigure -f noninteractive tzdata \
   && echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/ubuntu \
   && chmod 0440 /etc/sudoers.d/ubuntu \
-  && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
-  && locale-gen en_US.UTF-8 \
-  && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-ENV LANG=en_US.UTF-8 \
-  LC_ALL=en_US.UTF-8 \
-  LANGUAGE=en_US.UTF-8 \
-  SHELL=zsh \
-  WORKDIR=/home/ubuntu/proj/active \
-  RUNNING_IN_DOCKER=true
+ENV SHELL=zsh \
+  WORKDIR=/home/ubuntu/proj/active
 
 WORKDIR /home/ubuntu/proj/active
 USER ubuntu

@@ -6,14 +6,12 @@
 .oh-my-zsh/cache/**
 .oh-my-zsh/plugins/**
 .oh-my-zsh/templates/**
-.oh-my-zsh/custom/themes/powerlevel10k/**/*.zwc
 .oh-my-zsh/CONTRIBUTING.md
 .oh-my-zsh/LICENSE.txt
 
 {{ if ne .chezmoi.os "darwin" }}
 .chezmoiscripts/darwin/**
 .docker/config.json
-.config/iterm2/com.googlecode.iterm2.plist
 Library/Preferences/**
 .config/local-compose
 {{ if not .personal }}

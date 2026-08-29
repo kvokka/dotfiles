@@ -1,4 +1,4 @@
-auto_update = true
+# auto_update = true # disabed until re-install on both macOS & linux from install script
 
 [env]
 
@@ -60,11 +60,11 @@ opencode = '1.18'
 claude = '2.1'
 gcloud = 'latest'
 
-{{- if eq .chezmoi.os "linux" }}
-docker-cli = '29.7'
-# "npm:openclaw" = "latest" # use npm for now, since with bun it fails
-"npm:agent-browser" = "latest"
-{{- end }}
+mas = { os = "macos", version = "7" }
+
+docker-cli =  { os = "linux", version = '29.7' }
+# "npm:openclaw" = { os = "linux" }
+"npm:agent-browser" = { os = "linux", version = "latest" }
 
 {{ if not .headless }}
 dive = '0.13'
@@ -109,7 +109,7 @@ helm-diff = '3'
 "apt:imagemagick" = { os = "linux" } #jpackage
 "apt:gcc" = { os = "linux" } #jpackage
 "apt:bubblewrap" = { os = "linux" }
-"apt:bubblewrap" = { os = "keychain" }
+"apt:keychain" = { os = "linux" }
 "apt:socat" = { os = "linux" } # claude code
 
 "brew:coreutils" = { os = "macos" }
@@ -127,43 +127,48 @@ helm-diff = '3'
 "brew:wget" = { os = "macos" }
 "brew:zsh" = { os = "macos" }
 
-{{- if not .headless }}
-
 "brew-cask:ghostty@tip" = { os = "macos" }
-{{- end }}
-
-{{- if .personal }}
-
-# Casks reach Linux only as fonts; mise skips the rest there.
 "brew-cask:font-meslo-lg-nerd-font" = "latest"  # p10k font `MesloLGM NF`
 
+{{- if .personal }}
+"brew-cask:vlc" = { os = "macos" }
+"brew-cask:visual-studio-code" = { os = "macos" }
 "brew-cask:firefox" = { os = "macos" }
 "brew-cask:google-chrome" = { os = "macos" }
-"brew-cask:telegram" = { os = "macos" }
 "brew-cask:transmission" = { os = "macos" }
 "brew-cask:veracrypt" = { os = "macos" } # pulls the macfuse cask, which needs a kernel extension approval
-"brew-cask:visual-studio-code" = { os = "macos" }
-"brew-cask:vlc" = { os = "macos" }
-# "brew-cask:whatsapp" = { os = "macos" }
+
+"mas:747648890" = "latest" # telegram
+"mas:310633997" = "latest" # whatsapp
 {{- end }}
 
-{{- if and (eq .chezmoi.os "linux") (not .ephemeral) }}
+{{- if eq .chezmoi.os "linux" }}
 
 [bootstrap.user]
 
 login_shell = "/usr/bin/zsh"
+
+[bootstrap.files."/etc/locale.gen"]
+content = "en_US.UTF-8 UTF-8\n"
+owner = "root"
+group = "root"
+mode = "0644"
+
 {{- end }}
 
-{{- if eq .chezmoi.os "darwin" }}
+[bootstrap.mise_shell_activate]
+zprofile = {enabled = true, mode = "shims"}
+zshrc = {enabled = true, mode = "activate"}
+zshenv = {enabled = true, mode = "activate"}
 
 [bootstrap.macos.dock]
 autohide = false
-orientation = bottom
+orientation = "bottom"
 largesize = 128
 
 [bootstrap.macos.finder]
 show_extensions_warning = false
-preferred_view_style = list
+preferred_view_style = "list"
 show_status_bar = false
 show_pathbar = true
 show_all_files = true
@@ -177,24 +182,34 @@ press_and_hold = false
 tap_to_click = true
 three_finger_drag = true
 
-[bootstrap.macos.defaults]
-"com.apple.Accessibility" = { KeyRepeatDelay = 0.416666666 }
-"com.apple.Accessibility" = { KeyRepeatInterval = 0.016666666 }
-"NSGlobalDomain" = { NSAutomaticCapitalizationEnabled = 1 }
-"NSGlobalDomain" = { NSAutomaticDashSubstitutionEnabled = 1 }
-"NSGlobalDomain" = { NSAutomaticPeriodSubstitutionEnabled = 1 }
-"NSGlobalDomain" = { NSAutomaticSpellingCorrectionEnabled = 1 }
-"NSGlobalDomain" = { NSAutomaticQuoteSubstitutionEnabled = 1 }
-"NSGlobalDomain" = { NSAutomaticSpellingCorrectionEnabled = 1 }
-"NSGlobalDomain" = { NSDocumentSaveNewDocumentsToCloud = 0 }
-"NSGlobalDomain" = { WebAutomaticSpellingCorrectionEnabled = 1 }
-"com.apple.AppleMultitouchTrackpad" = { TrackpadRightClick = 1 }
-"com.apple.AppleMultitouchTrackpad" = { ForceSuppressed = 0 }
+[bootstrap.macos.defaults."com.apple.Accessibility"]
+KeyRepeatDelay = 0.416666666
+KeyRepeatInterval = 0.016666666
 
-[bootstrap.hooks]
+[bootstrap.macos.defaults."NSGlobalDomain"]
+NSAutomaticCapitalizationEnabled = 1
+NSAutomaticDashSubstitutionEnabled = 1
+NSAutomaticPeriodSubstitutionEnabled = 1
+NSAutomaticSpellingCorrectionEnabled = 1
+NSAutomaticQuoteSubstitutionEnabled = 1
+NSDocumentSaveNewDocumentsToCloud = 0
+WebAutomaticSpellingCorrectionEnabled = 1
 
-post-defaults = "killall Dock || true"
-{{- end }}
+[bootstrap.macos.defaults."com.apple.AppleMultitouchTrackpad"]
+TrackpadRightClick = 1
+ForceSuppressed = 0
+
+[bootstrap.hooks.post-defaults]
+run = "killall Dock 2>/dev/null || true"
+
+[bootstrap.hooks.final]
+run = [
+  "[ -f /etc/locale.gen ] && locale-gen en_US.UTF-8",
+  "[ -f /etc/locale.gen ] && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8"
+]
+
+[dotfiles]
+"~/.cache/terraform/plugin-cache/.keep" = { content = "" }
 
 [settings]
 

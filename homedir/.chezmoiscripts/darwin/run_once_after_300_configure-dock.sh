@@ -32,4 +32,4 @@ dockutil --no-restart --add /Applications/Visual\ Studio\ Code.app --position 1 
 
 dockutil --no-restart --add /Applications/Google\ Chrome.app --position 2 &>/dev/null || true
 
-dockutil --add /Applications/iTerm.app/ --position 3 &>/dev/null || true
+dockutil --add /Applications/Ghostty.app/ --position 3 &>/dev/null || true
