@@ -63,12 +63,14 @@ of the tool runtimes. This keeps everyday pushes fast.
 
 To run a **full installation** (identical to a real machine setup), either:
 
-* Tag the commit with `full` before pushing:
+* Push the `full` tag at the commit:
 
 ```bash
 git tag full
-git push origin main --tags
+git push origin master --tags
 ```
+
+  The tag push is its own CI run, and that run is the full one.
 
 * Or trigger manually via GitHub Actions → "Run workflow" with the `full` checkbox.
 

@@ -12,6 +12,7 @@ bun = '1.4'
 pnpm = '11.22'
 
 "npm:aicommit2" = "latest"
+"npm:diff-so-fancy" = "1.4" # not packaged for Ubuntu noble, and one source serves both hosts
 "npm:fallow" = "v3.17"
 "npm:@fission-ai/openspec" = "1.10"
 
@@ -35,6 +36,8 @@ vale = '3.14'
 just = '1.58'
 chezmoi = '2.72'
 bat = '0.26'
+btop = { os = "linux", version = '1.4' } # upstream releases linux binaries only, macOS pours the bottle
+gdu = '5.37' # ncdu has no release binaries at all
 fzf = '0.74'
 fd = '10.4'
 jq = '1.8'
@@ -91,12 +94,9 @@ helm-diff = '3'
 "apt:language-pack-en-base" = { os = "linux" }
 "apt:coreutils" = { os = "linux" }
 "apt:curl" = { os = "linux" }
-"apt:diff-so-fancy" = { os = "linux" }
 "apt:git" = { os = "linux" }
 "apt:gnupg" = { os = "linux" }
-"apt:htop" = { os = "linux" }
 "apt:make" = { os = "linux" }
-"apt:ncdu" = { os = "linux" }
 "apt:tig" = { os = "linux" }
 "apt:tree" = { os = "linux" }
 "apt:wget" = { os = "linux" }
@@ -112,16 +112,14 @@ helm-diff = '3'
 "apt:keychain" = { os = "linux" }
 "apt:socat" = { os = "linux" } # claude code
 
+"brew:btop" = { os = "macos" }
 "brew:coreutils" = { os = "macos" }
 "brew:curl" = { os = "macos" }
-"brew:diff-so-fancy" = { os = "macos" }
 "brew:docker-credential-helper" = { os = "macos" }
 "brew:dockutil" = { os = "macos" }
 "brew:git" = { os = "macos" }
 "brew:gnupg" = { os = "macos" }
-"brew:htop" = { os = "macos" }
 "brew:make" = { os = "macos" }
-"brew:ncdu" = { os = "macos" }
 "brew:tig" = { os = "macos" }
 "brew:tree" = { os = "macos" }
 "brew:wget" = { os = "macos" }
