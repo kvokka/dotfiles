@@ -88,7 +88,7 @@ helm-diff = '3'
 # image carries its own compiler and media stack in the Dockerfile; only the
 # packages a bare Linux host also needs are declared here.
 [bootstrap.packages]
-
+"apt:language-pack-en-base" = { os = "linux" }
 "apt:coreutils" = { os = "linux" }
 "apt:curl" = { os = "linux" }
 "apt:diff-so-fancy" = { os = "linux" }
@@ -154,6 +154,16 @@ owner = "root"
 group = "root"
 mode = "0644"
 
+[bootstrap.files."/etc/locale.gen"]
+content = """
+LANG=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+"""
+owner = "root"
+group = "root"
+mode = "0644"
+
+
 {{- end }}
 
 [bootstrap.mise_shell_activate]
@@ -201,12 +211,6 @@ ForceSuppressed = 0
 
 [bootstrap.hooks.post-defaults]
 run = "killall Dock 2>/dev/null || true"
-
-[bootstrap.hooks.final]
-run = [
-  "[ -f /etc/locale.gen ] && locale-gen en_US.UTF-8",
-  "[ -f /etc/locale.gen ] && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8"
-]
 
 [dotfiles]
 "~/.cache/terraform/plugin-cache/.keep" = { content = "" }
