@@ -83,6 +83,11 @@ keybind = super+right=next_tab
 keybind = super+shift+left=move_tab:-1
 keybind = super+shift+right=move_tab:+1
 
+# Copy/paste with search fix
+# https://github.com/ghostty-org/ghostty/issues/10749#issuecomment-4825942622
+keybind = super+v=paste_from_clipboard
+keybind = super+c=copy_to_clipboard
+
 # -----------------------------------------------------------------------------
 # Shell Integration
 # -----------------------------------------------------------------------------
