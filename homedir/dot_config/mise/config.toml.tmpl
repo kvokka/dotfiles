@@ -126,7 +126,7 @@ helm-diff = '3'
 "brew:zsh" = { os = "macos" }
 
 "brew-cask:ghostty@tip" = { os = "macos" }
-"brew-cask:font-meslo-lg-nerd-font" = "latest"  # p10k font `MesloLGM NF`
+"brew-cask:font-meslo-lg-nerd-font" = { os = "macos" } # `MesloLGM NF` font
 
 {{- if .personal }}
 "brew-cask:vlc" = { os = "macos" }
@@ -162,11 +162,6 @@ group = "root"
 mode = "0644"
 replace = true
 {{- end }}
-
-[bootstrap.mise_shell_activate]
-zprofile = {enabled = true, mode = "shims"}
-zshrc = {enabled = true, mode = "activate"}
-zshenv = {enabled = true, mode = "activate"}
 
 [bootstrap.macos.dock]
 autohide = false
