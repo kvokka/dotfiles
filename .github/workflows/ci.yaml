@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       full:
-        description: 'Run full installation (same as tagging commit with "full")'
+        description: 'Run full installation (same as pushing the "full" tag)'
         type: boolean
         default: true
 
@@ -25,29 +25,32 @@ jobs:
       env:
         CODESPACES: true
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+        # The event carries the trigger: the workflow_dispatch input, or the
+        # ref of the pushed `full` tag. Reading it from the event needs no
+        # checkout, and `git tag --points-at` inside the container hits
+        # `detected dubious ownership` and silently reports no tag.
       - name: Detect full mode
         run: |
-          git fetch --tags --force 2>/dev/null || true
-          if [ "${{ inputs.full }}" = "true" ] || git tag --points-at HEAD | grep -q '^full$'; then
-            echo "CI_FULL=true" >> "$GITHUB_ENV"
+          if [ "${{ inputs.full || (github.ref_type == 'tag' && github.ref_name == 'full') }}" = "true" ]; then
             echo "::notice::Running FULL installation"
           else
-            echo "::notice::Running LIGHT installation (tag commit with 'full' for complete run)"
+            # Light mode: mise bootstrap leaves the host packages and the login
+            # shell alone, and installs only the tools the smoke test runs.
+            {
+              echo "DOTFILES_BOOTSTRAP_SKIP=packages,user,tools"
+              echo "DOTFILES_BOOTSTRAP_TOOLS=chezmoi oh-my-posh zoxide"
+            } >> "$GITHUB_ENV"
+            echo "::notice::Running LIGHT installation (push the 'full' tag for the complete run)"
           fi
 
-        # CI light mode: install mise and the tools the smoke test needs, and
-        # let `mise bootstrap` skip the system packages of [bootstrap.packages]
       - name: Install
         run: |
-          if [ "${CI_FULL}" != "true" ]; then
-            export MISE_ENABLE_TOOLS="chezmoi,oh-my-posh,zoxide"
-            export DOTFILES_BOOTSTRAP_SKIP="packages"
-          fi
+          sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary \
+            --branch "${{ github.head_ref || github.ref_name }}" \
+            "${{ github.event.pull_request.head.repo.full_name || github.repository }}"
 
-          sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary --branch ${{ github.ref_name }} kvokka
       - run: "tree -a -L 2 $HOME"
+
       - name: smoke test
         run: |
           export PATH="$HOME/.local/bin:$PATH"

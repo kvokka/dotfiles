@@ -16,9 +16,10 @@
   ```
 - Do not run install/bootstrap/`chezmoi apply` casually: they install tools, apply dotfiles, and mutate home state.
 - CI lives in `.github/workflows/ci.yaml`. Push CI is path-filtered; PR CI is not.
-- CI light mode sets `MISE_ENABLE_TOOLS="chezmoi,oh-my-posh,zoxide"` and skips most Homebrew packages.
-- Full CI is enabled with workflow input `full=true` or a `full` tag.
-- CI smoke checks are `brew shellenv`, `mise --version`, `~/.local/share/mise/shims/chezmoi --version`, and `~/.local/share/mise/shims/chezmoi data`.
+- `run_once_before_010_install-mise.sh` installs the mise binary; `run_once_after_020_mise-bootstrap.sh` runs `mise bootstrap` after apply, once chezmoi has written `~/.config/mise/config.toml`.
+- CI light mode passes `DOTFILES_BOOTSTRAP_SKIP=packages,user,tools` and `DOTFILES_BOOTSTRAP_TOOLS="chezmoi oh-my-posh zoxide"` to that script.
+- Full CI runs on the workflow_dispatch input `full` and on a push of the `full` tag.
+- CI smoke checks are `mise --version`, `mise bootstrap status`, `~/.local/share/mise/shims/chezmoi --version`, and `~/.local/share/mise/shims/chezmoi data`.
 
 ## Verification
 
