@@ -152,7 +152,7 @@ owner = "root"
 group = "root"
 mode = "0644"
 
-[bootstrap.files."/etc/locale.gen"]
+[bootstrap.files."/etc/default/locale"]
 content = """
 LANG=en_US.UTF-8
 LC_ALL=en_US.UTF-8
@@ -160,7 +160,6 @@ LC_ALL=en_US.UTF-8
 owner = "root"
 group = "root"
 mode = "0644"
-
 
 {{- end }}
 
