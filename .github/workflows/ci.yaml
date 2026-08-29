@@ -7,8 +7,8 @@ on:
     - .github/workflows/**
     - homedir/.chezmoiscripts/**
     - homedir/.chezmoi*
+    - homedir/dot_config/mise/**
     - .chezmoi*
-    - bootstrap.sh
   pull_request:
   workflow_dispatch:
     inputs:
@@ -37,19 +37,21 @@ jobs:
             echo "::notice::Running LIGHT installation (tag commit with 'full' for complete run)"
           fi
 
-        # CI light mode: install only critical dependencies (brew + mise), brew allows only to skip tools
+        # CI light mode: install mise and the tools the smoke test needs, and
+        # let `mise bootstrap` skip the system packages of [bootstrap.packages]
       - name: Install
         run: |
           if [ "${CI_FULL}" != "true" ]; then
             export MISE_ENABLE_TOOLS="chezmoi,oh-my-posh,zoxide"
-            export HOMEBREW_BUNDLE_BREW_SKIP="git curl wget make docker-credential-helper htop ncdu tree diff-so-fancy tig gnupg coreutils"
+            export DOTFILES_BOOTSTRAP_SKIP="packages"
           fi
 
           sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary --branch ${{ github.ref_name }} kvokka
       - run: "tree -a -L 2 $HOME"
       - name: smoke test
         run: |
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          export PATH="$HOME/.local/bin:$PATH"
           mise --version
+          mise bootstrap status
           ~/.local/share/mise/shims/chezmoi --version
           ~/.local/share/mise/shims/chezmoi data

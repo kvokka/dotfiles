@@ -1,3 +1,5 @@
+auto_update = true
+
 [env]
 
 _.path = ['{{ "{{config_root}}" }}/node_modules/.bin']
@@ -80,6 +82,119 @@ helm-diff = '3'
 # kubeseal = '0.28'
 # k9s = '0.40'
 # git-cliff = '2.8'
+
+# Host packages, applied by `mise bootstrap`. On macOS mise pours homebrew/core
+# bottles into /opt/homebrew itself, so Homebrew is never installed. The Linux
+# image carries its own compiler and media stack in the Dockerfile; only the
+# packages a bare Linux host also needs are declared here.
+[bootstrap.packages]
+
+"apt:coreutils" = { os = "linux" }
+"apt:curl" = { os = "linux" }
+"apt:diff-so-fancy" = { os = "linux" }
+"apt:git" = { os = "linux" }
+"apt:gnupg" = { os = "linux" }
+"apt:htop" = { os = "linux" }
+"apt:make" = { os = "linux" }
+"apt:ncdu" = { os = "linux" }
+"apt:tig" = { os = "linux" }
+"apt:tree" = { os = "linux" }
+"apt:wget" = { os = "linux" }
+"apt:zsh" = { os = "linux" }
+"apt:sudo" = { os = "linux" }
+"apt:libasound2t64" = { os = "linux" } # libasound2t64
+"apt:binutils" = { os = "linux" } #jpackage
+"apt:fakeroot" = { os = "linux" } #jpackage
+"apt:libc6" = { os = "linux" } #jpackage
+"apt:imagemagick" = { os = "linux" } #jpackage
+"apt:gcc" = { os = "linux" } #jpackage
+"apt:bubblewrap" = { os = "linux" }
+"apt:bubblewrap" = { os = "keychain" }
+"apt:socat" = { os = "linux" } # claude code
+
+"brew:coreutils" = { os = "macos" }
+"brew:curl" = { os = "macos" }
+"brew:diff-so-fancy" = { os = "macos" }
+"brew:docker-credential-helper" = { os = "macos" }
+"brew:dockutil" = { os = "macos" }
+"brew:git" = { os = "macos" }
+"brew:gnupg" = { os = "macos" }
+"brew:htop" = { os = "macos" }
+"brew:make" = { os = "macos" }
+"brew:ncdu" = { os = "macos" }
+"brew:tig" = { os = "macos" }
+"brew:tree" = { os = "macos" }
+"brew:wget" = { os = "macos" }
+"brew:zsh" = { os = "macos" }
+
+{{- if not .headless }}
+
+"brew-cask:ghostty@tip" = { os = "macos" }
+{{- end }}
+
+{{- if .personal }}
+
+# Casks reach Linux only as fonts; mise skips the rest there.
+"brew-cask:font-meslo-lg-nerd-font" = "latest"  # p10k font `MesloLGM NF`
+
+"brew-cask:firefox" = { os = "macos" }
+"brew-cask:google-chrome" = { os = "macos" }
+"brew-cask:telegram" = { os = "macos" }
+"brew-cask:transmission" = { os = "macos" }
+"brew-cask:veracrypt" = { os = "macos" } # pulls the macfuse cask, which needs a kernel extension approval
+"brew-cask:visual-studio-code" = { os = "macos" }
+"brew-cask:vlc" = { os = "macos" }
+# "brew-cask:whatsapp" = { os = "macos" }
+{{- end }}
+
+{{- if and (eq .chezmoi.os "linux") (not .ephemeral) }}
+
+[bootstrap.user]
+
+login_shell = "/usr/bin/zsh"
+{{- end }}
+
+{{- if eq .chezmoi.os "darwin" }}
+
+[bootstrap.macos.dock]
+autohide = false
+orientation = bottom
+largesize = 128
+
+[bootstrap.macos.finder]
+show_extensions_warning = false
+preferred_view_style = list
+show_status_bar = false
+show_pathbar = true
+show_all_files = true
+
+[bootstrap.macos.keyboard]
+key_repeat = 1
+initial_key_repeat = 25
+press_and_hold = false
+
+[bootstrap.macos.trackpad]
+tap_to_click = true
+three_finger_drag = true
+
+[bootstrap.macos.defaults]
+"com.apple.Accessibility" = { KeyRepeatDelay = 0.416666666 }
+"com.apple.Accessibility" = { KeyRepeatInterval = 0.016666666 }
+"NSGlobalDomain" = { NSAutomaticCapitalizationEnabled = 1 }
+"NSGlobalDomain" = { NSAutomaticDashSubstitutionEnabled = 1 }
+"NSGlobalDomain" = { NSAutomaticPeriodSubstitutionEnabled = 1 }
+"NSGlobalDomain" = { NSAutomaticSpellingCorrectionEnabled = 1 }
+"NSGlobalDomain" = { NSAutomaticQuoteSubstitutionEnabled = 1 }
+"NSGlobalDomain" = { NSAutomaticSpellingCorrectionEnabled = 1 }
+"NSGlobalDomain" = { NSDocumentSaveNewDocumentsToCloud = 0 }
+"NSGlobalDomain" = { WebAutomaticSpellingCorrectionEnabled = 1 }
+"com.apple.AppleMultitouchTrackpad" = { TrackpadRightClick = 1 }
+"com.apple.AppleMultitouchTrackpad" = { ForceSuppressed = 0 }
+
+[bootstrap.hooks]
+
+post-defaults = "killall Dock || true"
+{{- end }}
 
 [settings]
 

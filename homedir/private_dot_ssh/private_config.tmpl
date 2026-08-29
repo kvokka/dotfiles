@@ -24,3 +24,10 @@ Host github-cat
 	{{ if eq .chezmoi.os "darwin" }}
 	UseKeychain yes
 	{{ end }}
+
+Host docker-container
+	HostName localhost
+	Port 2222
+	User ubuntu
+	IdentityFile ~/.secrets/ssh/kvokka-agent
+	IdentitiesOnly yes

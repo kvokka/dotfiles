@@ -24,8 +24,6 @@ declare -a remove_labels=(
 	"App Store"
 )
 
-source ~/.config/zshrc.d/010-brew.zsh
-
 for label in "${remove_labels[@]}"; do
 	dockutil --no-restart --remove "${label}" || true
 done

@@ -41,10 +41,15 @@ export CONTEXT7_API_KEY=abc...
 BRAVESEARCH_API_KEY=abc...
 ```
 
-## WSL/Parallels MacOs
+## Packages
 
-For MacOs you might be asked for sudo pass, that is required for some casks, in
-the installation process, also it might be pre-set via
+`mise bootstrap` converges everything a machine needs: system packages, macOS
+defaults, the login shell and the tool runtimes of `[tools]`. Homebrew is never
+installed — mise pours `homebrew/core` bottles and casks into `/opt/homebrew`
+itself. Linux takes the same packages from `apt`.
+
+On macOS mise asks for sudo when it creates `/opt/homebrew` and when a cask
+ships a `pkg` installer. Pre-set it with
 
 ```bash
 export SUDO_PASSWORD="your_password_here"
@@ -52,8 +57,9 @@ export SUDO_PASSWORD="your_password_here"
 
 ## CI
 
-By default CI runs in **light mode** — only brew and mise are installed, skipping
-all other packages and tool runtimes. This keeps everyday pushes fast.
+By default CI runs in **light mode** — only mise and the tools the smoke test
+needs are installed; `mise bootstrap` skips `[bootstrap.packages]` and the rest
+of the tool runtimes. This keeps everyday pushes fast.
 
 To run a **full installation** (identical to a real machine setup), either:
 
