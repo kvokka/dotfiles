@@ -1,7 +1,7 @@
 FROM ubuntu:24.04
 
-ARG DOTFILES_GITHUB_USERNAME=kvokka
-ENV DOTFILES_GITHUB_USERNAME=${DOTFILES_GITHUB_USERNAME}
+WORKDIR /home/ubuntu/proj/active
+USER ubuntu
 
 ARG TZ=Asia/Bangkok
 ENV TZ=${TZ}
@@ -26,14 +26,6 @@ RUN apt update \
   && chmod 0440 /etc/sudoers.d/ubuntu \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
-
-ENV SHELL=zsh \
-  WORKDIR=/home/ubuntu/proj/active
-
-WORKDIR /home/ubuntu/proj/active
-USER ubuntu
-
-ENV PATH=$PATH:/home/ubuntu/.local/bin
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/usr/bin/tini", "--", "/entrypoint.sh"]

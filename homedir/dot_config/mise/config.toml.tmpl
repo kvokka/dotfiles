@@ -144,6 +144,21 @@ helm-diff = '3'
 
 login_shell = "/usr/bin/zsh"
 
+[bootstrap.groups.docker]
+system = true
+
+[bootstrap.users.ubuntu]
+system = true
+group = "ubuntu"
+groups = ["docker"]
+shell = "/usr/bin/zsh"
+
+[bootstrap.users.root]
+system = true
+group = "root"
+groups = ["docker"]
+shell = "/usr/bin/zsh"
+
 [bootstrap.files."/etc/locale.gen"]
 content = "en_US.UTF-8 UTF-8\n"
 owner = "root"

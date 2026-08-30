@@ -218,5 +218,6 @@
     "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/": true,
     "https://opencode.ai/": true,
   },
-  "scm.repositories.selectionMode": "single"
+  "scm.repositories.selectionMode": "single",
+  "git.confirmSync": false
 }
