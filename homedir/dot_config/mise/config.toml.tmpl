@@ -4,25 +4,25 @@ _.path = ['{{ "{{config_root}}" }}/node_modules/.bin']
 
 [tools]
 
-nodejs = '26.7.0'
+nodejs = '26.8'
 biome = '2.5'
 bun = '1.4'
 pnpm = '11.22'
 
 "npm:aicommit2" = "latest"
 "npm:diff-so-fancy" = "1.4" # not packaged for Ubuntu noble, and one source serves both hosts
-"npm:fallow" = "v3.17"
-"npm:@fission-ai/openspec" = "1.10"
+"npm:fallow" = "v3.20"
+"npm:@fission-ai/openspec" = "1.11"
 
-golang = '1.26'
+golang = '1.27'
 
 python = '3.14'
 uv = '0.12'
 ruff = '0.16'
-ty = '0.0.69'
+ty = '0.0.75'
 pipx = '1.16'
 
-"pipx:hf" = "1.28"
+"pipx:hf" = "1.29"
 
 prek = '0.4'
 hadolint = '2.15'
@@ -66,10 +66,10 @@ mas = { os = "macos", version = "7" }
 docker-cli =  { os = "linux", version = '29.7' }
 # "npm:openclaw" = { os = "linux" }
 "npm:agent-browser" = { os = "linux", version = "latest" }
+terraform = '1.16'
 
 {{ if not .headless }}
 dive = '0.13'
-terraform = '1.15'
 cosign = '3'
 helm = '4'
 helm-diff = '3'
@@ -134,8 +134,8 @@ helm-diff = '3'
 "brew-cask:transmission" = { os = "macos" }
 "brew-cask:veracrypt" = { os = "macos" } # pulls the macfuse cask, which needs a kernel extension approval
 
-"mas:747648890" = "latest" # telegram
-"mas:310633997" = "latest" # whatsapp
+"mas:747648890" = { os = "macos" } # telegram
+"mas:310633997" = { os = "macos" } # whatsapp
 {{- end }}
 
 {{- if eq .chezmoi.os "linux" }}
