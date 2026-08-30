@@ -22,31 +22,14 @@ email: # GitHub email, default: kvokka@yahoo.com
 * `personal` setting is responsible for extra tools installation and should be patched
 with the actual hostname
 
-### Shared secrets (optional)
+### Secrets (optional)
 
-* Recommended to set shared with devcontainer secrets in `~/.secrets/shared/.env`
-
-```text
-# optional GitHub PAT with public access to increace download quota for packages installation
-# take from https://github.com/settings/personal-access-tokens for public repos only (minimal access)
-export MISE_GITHUB_TOKEN=github_pat...
-
-# Quotio GUI App API Key for CLI Proxy access
-export MY_CLI_LLM_PROXY_API_KEY=quotio-local-...
-
-# https://context7.com/ api key
-export CONTEXT7_API_KEY=abc...
-
-# https://brave.com/search/api/ api key
-BRAVESEARCH_API_KEY=abc...
-```
+* Use fnox and [config.toml](./homedir/dot_config/fnox/config.toml)
 
 ## Packages
 
 `mise bootstrap` converges everything a machine needs: system packages, macOS
-defaults, the login shell and the tool runtimes of `[tools]`. Homebrew is never
-installed — mise pours `homebrew/core` bottles and casks into `/opt/homebrew`
-itself. Linux takes the same packages from `apt`.
+defaults, the login shell and the tool runtimes of `[tools]`.
 
 On macOS mise asks for sudo when it creates `/opt/homebrew` and when a cask
 ships a `pkg` installer. Pre-set it with
@@ -80,10 +63,6 @@ After a full run you can delete the tag so it doesn't carry over:
 git push origin :refs/tags/full
 git tag -d full
 ```
-
-## Notes
-
-* [fonts](https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k)
 
 ## License
 

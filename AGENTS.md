@@ -4,7 +4,6 @@
 
 - This is a chezmoi dotfiles repo, not an application package.
 - `.chezmoiroot` sets the chezmoi source root to `homedir`; edit managed source files there, not rendered files under `$HOME`.
-- `.chezmoiversion` pins chezmoi compatibility to `2.68.1`.
 - There are no repo package manifests or task-runner files discovered (`package.json`, `pyproject.toml`, `go.mod`, `Makefile`, `justfile`, `Taskfile`). Do not invent npm/pytest/go test commands.
 - Some high-value tracked paths can be absent from this sparse checkout; verify missing tracked files with `git show HEAD:<path>` before concluding they do not exist.
 
@@ -59,9 +58,3 @@
 - `scripts/topic_config.py check` is not passive; it sends and deletes probe messages because Telegram lacks a read-only forum-topic lookup.
 - `scripts/topic_config.py delete` deletes Telegram topics before config cleanup. Topic `1` is protected General/root topic; never delete it.
 - For ACP project topics, the helper creates worktrees under `$WORKDIR`; never delete a source project directory when cleaning up a topic.
-
-## Secrets And Sensitive Files
-
-- README recommends shared secrets in `~/.secrets/shared/.env`; mention env var names only, never real values.
-- Treat OpenClaw, kube, Telegram, and `private_` configs as sensitive. Do not quote secrets in docs, logs, prompts, or commits.
-- `homedir/dot_config/zshrc.d/executable_800-secrets.zsh` sources shared secrets and symlinks `~/.secrets/home/*` into `$HOME`; changing it affects login shells.
