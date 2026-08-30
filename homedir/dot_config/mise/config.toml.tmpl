@@ -161,6 +161,18 @@ mode = "0644"
 replace = true
 {{- end }}
 
+{{- if eq .chezmoi.os "darwin" }}
+[bootstrap.files."/etc/pam.d/sudo_local"]
+# Allows to use touchID instead of password in terminal
+content = """
+auth       sufficient     pam_tid.so
+"""
+owner = "root"
+group = "root"
+mode = "644"
+replace = true
+{{- end }}
+
 [bootstrap.macos.dock]
 autohide = false
 orientation = "bottom"
@@ -219,19 +231,7 @@ auto_update = true
 
 idiomatic_version_file_enable_tools = ["python", "ruby"]
 
-{{- $paths := list }}
-{{- $paths = append $paths (joinPath .chezmoi.homeDir "proj/active") }}
-
-{{- if eq .chezmoi.os "linux" }}
-{{-   $paths = append $paths "/workspace" -}}
-{{- end }}
-
-trusted_config_paths = [{{ if $paths }}
-{{- range compact $paths }}
-  "{{ . }}",
-{{- end }}
-{{- end }}
-]
+trusted_config_paths = ["~/proj/active"]
 
 [settings.pipx]
 uvx = true
