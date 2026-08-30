@@ -12,11 +12,13 @@ RUN apt update \
   binutils \
   build-essential \
   ca-certificates \
+  software-properties-common \
   curl \
   locales \
   sudo \
   tini \
   tzdata \
+  && add-apt-repository ppa:git-core/ppa -y \
   && ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime \
   && echo "$TZ" > /etc/timezone \
   && dpkg-reconfigure -f noninteractive tzdata \
