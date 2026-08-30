@@ -1,5 +1,3 @@
-# auto_update = true # disabed until re-install on both macOS & linux from install script
-
 [env]
 
 _.path = ['{{ "{{config_root}}" }}/node_modules/.bin']
@@ -216,10 +214,10 @@ npm.package_manager = "bun"
 
 {{ if .ephemeral }}
 yes = true
+auto_update = true
 {{ end }}
 
 idiomatic_version_file_enable_tools = ["python", "ruby"]
-
 
 {{- $paths := list }}
 {{- $paths = append $paths (joinPath .chezmoi.homeDir "proj/active") }}
