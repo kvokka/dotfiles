@@ -8,6 +8,8 @@
   "worktree": {
     "baseRef": "fresh"
   },
+  "promptCacheTtl": "1h",
+  "subagentPromptCacheTtl": "1h",
   "enabledPlugins": {
     "siam-orchestration@siam": true,
     "engineering@siam": true,
