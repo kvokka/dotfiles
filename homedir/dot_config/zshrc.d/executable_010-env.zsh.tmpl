@@ -1,6 +1,8 @@
 # mise installs itself here; sourced from .zprofile before mise is activated.
 [[ ":$PATH:" == *":$HOME/.local/bin:"* ]] || export PATH="$HOME/.local/bin:$PATH"
 
+[[ ":$PATH:" == *":$HOME/.bun/bin:"* ]] || export PATH="$PATH:$HOME/.bun/bin"
+
 {{ if eq .chezmoi.os "darwin" -}}
 # `mise bootstrap` pours homebrew/core bottles into this prefix without
 # installing Homebrew, so there is no `brew shellenv` to evaluate.
