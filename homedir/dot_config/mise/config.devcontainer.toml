@@ -1,0 +1,36 @@
+[bootstrap.user]
+
+login_shell = "/usr/bin/zsh"
+
+[bootstrap.hooks.post-user]
+run = '[ "$(getent passwd root | cut -d: -f7)" = /usr/bin/zsh ] || sudo usermod -s /usr/bin/zsh root'
+
+[bootstrap.groups.docker]
+system = true
+
+[bootstrap.groups.ubuntu]
+
+[bootstrap.users.ubuntu]
+group = "ubuntu"
+groups = ["docker"]
+shell = "/usr/bin/zsh"
+
+[bootstrap.files."/etc/locale.gen"]
+content = "en_US.UTF-8 UTF-8\n"
+owner = "root"
+group = "root"
+mode = "0644"
+
+[bootstrap.files."/etc/default/locale"]
+content = """
+LANG=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+"""
+owner = "root"
+group = "root"
+mode = "0644"
+replace = true
+
+[settings]
+
+auto_update = true

@@ -1,0 +1,82 @@
+[tools]
+
+mas = "7"
+
+dive = '0.13'
+cosign = '3'
+
+[bootstrap.packages]
+"brew:btop" = "latest"
+"brew:coreutils" = "latest"
+"brew:curl" = "latest"
+"brew:docker-credential-helper" = "latest"
+"brew:dockutil" = "latest"
+"brew:git" = "latest"
+"brew:gnupg" = "latest"
+"brew:make" = "latest"
+"brew:tig" = "latest"
+"brew:tree" = "latest"
+"brew:wget" = "latest"
+"brew:zsh" = "latest"
+
+"brew-cask:ghostty@tip" = "latest"
+"brew-cask:font-meslo-lg-nerd-font" = "latest" # `MesloLGM NF` font
+
+"brew-cask:vlc" = "latest"
+"brew-cask:visual-studio-code" = "latest"
+"brew-cask:firefox" = "latest"
+"brew-cask:google-chrome" = "latest"
+"brew-cask:transmission" = "latest"
+"brew-cask:veracrypt" = "latest"          # pulls the macfuse cask, which needs a kernel extension approval
+
+"mas:747648890" = "latest" # telegram
+"mas:310633997" = "latest" # whatsapp
+
+[bootstrap.files."/etc/pam.d/sudo_local"]
+# Allows to use touchID instead of password in terminal
+content = """
+auth       sufficient     pam_tid.so
+"""
+mode = "644"
+replace = true
+
+[bootstrap.macos.dock]
+autohide = false
+orientation = "bottom"
+largesize = 128
+
+[bootstrap.macos.finder]
+show_extensions_warning = false
+preferred_view_style = "list"
+show_status_bar = false
+show_pathbar = true
+show_all_files = true
+
+[bootstrap.macos.keyboard]
+key_repeat = 1
+initial_key_repeat = 25
+press_and_hold = false
+
+[bootstrap.macos.trackpad]
+tap_to_click = true
+three_finger_drag = true
+
+[bootstrap.macos.defaults."com.apple.Accessibility"]
+KeyRepeatDelay = 0.416666666
+KeyRepeatInterval = 0.016666666
+
+[bootstrap.macos.defaults."NSGlobalDomain"]
+NSAutomaticCapitalizationEnabled = 1
+NSAutomaticDashSubstitutionEnabled = 1
+NSAutomaticPeriodSubstitutionEnabled = 1
+NSAutomaticSpellingCorrectionEnabled = 1
+NSAutomaticQuoteSubstitutionEnabled = 1
+NSDocumentSaveNewDocumentsToCloud = 0
+WebAutomaticSpellingCorrectionEnabled = 1
+
+[bootstrap.macos.defaults."com.apple.AppleMultitouchTrackpad"]
+TrackpadRightClick = 1
+ForceSuppressed = 0
+
+[bootstrap.hooks.post-defaults]
+run = "killall Dock 2>/dev/null || true"

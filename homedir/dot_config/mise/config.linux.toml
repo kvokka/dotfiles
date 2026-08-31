@@ -1,0 +1,30 @@
+[tools]
+
+"npm:agent-browser" = "latest"
+btop = '1.4'                   # upstream releases linux binaries only, macOS pours the bottle
+
+[bootstrap.packages]
+"apt:language-pack-en-base" = "latest"
+"apt:coreutils" = "latest"
+"apt:curl" = "latest"
+"apt:git" = "latest"
+"apt:gnupg" = "latest"
+"apt:make" = "latest"
+"apt:tig" = "latest"
+"apt:tree" = "latest"
+"apt:wget" = "latest"
+"apt:zsh" = "latest"
+"apt:sudo" = "latest"
+"apt:libasound2t64" = "latest"         # libasound2t64
+"apt:binutils" = "latest"              #jpackage
+"apt:fakeroot" = "latest"              #jpackage
+"apt:libc6" = "latest"                 #jpackage
+"apt:imagemagick" = "latest"           #jpackage
+"apt:gcc" = "latest"                   #jpackage
+"apt:bubblewrap" = "latest"
+"apt:keychain" = "latest"
+"apt:socat" = "latest"                 # claude code
+
+[settings]
+
+yes = true

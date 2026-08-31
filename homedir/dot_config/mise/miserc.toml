@@ -1,0 +1,5 @@
+auto_env = true
+
+{% if get_env(name="RUNNER_VERSION", default="__UNSET__") == "__UNSET__" and os() == "linux" %}
+env = ["devcontainer"]
+{% endif %}

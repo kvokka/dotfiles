@@ -1,6 +1,6 @@
 [env]
 
-_.path = ['{{ "{{config_root}}" }}/node_modules/.bin']
+_.path = "./node_modules/.bin"
 
 [tools]
 
@@ -34,7 +34,6 @@ vale = '3.14'
 just = '1.58'
 chezmoi = '2.72'
 bat = '0.26'
-btop = { os = "linux", version = '1.4' } # upstream releases linux binaries only, macOS pours the bottle
 gdu = '5.37' # ncdu has no release binaries at all
 fzf = '0.74'
 fd = '10.4'
@@ -61,19 +60,8 @@ opencode = '1.18'
 claude = '2.1'
 gcloud = 'latest'
 
-mas = { os = "macos", version = "7" }
-
-docker-cli =  { os = "linux", version = '29.7' }
-# "npm:openclaw" = { os = "linux" }
-"npm:agent-browser" = { os = "linux", version = "latest" }
+docker-cli = '29.7'
 terraform = '1.16'
-
-{{ if not .headless }}
-dive = '0.13'
-cosign = '3'
-helm = '4'
-helm-diff = '3'
-{{ end }}
 
 # # # # # # extras
 # ruby = '3.4'
@@ -83,147 +71,8 @@ helm-diff = '3'
 # kubeseal = '0.28'
 # k9s = '0.40'
 # git-cliff = '2.8'
-
-# Host packages, applied by `mise bootstrap`. On macOS mise pours homebrew/core
-# bottles into /opt/homebrew itself, so Homebrew is never installed. The Linux
-# image carries its own compiler and media stack in the Dockerfile; only the
-# packages a bare Linux host also needs are declared here.
-[bootstrap.packages]
-"apt:language-pack-en-base" = { os = "linux" }
-"apt:coreutils" = { os = "linux" }
-"apt:curl" = { os = "linux" }
-"apt:git" = { os = "linux" }
-"apt:gnupg" = { os = "linux" }
-"apt:make" = { os = "linux" }
-"apt:tig" = { os = "linux" }
-"apt:tree" = { os = "linux" }
-"apt:wget" = { os = "linux" }
-"apt:zsh" = { os = "linux" }
-"apt:sudo" = { os = "linux" }
-"apt:libasound2t64" = { os = "linux" } # libasound2t64
-"apt:binutils" = { os = "linux" } #jpackage
-"apt:fakeroot" = { os = "linux" } #jpackage
-"apt:libc6" = { os = "linux" } #jpackage
-"apt:imagemagick" = { os = "linux" } #jpackage
-"apt:gcc" = { os = "linux" } #jpackage
-"apt:bubblewrap" = { os = "linux" }
-"apt:keychain" = { os = "linux" }
-"apt:socat" = { os = "linux" } # claude code
-
-"brew:btop" = { os = "macos" }
-"brew:coreutils" = { os = "macos" }
-"brew:curl" = { os = "macos" }
-"brew:docker-credential-helper" = { os = "macos" }
-"brew:dockutil" = { os = "macos" }
-"brew:git" = { os = "macos" }
-"brew:gnupg" = { os = "macos" }
-"brew:make" = { os = "macos" }
-"brew:tig" = { os = "macos" }
-"brew:tree" = { os = "macos" }
-"brew:wget" = { os = "macos" }
-"brew:zsh" = { os = "macos" }
-
-"brew-cask:ghostty@tip" = { os = "macos" }
-"brew-cask:font-meslo-lg-nerd-font" = { os = "macos" } # `MesloLGM NF` font
-
-{{- if .personal }}
-"brew-cask:vlc" = { os = "macos" }
-"brew-cask:visual-studio-code" = { os = "macos" }
-"brew-cask:firefox" = { os = "macos" }
-"brew-cask:google-chrome" = { os = "macos" }
-"brew-cask:transmission" = { os = "macos" }
-"brew-cask:veracrypt" = { os = "macos" } # pulls the macfuse cask, which needs a kernel extension approval
-
-"mas:747648890" = { os = "macos" } # telegram
-"mas:310633997" = { os = "macos" } # whatsapp
-{{- end }}
-
-{{- if eq .chezmoi.os "linux" }}
-
-[bootstrap.user]
-
-login_shell = "/usr/bin/zsh"
-
-[bootstrap.hooks.post-user]
-run = '[ "$(getent passwd root | cut -d: -f7)" = /usr/bin/zsh ] || sudo usermod -s /usr/bin/zsh root'
-
-[bootstrap.groups.docker]
-system = true
-
-[bootstrap.groups.ubuntu]
-
-[bootstrap.users.ubuntu]
-group = "ubuntu"
-groups = ["docker"]
-shell = "/usr/bin/zsh"
-
-[bootstrap.files."/etc/locale.gen"]
-content = "en_US.UTF-8 UTF-8\n"
-owner = "root"
-group = "root"
-mode = "0644"
-
-[bootstrap.files."/etc/default/locale"]
-content = """
-LANG=en_US.UTF-8
-LC_ALL=en_US.UTF-8
-"""
-owner = "root"
-group = "root"
-mode = "0644"
-replace = true
-{{- end }}
-
-{{- if eq .chezmoi.os "darwin" }}
-[bootstrap.files."/etc/pam.d/sudo_local"]
-# Allows to use touchID instead of password in terminal
-content = """
-auth       sufficient     pam_tid.so
-"""
-mode = "644"
-replace = true
-{{- end }}
-
-[bootstrap.macos.dock]
-autohide = false
-orientation = "bottom"
-largesize = 128
-
-[bootstrap.macos.finder]
-show_extensions_warning = false
-preferred_view_style = "list"
-show_status_bar = false
-show_pathbar = true
-show_all_files = true
-
-[bootstrap.macos.keyboard]
-key_repeat = 1
-initial_key_repeat = 25
-press_and_hold = false
-
-[bootstrap.macos.trackpad]
-tap_to_click = true
-three_finger_drag = true
-
-[bootstrap.macos.defaults."com.apple.Accessibility"]
-KeyRepeatDelay = 0.416666666
-KeyRepeatInterval = 0.016666666
-
-[bootstrap.macos.defaults."NSGlobalDomain"]
-NSAutomaticCapitalizationEnabled = 1
-NSAutomaticDashSubstitutionEnabled = 1
-NSAutomaticPeriodSubstitutionEnabled = 1
-NSAutomaticSpellingCorrectionEnabled = 1
-NSAutomaticQuoteSubstitutionEnabled = 1
-NSDocumentSaveNewDocumentsToCloud = 0
-WebAutomaticSpellingCorrectionEnabled = 1
-
-[bootstrap.macos.defaults."com.apple.AppleMultitouchTrackpad"]
-TrackpadRightClick = 1
-ForceSuppressed = 0
-
-[bootstrap.hooks.post-defaults]
-run = "killall Dock 2>/dev/null || true"
+# helm = '4'
+# helm-diff = '3'
 
 [dotfiles]
 "~/.cache/terraform/plugin-cache/.keep" = { content = "" }
@@ -234,11 +83,6 @@ minimum_release_age = "3d"
 minimum_release_age_excludes = ["opencode", "claude", "codex", "aqua:openai/codex"]
 
 npm.package_manager = "bun"
-
-{{ if .ephemeral }}
-yes = true
-auto_update = true
-{{ end }}
 
 idiomatic_version_file_enable_tools = ["python", "ruby"]
 
