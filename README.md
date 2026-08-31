@@ -17,6 +17,13 @@ name: # GitHub username, default: kvokka
 email: # GitHub email, default: kvokka@yahoo.com
 ```
 
+## SSH with passphrase
+
+```bash
+# run it once to save the key in keychain
+ssh-add --apple-use-keychain ~/.secrets/ssh/cat
+```
+
 ### Extras
 
 * `personal` setting is responsible for extra tools installation and should be patched

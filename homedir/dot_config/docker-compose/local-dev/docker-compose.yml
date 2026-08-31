@@ -71,24 +71,6 @@ services:
       retries: 900
     stop_grace_period: 1s # short → forces quicker kill
 
-  openclaw:
-    <<: [ *common-base ]
-    profiles: [ "claw" ]
-    depends_on:
-      wait-for-ready:
-        condition: service_healthy
-    ## for debugging
-    # command: openclaw gateway --verbose --raw-stream
-    ## for local dev
-    # command: bun run start gateway
-    # working_dir: /home/ubuntu/proj/active/openclaw
-    command: openclaw gateway
-
-    restart: unless-stopped
-    ports:
-      - "18789:18789"
-      - "18791:18791"
-
   opencode:
     <<: [ *common-base ]
     profiles: [ "agent" ]

@@ -9,6 +9,11 @@ set -eu
 # before apply, mise sees an empty config, reports "all tools are installed"
 # and installs nothing.
 
+if [ ! -x "$HOME/.local/bin/mise" ]; then
+  echo "==> Installing mise..."
+  curl -fsSL https://mise.run | sh
+fi
+
 PATH="$HOME/.local/bin:$PATH"
 export PATH
 

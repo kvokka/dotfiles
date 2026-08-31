@@ -13,4 +13,9 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 autoload -Uz compinit
 compinit
 
+{{ if eq .chezmoi.os "linux" }}
+zstyle :omz:plugins:ssh-agent quiet yes
+zstyle :omz:plugins:ssh-agent lazy yes
+{{ end }}
+
 source $ZSH/oh-my-zsh.sh
