@@ -1,8 +1,5 @@
 FROM ubuntu:24.04
 
-WORKDIR /home/ubuntu/proj/active
-USER ubuntu
-
 ARG TZ=Asia/Bangkok
 ENV TZ=${TZ}
 
@@ -26,6 +23,9 @@ RUN apt update \
   && chmod 0440 /etc/sudoers.d/ubuntu \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+
+USER ubuntu
+WORKDIR /home/ubuntu/proj/active
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/usr/bin/tini", "--", "/entrypoint.sh"]
