@@ -144,21 +144,16 @@ helm-diff = '3'
 
 login_shell = "/usr/bin/zsh"
 
+[bootstrap.hooks.post-user]
+run = '[ "$(getent passwd root | cut -d: -f7)" = /usr/bin/zsh ] || sudo usermod -s /usr/bin/zsh root'
+
 [bootstrap.groups.docker]
 system = true
 
 [bootstrap.groups.ubuntu]
-system = true
 
 [bootstrap.users.ubuntu]
-system = true
 group = "ubuntu"
-groups = ["docker"]
-shell = "/usr/bin/zsh"
-
-[bootstrap.users.root]
-system = true
-group = "root"
 groups = ["docker"]
 shell = "/usr/bin/zsh"
 
