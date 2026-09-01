@@ -2,7 +2,18 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "//": "TODO: move siam-orchestration@siam to the project level",
   "permissions": {
-    "defaultMode": "auto"
+    "defaultMode": "auto",
+    "deny": [
+      "EndConversation",
+      "NotebookEdit",
+      "DesignSync",
+      "Agent(statusline-setup)"
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "refreshInterval": 60
   },
   "model": "opus[1m]",
   "worktree": {
@@ -45,5 +56,15 @@
   "theme": "dark-ansi",
   "remoteControlAtStartup": false,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "feedbackDrafts": "off",
+  "skillOverrides": {
+    "run": "off",
+    "init": "off",
+    "design": "off",
+    "dataviz": "off",
+    "artifact-design": "off",
+    "artifact-diagramming": "off",
+    "artifact-capabilities": "off"
+  }
 }
