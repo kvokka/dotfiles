@@ -15,6 +15,9 @@
     "command": "~/.claude/statusline.sh",
     "refreshInterval": 60
   },
+  "env": {
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "5"
+  },
   "model": "opus[1m]",
   "worktree": {
     "baseRef": "fresh"
@@ -22,7 +25,7 @@
   "enabledPlugins": {
     "siam-orchestration@siam": true,
     "engineering@siam": true,
-    "frontend-design@claude-plugins-official": false,
+    "frontend-design@claude-plugins-official": true,
     "pohuy@pohuy": true
   },
   "extraKnownMarketplaces": {
@@ -60,11 +63,6 @@
   "feedbackDrafts": "off",
   "skillOverrides": {
     "run": "off",
-    "init": "off",
-    "design": "off",
-    "dataviz": "off",
-    "artifact-design": "off",
-    "artifact-diagramming": "off",
-    "artifact-capabilities": "off"
+    "init": "off"
   }
 }
