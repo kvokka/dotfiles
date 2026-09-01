@@ -1,3 +1,4 @@
 source ~/.config/zshrc.d/010-env.zsh
 
 command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh --shims)"
+source ~/.orbstack/shell/init.zsh 2>/dev/null || :

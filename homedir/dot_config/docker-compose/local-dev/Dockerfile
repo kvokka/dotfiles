@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 ARG TZ=Asia/Bangkok
 ENV TZ=${TZ}
@@ -15,6 +15,7 @@ RUN apt update \
   sudo \
   tini \
   tzdata \
+  zsh \
   && add-apt-repository ppa:git-core/ppa -y \
   && ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime \
   && echo "$TZ" > /etc/timezone \
