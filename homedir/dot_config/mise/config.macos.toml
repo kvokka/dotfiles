@@ -21,7 +21,7 @@ cosign = '3'
 
 "brew-cask:ghostty@tip" = "latest"
 "brew-cask:font-meslo-lg-nerd-font" = "latest" # `MesloLGM NF` font
-
+"brew-cask:orbstack" = "latest"
 "brew-cask:vlc" = "latest"
 "brew-cask:visual-studio-code" = "latest"
 "brew-cask:firefox" = "latest"

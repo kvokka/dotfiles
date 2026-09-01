@@ -9,7 +9,7 @@
 	"credHelpers": {
 		"europe-west2-docker.pkg.dev": "gcloud"
 	},
-	"currentContext": "desktop-linux",
+	"currentContext": "orbstack",
 	"plugins": {
 		"-x-cli-hints": {
 			"enabled": "true"
