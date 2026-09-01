@@ -107,3 +107,8 @@ mouse-hide-while-typing = true
 link-url = true
 
 macos-titlebar-style = native
+
+mouse-reporting = false
+
+keybind = ctrl+shift+r=reset
+keybind = ctrl+shift+m=toggle_mouse_reporting
