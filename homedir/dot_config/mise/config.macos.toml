@@ -5,6 +5,9 @@ mas = "7"
 dive = '0.13'
 cosign = '3'
 
+[bootstrap.brew]
+adopt = true
+
 [bootstrap.packages]
 "brew:btop" = "latest"
 "brew:coreutils" = "latest"
