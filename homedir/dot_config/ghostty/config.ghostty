@@ -114,3 +114,4 @@ keybind = ctrl+shift+r=reset
 keybind = ctrl+shift+m=toggle_mouse_reporting
 
 copy-on-select = clipboard
+mouse-scroll-multiplier = precision:1,discrete:2
