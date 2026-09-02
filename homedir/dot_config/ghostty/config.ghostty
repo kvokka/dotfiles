@@ -108,8 +108,7 @@ link-url = true
 
 macos-titlebar-style = native
 
-mouse-reporting = false
-
+mouse-reporting = true
 keybind = ctrl+shift+r=reset
 keybind = ctrl+shift+m=toggle_mouse_reporting
 
