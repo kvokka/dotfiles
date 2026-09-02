@@ -49,7 +49,7 @@
 ## Local Dev Compose
 
 - `homedir/dot_config/docker-compose/local-dev/README.md` describes local compose as the devcontainer replacement.
-- The zsh aliases wrap `docker compose -f "$HOME/.config/docker-compose/local-dev/docker-compose.yml"` through `dc`.
+- The zsh aliases wrap `docker-compose -f "$HOME/.config/docker-compose/local-dev/docker-compose.yml"` through `dc`.
 - Compose entrypoint applies dotfiles in the container and creates the OpenCode worktree symlink, so compose operations are not inspection-only.
 
 ## Telegram Topics

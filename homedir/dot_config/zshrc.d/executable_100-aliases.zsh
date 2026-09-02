@@ -22,7 +22,7 @@ alias cli_llm_proxy_models='curl -H "Authorization: Bearer ${MY_CLI_LLM_PROXY_AP
 DC_FILE_LOCAL_DEV="$HOME/.config/docker-compose/local-dev/docker-compose.yml"
 
 dc() {
-    command docker compose -f "$DC_FILE_LOCAL_DEV" "$@"
+    command docker-compose -f "$DC_FILE_LOCAL_DEV" "$@"
 }
 
 alias dcup='dc up -d'

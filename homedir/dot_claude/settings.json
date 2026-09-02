@@ -26,6 +26,7 @@
     "siam-orchestration@siam": true,
     "engineering@siam": true,
     "frontend-design@claude-plugins-official": true,
+    "codex-mcp@codex-mcp": true,
     "pohuy@pohuy": true
   },
   "extraKnownMarketplaces": {
@@ -40,6 +41,12 @@
       "source": {
         "source": "github",
         "repo": "smixs/pohuy"
+      }
+    },
+    "codex-mcp": {
+      "source": {
+        "source": "github",
+        "repo": "kvokka/codex-mcp"
       }
     }
   },
