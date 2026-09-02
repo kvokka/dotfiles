@@ -45,9 +45,10 @@
     },
     "codex-mcp": {
       "source": {
-        "source": "github",
-        "repo": "kvokka/codex-mcp"
-      }
+        "source": "git",
+        "url": "https://github.com/kvokka/codex-mcp.git"
+      },
+      "autoUpdate": true
     }
   },
   "modelSettings": {
