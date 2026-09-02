@@ -3,16 +3,12 @@ export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
 {{ if eq .chezmoi.os "linux" }}
-if [[ -z $DOCKER_SOCK_OWNED && $GITHUB_ACTIONS != "true" && $CI != "true" && -f /.dockerenv && -S /var/run/docker.sock ]]; then
-    sudo chown "$(whoami):$(whoami)" /var/run/docker.sock 2>/dev/null || true
-    export DOCKER_SOCK_OWNED=1   # prevent repeating in subshells
-fi
 export EDITOR="nvim"
 {{- else }}
 export EDITOR="code -w"
 {{- end }}
-export MY_CLI_LLM_PROXY_HOST=https://p01--cpa--vyz4vtzxq2zw.code.run
-export MY_CLI_LLM_PROXY_URL=$MY_CLI_LLM_PROXY_HOST/v1
+export MY_CLI_LLM_PROXY_HOST={{ .my_cli_llm_proxy.host | quote }}
+export MY_CLI_LLM_PROXY_URL={{ .my_cli_llm_proxy.url | quote }}
 export AICOMMIT_CONFIG_PATH=$HOME/.config/aicommit2/config.ini
 {{ if .personal }}
 export FNOX_AGE_KEY_FILE=~/.secrets/ssh/id_rsa
