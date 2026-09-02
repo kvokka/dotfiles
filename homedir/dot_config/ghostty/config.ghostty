@@ -112,3 +112,5 @@ mouse-reporting = false
 
 keybind = ctrl+shift+r=reset
 keybind = ctrl+shift+m=toggle_mouse_reporting
+
+copy-on-select = clipboard
