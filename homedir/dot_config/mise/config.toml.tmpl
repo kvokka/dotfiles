@@ -93,3 +93,7 @@ uvx = true
 
 [settings.python]
 uv_venv_auto = "create|source"
+
+[tasks."openspec:setup:stores"]
+description = "Setup all openspec stores"
+run = "openspec store register ~/proj/active/siam-platform"
