@@ -12,7 +12,7 @@ pnpm = '11.22'
 "npm:aicommit2" = "latest"
 "npm:diff-so-fancy" = "1.4" # not packaged for Ubuntu noble, and one source serves both hosts
 "npm:fallow" = "v3.20"
-"npm:@fission-ai/openspec" = "1.11"
+"npm:@fission-ai/openspec" = { version = "1.12", postinstall = "openspec completion install zsh" }
 
 golang = '1.27'
 
