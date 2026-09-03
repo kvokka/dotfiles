@@ -1,6 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "//": "TODO: move siam-orchestration@siam to the project level",
+  "//": [
+    "TODO: move siam-orchestration@siam to the project level",
+    "TODO: move CODEX_MCP_ALLOWED_AGENTS to siam env after testing is done"
+  ],
   "permissions": {
     "defaultMode": "auto",
     "deny": [
@@ -16,7 +19,8 @@
     "refreshInterval": 60
   },
   "env": {
-    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "5"
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "5",
+    "CODEX_MCP_ALLOWED_AGENTS": "engineering:librarian,engineering:critic"
   },
   "model": "opus[1m]",
   "worktree": {
