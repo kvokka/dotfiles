@@ -3,6 +3,10 @@ export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
 {{ if eq .chezmoi.os "linux" }}
+if [[ -z $DOCKER_SOCK_OWNED && $GITHUB_ACTIONS != "true" && $CI != "true" && -f /.dockerenv && -S /var/run/docker.sock ]]; then
+    sudo chown "$(whoami):$(whoami)" /var/run/docker.sock 2>/dev/null || true
+    export DOCKER_SOCK_OWNED=1   # prevent repeating in subshells
+fi
 export EDITOR="nvim"
 {{- else }}
 export EDITOR="code -w"

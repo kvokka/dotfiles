@@ -13,5 +13,6 @@
     "update",
     "sync",
     "archive"
-  ]
+  ],
+  "completionTipSeen": true
 }
