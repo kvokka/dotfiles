@@ -25,6 +25,12 @@ btop = '1.4'                   # upstream releases linux binaries only, macOS po
 "apt:keychain" = "latest"
 "apt:socat" = "latest"                 # claude code
 
+"github:gastownhall/beads" = "latest"
+"aqua:dolthub/dolt" = "2.3.2"
+opencode = "1.18"
+codex = "0"
+claude = "2.1"
+
 [settings]
 
 yes = true
