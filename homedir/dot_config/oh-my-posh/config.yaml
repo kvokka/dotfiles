@@ -74,8 +74,6 @@ blocks:
           - "{{ if gt .Behind 0 }}p:git-behind{{ end }}"
         template: " {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \ueb4b {{ .StashCount }}{{ end }} "
         options:
-          fetch_status: true
-          fetch_upstream_icon: false
           branch_identical_icon: ""
           branch_gone_icon: ""
 
@@ -266,8 +264,6 @@ tooltips:
     foreground: "p:fg-light"
     background: "p:terraform-bg"
     template: " \ue69a {{ .WorkspaceName }}{{ if .Version }} {{ .Version }}{{ end }} "
-    options:
-      fetch_version: true
 
   - type: terraform
     tips:
@@ -280,7 +276,6 @@ tooltips:
     background: "#FFDA18"
     template: " \ue69a {{ .WorkspaceName }}{{ if .Version }} {{ .Version }}{{ end }} "
     options:
-      fetch_version: true
       command: tofu
 
   - type: aws
@@ -305,3 +300,12 @@ tooltips:
     foreground: "p:fg-light"
     background: "p:gcp-bg"
     template: " \ue7b2 {{ .Project }} "
+
+  - type: mvn
+    style: powerline
+    powerline_symbol: 
+    foreground: "#FFFFFF"
+    background: "#2E2A65"
+    template: "  {{ .Full }} "
+    tips:
+      - mvn
