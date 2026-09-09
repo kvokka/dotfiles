@@ -1,6 +1,8 @@
 [env]
 
 _.path = "./node_modules/.bin"
+BEADS_DIR = "{{ .chezmoi.homeDir }}/proj/share/beads"
+BEADS_DOLT_SHARED_SERVER=1
 
 [tools]
 
@@ -59,7 +61,7 @@ gcloud = 'latest'
 docker-cli = '29.7'
 terraform = '1.16'
 
-"github:gastownhall/beads" = { version = "latest", os = "linux"}
+"github:gastownhall/beads" = { version = "1.3.0-rc.1", os = "linux"}
 "aqua:dolthub/dolt" = { version = "2.3.2", os = "linux"}
 opencode = { version = "1.18", os = "linux"}
 codex = { version = "0", os = "linux"}
