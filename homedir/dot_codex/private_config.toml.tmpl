@@ -103,3 +103,18 @@ trust_level = "trusted"
 {{ end -}}
 
 [hooks.state]
+
+[hooks.state."org@siam-platform:hooks/hooks.json:pre_tool_use:0:0"]
+trusted_hash = "sha256:cf6ae0ec53146e85e63b8f6d06545d020143fd1bef3f25a5586aba1a93bf4906"
+
+[hooks.state."org@siam-platform:hooks/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:9bf1969b76317735251d8c336b0ea96dacbda45558c5ed5ae53871a9a1e28429"
+
+[hooks.state."org@siam-platform:hooks/hooks.json:session_start:0:1"]
+trusted_hash = "sha256:3c71afe678f109df7a5f438125523fa210312607a620683c6e13df4817f80f1a"
+
+[hooks.state."org@siam-platform:hooks/hooks.json:subagent_start:0:0"]
+trusted_hash = "sha256:ce2c65b52d3a1c228b8ae6271fd5929d4fae9585c2c4aef6307836571ecc591d"
+
+[hooks.state."org@siam-platform:hooks/hooks.json:subagent_start:0:1"]
+trusted_hash = "sha256:be7766451cdeb611a549aaca188b55b6f9e1efe6d65d05c93a4c2f077cada688"
