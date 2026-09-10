@@ -67,19 +67,19 @@ job_max_runtime_seconds = 1800
 view_image = true
 
 {{ if or (eq .github_login "kvokka") (eq .github_login "kvokka-agent")  }}
-[marketplaces.siam]
+[marketplaces."siam-platform"]
 source_type = "git"
-source = "https://github.com/umum-ai/siam-plugins.git"
+source = "https://github.com/umum-ai/siam-platform.git"
 
 # TODO: After maturity of this plugin exctract it to the separate marketplace/plugin
 #       with pubic scope
-[plugins."engineering@siam"]
+[plugins."engineering@siam-platform"]
 enabled = true
 
 # With codex 0.149.1 this DOES NOT override global config because of codex bug!
 # kept it just to make it explisit. Have edit global codex config
 # TODO: make this project-related, not global
-[plugins."siam-orchestration@siam"]
+[plugins."org@siam-platform"]
 enabled = true
 {{ end }}
 
@@ -103,15 +103,3 @@ trust_level = "trusted"
 {{ end -}}
 
 [hooks.state]
-
-[hooks.state."engineering@siam:hooks/hooks.json:session_start:0:0"]
-trusted_hash = "sha256:8f60d0b9308e4c6f13aa66a89b2620966f808b240445bbdac8ca70b266dfa1fc"
-
-[hooks.state."engineering@siam:hooks/hooks.json:subagent_start:0:0"]
-trusted_hash = "sha256:2ca64fc7543ccea021828ef0921d6a85e31eabe9c7b2de3664c071876c87e45b"
-
-[hooks.state."siam-orchestration@siam:hooks/hooks.json:session_start:0:0"]
-trusted_hash = "sha256:9bf1969b76317735251d8c336b0ea96dacbda45558c5ed5ae53871a9a1e28429"
-
-[hooks.state."siam-orchestration@siam:hooks/hooks.json:subagent_start:0:0"]
-trusted_hash = "sha256:ce2c65b52d3a1c228b8ae6271fd5929d4fae9585c2c4aef6307836571ecc591d"
