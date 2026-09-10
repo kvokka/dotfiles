@@ -15,6 +15,7 @@ btop = '1.4'                   # upstream releases linux binaries only, macOS po
 "apt:wget" = "latest"
 "apt:zsh" = "latest"
 "apt:sudo" = "latest"
+"apt:lsof" = "latest"
 "apt:libasound2t64" = "latest"         # libasound2t64
 "apt:binutils" = "latest"              #jpackage
 "apt:fakeroot" = "latest"              #jpackage
