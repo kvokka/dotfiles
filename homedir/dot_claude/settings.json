@@ -25,17 +25,17 @@
     "baseRef": "fresh"
   },
   "enabledPlugins": {
-    "siam-orchestration@siam": true,
-    "engineering@siam": true,
+    "org@siam-platform": true,
+    "engineering@siam-platform": true,
     "frontend-design@claude-plugins-official": true,
     "claude-codex-bridge@claude-codex-bridge": true,
     "pohuy@pohuy": true
   },
   "extraKnownMarketplaces": {
-    "siam": {
+    "siam-platform": {
       "source": {
         "source": "github",
-        "repo": "umum-ai/siam-plugins"
+        "repo": "umum-ai/siam-platform"
       },
       "autoUpdate": true
     },
