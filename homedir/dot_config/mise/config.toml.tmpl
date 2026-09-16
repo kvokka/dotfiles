@@ -15,7 +15,7 @@ pnpm = '12.4.0'
 
 "npm:aicommit2" = "latest"
 "npm:diff-so-fancy" = "1.4" # not packaged for Ubuntu noble, and one source serves both hosts
-"npm:fallow" = "v3.24"
+"npm:fallow" = "v3.26"
 "npm:@fission-ai/openspec" = { version = "1.13", postinstall = "openspec completion install zsh" }
 
 golang = '1.27'
@@ -23,7 +23,7 @@ golang = '1.27'
 python = '3.14'
 uv = '0.12'
 ruff = '0.16'
-ty = '0.0.80'
+ty = '0.0.81'
 pipx = '1.16'
 
 "pipx:hf" = "1.31"
@@ -45,7 +45,7 @@ yq = '4.53'
 ripgrep = '15.2'
 direnv = '2.37'
 zoxide = '0.10'
-gh = '2.100'
+gh = '2.101'
 oxlint = '1.82'
 fnox = '1.35'
 
@@ -63,12 +63,13 @@ gcloud = 'latest'
 docker-cli = '29.8'
 terraform = '1.16'
 
-"github:gastownhall/beads" = { version = "1.3.0-rc.2", os = "linux"}
-"aqua:dolthub/dolt" = { version = "2.3.2", os = "linux"}
+"github:gastownhall/beads" = { version = "1.3.0", os = "linux"}
+"aqua:dolthub/dolt" = { version = "2.3.4", os = "linux"}
 opencode = { version = "1.18", os = "linux"}
 codex = { version = "0", os = "linux"}
 claude = { version = "2.1", os = "linux"}
 just = { version = "1.58", os = "linux"}
+ast-grep = { version = "0.45", os = "linux"}
 
 cloc = { version = "2.10", bin = "cloc", platforms = { linux-arm64 = { asset_pattern = "cloc-{{ version }}.pl" }, linux-x64 = { asset_pattern = "cloc-{{ version }}.pl" }, macos-arm64 = { asset_pattern = "cloc-{{ version }}.pl" } } }
 
