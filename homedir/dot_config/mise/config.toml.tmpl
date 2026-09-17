@@ -71,7 +71,7 @@ claude = { version = "2.1", os = "linux"}
 just = { version = "1.58", os = "linux"}
 ast-grep = { version = "0.45", os = "linux"}
 
-cloc = { version = "2.10", bin = "cloc", platforms = { linux-arm64 = { asset_pattern = "cloc-{{ version }}.pl" }, linux-x64 = { asset_pattern = "cloc-{{ version }}.pl" }, macos-arm64 = { asset_pattern = "cloc-{{ version }}.pl" } } }
+cloc = { version = "2.10", bin = "cloc", asset_pattern = "cloc-{{ "{{ version }}" }}.pl" }
 
 # # # # # # extras
 # ruby = '3.4'
