@@ -11,7 +11,6 @@ x-common-base: &common-base
     - home:/home/ubuntu:cached
     - ~/proj/active:/home/ubuntu/proj/active:cached
     - ~/.secrets/shared:/home/ubuntu/.secrets/shared:ro
-    - ~/.secrets/history:/home/ubuntu/.secrets/history
     - ~/.openclaw:/home/ubuntu/.openclaw
     - /var/run/docker.sock:/var/run/docker.sock
     - brew:/home/linuxbrew:cached

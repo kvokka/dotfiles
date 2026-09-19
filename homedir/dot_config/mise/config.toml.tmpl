@@ -63,6 +63,8 @@ gcloud = 'latest'
 docker-cli = '29.8'
 terraform = '1.16'
 
+atuin = '18.22'
+
 "github:gastownhall/beads" = { version = "1.3.0", os = "linux"}
 "aqua:dolthub/dolt" = { version = "2.3.4", os = "linux"}
 opencode = { version = "1.18", os = "linux"}
@@ -107,3 +109,25 @@ uv_venv_auto = "source"
 [tasks."openspec:setup:stores"]
 description = "Setup all openspec stores"
 run = "openspec store register ~/proj/active/siam-platform"
+
+[tasks.bootstrap]
+description = "Global mise bootstrap"
+run = "fnox exec -- mise run bootstrap:atuin"
+
+[tasks."bootstrap:atuin"]
+hide = true
+run = """
+[ -n "${ATUIN_KEY:-}" ] && [ -n "${ATUIN_PASSWORD:-}" ] || { echo "skip: no ATUIN_KEY/ATUIN_PASSWORD"; exit 0; }
+atuin status >/dev/null 2>&1 || atuin login -u "${ATUIN_USERNAME:-kvokka}" -p "$ATUIN_PASSWORD" -k "$ATUIN_KEY"
+
+d="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/atuin"
+mkdir -p "$d"
+atuin gen-completions --shell zsh --out-dir "$d"
+cat > "$d/atuin.plugin.zsh" <<'EOF'
+(( $+commands[atuin] )) || return
+eval "$(atuin init zsh --disable-up-arrow)"
+EOF
+rm -f "$HOME"/.zcompdump*
+
+atuin sync
+"""
