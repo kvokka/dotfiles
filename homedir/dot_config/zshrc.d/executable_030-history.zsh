@@ -2,4 +2,4 @@ unset HISTFILE
 HISTSIZE=10000
 SAVEHIST=0
 
-eval "$(atuin init zsh --disable-up-arrow)"
+command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh --disable-up-arrow)"

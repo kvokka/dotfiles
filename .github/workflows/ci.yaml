@@ -38,7 +38,7 @@ jobs:
             # shell alone, and installs only the tools the smoke test runs.
             {
               echo "DOTFILES_BOOTSTRAP_SKIP=packages,user,tools"
-              echo "DOTFILES_BOOTSTRAP_TOOLS=chezmoi oh-my-posh zoxide"
+              echo "DOTFILES_BOOTSTRAP_TOOLS=chezmoi oh-my-posh fnox"
             } >> "$GITHUB_ENV"
             echo "::notice::Running LIGHT installation (push the 'full' tag for the complete run)"
           fi
