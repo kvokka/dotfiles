@@ -44,6 +44,9 @@ jobs:
           fi
 
       - name: Install
+        env:
+          DOTFILES_BOOTSTRAP_SKIP: ${{ env.DOTFILES_BOOTSTRAP_SKIP }}
+          DOTFILES_BOOTSTRAP_TOOLS: ${{ env.DOTFILES_BOOTSTRAP_TOOLS }}
         run: |
           sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary \
             --branch "${{ github.head_ref || github.ref_name }}" \
