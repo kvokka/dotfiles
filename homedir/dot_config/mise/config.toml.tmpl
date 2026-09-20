@@ -111,11 +111,19 @@ uv_venv_auto = "source"
 
 [tasks."openspec:setup:stores"]
 description = "Setup all openspec stores"
-run = "openspec store register ~/proj/active/siam-platform"
+run = """
+for store in ~/proj/active/siam-platform; do
+  [ -d "$store" ] || { echo "skip: $store does not exist"; continue; }
+  openspec store register "$store"
+done
+"""
 
 [tasks.bootstrap]
 description = "Global mise bootstrap"
-run = "mise run bootstrap:atuin"
+run = [
+  "mise run bootstrap:atuin",
+  "mise run openspec:setup:stores",
+]
 
 [tasks."bootstrap:atuin"]
 hide = true

@@ -36,8 +36,10 @@ jobs:
           else
             # Light mode: mise bootstrap leaves the host packages and the login
             # shell alone, and installs only the tools the smoke test runs.
+            # `task` is skipped with `tools`: the `bootstrap` task runs through
+            # `mise run`, which first installs every tool the config lists.
             {
-              echo "DOTFILES_BOOTSTRAP_SKIP=packages,user,tools"
+              echo "DOTFILES_BOOTSTRAP_SKIP=packages,user,tools,task"
               echo "DOTFILES_BOOTSTRAP_TOOLS=chezmoi oh-my-posh fnox"
             } >> "$GITHUB_ENV"
             echo "::notice::Running LIGHT installation (push the 'full' tag for the complete run)"
