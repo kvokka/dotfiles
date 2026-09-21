@@ -17,6 +17,7 @@ repos:
     rev: v1.0.0
     hooks:
     - id: check-json5
+      exclude: ^homedir/private_dot_gemini/antigravity-cli/modify_settings\.json$ # chezmoi modify-template, not JSON
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.1
     hooks:

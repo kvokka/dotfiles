@@ -1,0 +1,17 @@
+# Secrets and local environment (never commit these)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Build artifacts (extend for the project's stack)
+dist/
+build/
+coverage/
+__pycache__/
+*.py[cod]
+.venv/
+venv/

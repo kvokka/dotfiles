@@ -3,6 +3,7 @@
   "//": [
     "TODO: move siam-orchestration@siam to the project level"
   ],
+  "skipDangerousModePermissionPrompt": true,
   "permissions": {
     "defaultMode": "auto",
     "deny": [
@@ -10,6 +11,20 @@
       "NotebookEdit",
       "DesignSync",
       "Agent(statusline-setup)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dcg",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -21,6 +36,7 @@
     "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "5"
   },
   "model": "opus[1m]",
+  "cleanupPeriodDays": 99999,
   "worktree": {
     "baseRef": "fresh"
   },

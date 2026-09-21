@@ -1,0 +1,9 @@
+{
+  "agentMail": {
+    "baseUrl": "http://127.0.0.1:8765",
+    "path": "/mcp/"
+  },
+  "defaults": {
+    "template": "metaprompt_by_gpt_52.md"
+  }
+}

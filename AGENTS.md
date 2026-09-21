@@ -46,6 +46,14 @@
   ```
 - Do not replace it with `opencode --agent=sisyphus acp`; `opencode acp` has its own option parser and does not accept that flag.
 
+## Flywheel Agent Stack (fw)
+
+- The acfs-derived agent stack (ntm, br/bv, Agent Mail `am`, dcg, ubs, cass/cm, sbh, agy, ...) lives in `homedir/dot_config/mise/config.fw.toml`, loaded only in the Linux devcontainer through the `fw` entry of `miserc.toml`; `toon`, `typos` and `fmd` are global tools.
+- Every tool is a pinned `github:` release; `cm` is built from the tagged source tarball in a tool-level `postinstall` (needs mise >= 2026.9.12 for `{{ version }}` in platform URLs).
+- Services (`agent-mail` on 127.0.0.1:8765, `cm` on 8766, `sbh`) are pitchfork daemons declared in `[daemons]`; the container has no systemd. Never run `am service install`, `sbh install`, `dcg install`, `agy install` or any upstream `install.sh`: chezmoi owns all configs and hook files (Claude `settings.json.tmpl`, `dot_codex/hooks.json.tmpl`, `opencode/plugins/dcg-guard.js.tmpl`, `private_dot_gemini/`).
+- Per-repository files (`.mcp.json`, `.codex/config.toml`, `opencode.json`, `.pre-commit-config.yaml`, `AGENTS.md`, `docs/agent-tooling.md`) come from `homedir/dot_config/fw/templates/` via the file task `mise run fw:init`; `mise run fw:doctor` smoke-checks the stack.
+- `homedir/dot_config/fw/templates/scripts/hooks/executable_agent-mail-guard` wraps `am guard check`; `am guard install` is incompatible with the global `core.hooksPath`.
+
 ## Local Dev Compose
 
 - `homedir/dot_config/docker-compose/local-dev/README.md` describes local compose as the devcontainer replacement.

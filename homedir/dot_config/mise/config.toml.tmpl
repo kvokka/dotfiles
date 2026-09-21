@@ -1,10 +1,6 @@
 [env]
 
 _.path = "./node_modules/.bin"
-BEADS_DIR = "{{ .chezmoi.homeDir }}/proj/share/beads" # configs
-BEADS_SHARED_SERVER_DIR = "{{ .chezmoi.homeDir }}/proj/share/beads" # DB path
-BEADS_DOLT_SHARED_SERVER=1
-BD_JSON_ENVELOPE=1
 
 [tools]
 
@@ -68,8 +64,11 @@ lsd = '1.2'
 
 tmux = '3.7c'
 
-"github:gastownhall/beads" = { version = "1.3.0", os = "linux"}
-"aqua:dolthub/dolt" = { version = "2.3.4", os = "linux"}
+# agent-stack helpers that are useful on every OS; the rest of the stack is in config.fw.toml
+"github:Dicklesworthstone/toon_rust" = "0.2.4"        # `toon` encoder for br/bv/ubs --format toon
+"github:Dicklesworthstone/franken_markdown" = "0.4.5" # `fmd` markdown -> html/pdf
+typos = "1.50"                                        # aqua:crate-ci/typos spell checker
+
 opencode = { version = "1.18", os = "linux"}
 codex = { version = "0", os = "linux"}
 claude = { version = "2.1", os = "linux"}
@@ -123,6 +122,8 @@ description = "Global mise bootstrap"
 run = [
   "mise run bootstrap:atuin",
   "mise run openspec:setup:stores",
+  # flywheel stack (config.fw.toml) exists only in the Linux devcontainer
+  "if mise tasks ls --json | jq -e 'any(.[]; .name == \"fw:bootstrap\")' >/dev/null; then mise run fw:bootstrap; fi",
 ]
 
 [tasks."bootstrap:atuin"]
@@ -136,6 +137,8 @@ mkdir -p "$d"
 atuin gen-completions --shell zsh --out-dir "$d"
 cat > "$d/atuin.plugin.zsh" <<'EOF'
 (( $+commands[atuin] )) || return
+# shells spawned by coding agents must not pollute the shell history
+[[ -n "${CLAUDECODE:-}${CLAUDE_PROJECT_DIR:-}${CODEX_THREAD_ID:-}${CODEX_CI:-}${AGENT_NAME:-}" ]] && return
 eval "$(atuin init zsh --disable-up-arrow)"
 EOF
 rm -f "$HOME"/.zcompdump*

@@ -10,8 +10,7 @@ plugins+=(
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
-autoload -Uz compinit
-compinit
+# compinit runs once, inside oh-my-zsh.sh
 
 {{ if eq .chezmoi.os "linux" }}
 zstyle :omz:plugins:ssh-agent quiet yes

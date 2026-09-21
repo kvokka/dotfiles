@@ -1,0 +1,117 @@
+# Flywheel agent stack (ported from acfs). Linux devcontainer only: this file is
+# loaded through the `fw` entry of the env list in miserc.toml, so dropping `fw`
+# there disables the whole stack. Every tool is a pinned upstream release; the
+# only build is `cm` (no linux-arm64 asset upstream), see [tools.…cass_memory_system].
+#
+# Background services run under pitchfork (`mise daemons`), the only mise-native
+# supervisor that works without systemd (PID 1 is tini in the container).
+# Never run the upstream installers, `am service install`, `sbh install`,
+# `dcg install` or `agy install`: chezmoi owns every config and hook file.
+
+[settings]
+experimental = true # `mise daemons`
+
+[env]
+BV_NO_UPDATE_CHECK = "1"
+CASS_DATA_DIR = "{{ env.HOME }}/proj/share/cass"
+CASS_MEMORY_HOME = "{{ env.HOME }}/proj/share/cass-memory"
+# Agent Mail archive location. Both the service and `am guard check` (the
+# pre-commit guard) resolve it from the environment, so it has to be exported
+# here and not only in ~/.config/mcp-agent-mail/config.env (which keeps the
+# rest of the service settings).
+STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
+
+[dotfiles]
+"~/proj/share/agent-mail/.keep" = { content = "" }
+"~/proj/share/cass/.keep" = { content = "" }
+"~/proj/share/cass-memory/.keep" = { content = "" }
+
+[tools]
+pitchfork = "2.26"
+"github:Dicklesworthstone/ntm" = "1.35.1"
+"github:Dicklesworthstone/beads_rust" = "0.6.0"
+"github:Dicklesworthstone/beads_viewer" = "0.25.0"
+"github:Dicklesworthstone/mcp_agent_mail_rust" = "0.3.36" # ships `am` and `mcp-agent-mail`
+"github:Dicklesworthstone/destructive_command_guard" = "0.14.4"
+"github:Dicklesworthstone/ultimate_bug_scanner" = { version = "5.4.9", asset_pattern = "ubs" }
+"github:Dicklesworthstone/coding_agent_session_search" = "0.8.0"
+"github:Dicklesworthstone/repo_updater" = { version = "1.3.1", asset_pattern = "ru" }
+"github:Dicklesworthstone/jeffreysprompts.com" = "1.0.3"
+"github:Dicklesworthstone/brenner_bot" = "0.4.1"
+"github:Dicklesworthstone/storage_ballast_helper" = "0.6.2"
+"github:Dicklesworthstone/aadc" = "0.1.1"
+agy = "1.2.7" # aqua:google-antigravity/antigravity-cli
+
+# cm (cass-memory) is built from the tagged source tarball: upstream publishes
+# no linux-arm64 binary. `{{ version }}` in platform URLs needs mise >= 2026.9.12.
+# A failed postinstall leaves the directory registered as installed; repair with
+# `mise install --force "github:Dicklesworthstone/cass_memory_system"`.
+[tools."github:Dicklesworthstone/cass_memory_system"]
+version = "0.2.14"
+depends = ["bun"]
+strip_components = 1
+bin_path = "bin"
+platforms.linux-x64.url = "https://github.com/Dicklesworthstone/cass_memory_system/archive/refs/tags/v{{ version }}.tar.gz"
+platforms.linux-arm64.url = "https://github.com/Dicklesworthstone/cass_memory_system/archive/refs/tags/v{{ version }}.tar.gz"
+postinstall = """
+set -eu
+cd "$MISE_TOOL_INSTALL_PATH"
+# --ignore-scripts: `sharp` would pull node + libvips, and it is patched out of
+# the standalone binary anyway by the explicit patch step below.
+bun install --frozen-lockfile --ignore-scripts
+bun run scripts/patch-standalone-deps.mjs
+bun build src/cm.ts --compile --outfile bin/cm
+rm -rf node_modules
+"""
+
+# Daemons start with the first `mise activate` shell (auto = ["start"]) and
+# survive the shell; never add "stop": these are shared services.
+# `mise daemons …` needs a project config in cwd; `pitchfork status|logs <name>`
+# works from anywhere.
+[daemons.agent-mail]
+run = "exec am serve-http --no-tui --host 127.0.0.1 --port 8765 --path /mcp/"
+dir = "~/proj/share/agent-mail"
+env = { RUST_LOG = "info" }
+ready_http = "http://127.0.0.1:8765/healthz"
+health_http = { url = "http://127.0.0.1:8765/health", interval = "30s", timeout = "5s", retries = 3 }
+retry = true
+auto = ["start"]
+
+[daemons.cm]
+# cass-memory MCP server (JSON-RPC over HTTP POST at `/`); registered per
+# repository by `mise run fw:init` next to Agent Mail.
+run = "exec cm serve --host 127.0.0.1 --port 8766"
+ready_port = 8766
+retry = true
+auto = ["start"]
+
+[daemons.sbh]
+run = "exec sbh daemon"
+retry = true
+auto = ["start"]
+
+[tasks."fw:bootstrap"]
+description = "One-time setup of the flywheel services (idempotent)"
+# Daemons are not started here: they auto-start with the first activated shell,
+# and `mise daemons start` needs a project config in cwd. Manual start:
+# `pitchfork start agent-mail cm sbh` after that first shell.
+run = """
+set -eu
+[ -d "${CASS_MEMORY_HOME:?}/diary" ] || cm init
+sbh config validate
+sbh ballast provision
+"""
+
+# Global file tasks: `[task_config] includes` is ignored in an env config file,
+# an explicit `file =` per task works from any directory.
+[tasks."fw:init"]
+description = "Prepare a repository for the agent stack (idempotent)"
+file = "{{ env.HOME }}/.config/mise/tasks/fw/init"
+
+[tasks."fw:doctor"]
+description = "Smoke-check the flywheel agent stack (read-only)"
+file = "{{ env.HOME }}/.config/mise/tasks/fw/doctor"
+
+[tasks."fw:cass-index"]
+description = "Build the cass session index from scratch (slow, run once)"
+run = "cass index --full --json"

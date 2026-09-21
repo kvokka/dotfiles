@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+#MISE description="Prepare a repository for the agent stack (idempotent)"
+#MISE dir="{{cwd}}"
+#USAGE flag "--name <name>" help="Project name for AGENTS.md; defaults to the directory name"
+#USAGE arg "[path]" help="Repository path; defaults to the current directory"
+#
+# Adds only what is missing: git repository, files from ~/.config/fw/templates,
+# .beads/. Existing files are never modified; merge them by hand when the task
+# prints "keep:". Nothing is committed and no global config is touched.
+
+set -euo pipefail
+
+templates="${FW_TEMPLATES:-$HOME/.config/fw/templates}"
+target="${usage_path:-$PWD}"
+
+if [[ ! -d "$templates" ]]; then
+  printf 'fw:init: template directory not found: %s\n' "$templates" >&2
+  exit 1
+fi
+
+for tool in git br; do
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    printf 'fw:init: required tool not found in PATH: %s\n' "$tool" >&2
+    exit 1
+  fi
+done
+
+mkdir -p "$target"
+cd "$target"
+target="$(pwd -P)"
+name="${usage_name:-$(basename "$target")}"
+
+case "$name" in
+  *[!A-Za-z0-9._-]* | '')
+    printf 'fw:init: invalid project name: %s\n' "$name" >&2
+    exit 2
+    ;;
+esac
+
+# 1. Git repository (new repositories only).
+if git rev-parse --show-toplevel >/dev/null 2>&1; then
+  root="$(git rev-parse --show-toplevel)"
+  if [[ "$root" != "$target" ]]; then
+    printf 'fw:init: %s is inside the repository %s; run the task from the repository root\n' \
+      "$target" "$root" >&2
+    exit 1
+  fi
+  printf 'keep: git repository\n'
+else
+  git init -b main
+fi
+
+# 2. Template files: copy only what is missing, keep everything else.
+added=()
+while IFS= read -r -d '' src; do
+  rel="${src#"$templates"/}"
+  dest="$target/$rel"
+  if [[ -e "$dest" ]]; then
+    printf 'keep: %s\n' "$rel"
+    continue
+  fi
+  mkdir -p "$(dirname "$dest")"
+  if [[ "$rel" == "AGENTS.md" ]]; then
+    sed "s/PROJECT_NAME_PLACEHOLDER/$name/g" "$src" > "$dest"
+  else
+    cp -p "$src" "$dest"
+  fi
+  printf 'add:  %s\n' "$rel"
+  added+=("$rel")
+done < <(find "$templates" -type f -print0 | sort -z)
+
+# 3. Beads workspace.
+if [[ -d .beads ]]; then
+  printf 'keep: .beads/\n'
+else
+  br init
+fi
+
+# 4. Pre-commit guard: nothing to install, the global git hook runs prek with
+#    the repository's .pre-commit-config.yaml. Verify that this is still true.
+hooks_path="$(git config --get core.hooksPath || true)"
+if [[ -z "$hooks_path" ]]; then
+  printf 'fw:init: core.hooksPath is not set; the Agent Mail guard will not run.\n' >&2
+  printf '         Expected ~/.config/git/hooks from the dotfiles git config.\n' >&2
+  exit 1
+fi
+if ! command -v am >/dev/null 2>&1; then
+  printf 'warning: am (Agent Mail) is not in PATH; the guard hook will skip until it is installed\n' >&2
+fi
+if ! command -v ubs >/dev/null 2>&1; then
+  printf 'warning: ubs is not in PATH; every commit will fail on the ubs hook until it is installed\n' >&2
+fi
+
+# 5. Report.
+printf '\nfw:init done in %s\n' "$target"
+if (( ${#added[@]} )); then
+  printf 'Review and commit the added files:\n'
+  printf '  git add -A && git commit -m "chore: bootstrap agent tooling"\n'
+fi
+printf 'Next steps:\n'
+printf '  1. Fill in "Project commands" in AGENTS.md.\n'
+printf '  2. Trust the project in Codex if needed (projects.%q.trust_level in ~/.codex/config.toml).\n' "$target"
+printf '  3. Approve the mcp-agent-mail and cass-memory servers when Claude Code asks (project .mcp.json).\n'
+printf '  4. Make sure the Agent Mail service is running (pitchfork status agent-mail), then: ntm spawn %q --cc=2 --cod=1\n' "$name"

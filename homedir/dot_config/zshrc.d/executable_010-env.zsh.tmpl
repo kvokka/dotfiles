@@ -1,4 +1,7 @@
 # mise installs itself here; sourced from .zprofile before mise is activated.
+# Keep PATH entries unique: .zprofile and nested shells source this file more than once.
+typeset -U path PATH
+
 [[ ":$PATH:" == *":$HOME/.local/bin:"* ]] || export PATH="$HOME/.local/bin:$PATH"
 
 [[ ":$PATH:" == *":$HOME/.bun/bin:"* ]] || export PATH="$PATH:$HOME/.bun/bin"

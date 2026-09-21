@@ -45,6 +45,20 @@ ships a `pkg` installer. Pre-set it with
 export SUDO_PASSWORD="your_password_here"
 ```
 
+## Agent stack (Linux devcontainer)
+
+The agent-management stack ported from [acfs](https://github.com/Dicklesworthstone/agentic_coding_flywheel_setup)
+is declared in `homedir/dot_config/mise/config.fw.toml` and enabled only inside
+the devcontainer (`miserc.toml`, env `fw`). Background services run as pitchfork
+daemons (`mise daemons`), started with the first activated shell.
+
+```bash
+mise run fw:doctor          # smoke-check tools, hooks and daemons
+mise run fw:init [path]     # bootstrap a repository for agents (AGENTS.md, MCP, hooks, br init)
+mise run fw:cass-index      # first full cass index (slow)
+pitchfork status agent-mail cm sbh
+```
+
 ## CI
 
 By default CI runs in **light mode** — only mise and the tools the smoke test

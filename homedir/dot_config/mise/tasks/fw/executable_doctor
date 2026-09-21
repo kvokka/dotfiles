@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+#MISE description="Smoke-check the flywheel agent stack (read-only)"
+#MISE dir="{{cwd}}"
+#
+# Every check prints ok/FAIL and the task exits non-zero when any check failed.
+# Nothing is installed or fixed here; see the remediation printed next to a FAIL.
+
+set -uo pipefail
+
+failed=0
+check() { # check <label> <command...>
+  local label="$1"; shift
+  if "$@" >/dev/null 2>&1; then
+    printf 'ok   %s\n' "$label"
+  else
+    printf 'FAIL %s  (%s)\n' "$label" "$*"
+    failed=1
+  fi
+}
+dcg_shim="$HOME/.local/share/mise/shims/dcg"
+
+for tool in ntm br bv am dcg ubs cass cm ru jfp brenner sbh aadc agy pitchfork toon typos fmd; do
+  check "tool: $tool" command -v "$tool"
+done
+
+check "dcg shim exists (hooks point at it)" test -x "$dcg_shim"
+check "dcg denies 'git reset --hard'" bash -c \
+  "printf '%s' '{\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"git reset --hard\"}}' | \"$dcg_shim\" | jq -e '.hookSpecificOutput.permissionDecision == \"deny\"'"
+check "dcg doctor --strict" dcg doctor --strict
+check "claude hook registered" jq -e '.hooks.PreToolUse[]?.hooks[]? | select(.command == "'"$dcg_shim"'")' "$HOME/.claude/settings.json"
+check "codex hook registered" jq -e '.hooks.PreToolUse[]?.hooks[]? | select(.command == "'"$dcg_shim"'")' "$HOME/.codex/hooks.json"
+check "opencode dcg plugin present" grep -q dcg-opencode-plugin "$HOME/.config/opencode/plugins/dcg-guard.js"
+check "agy settings pinned" jq -e '.toolPermission == "always-proceed"' "$HOME/.gemini/antigravity-cli/settings.json"
+check "agy dcg hook enabled" jq -e '.dcg.enabled == true' "$HOME/.gemini/config/hooks.json"
+
+check "pitchfork: agent-mail running" bash -c "pitchfork status agent-mail | grep -q running"
+check "pitchfork: cm running" bash -c "pitchfork status cm | grep -q running"
+check "pitchfork: sbh running" bash -c "pitchfork status sbh | grep -q running"
+check "agent-mail /health ready" curl -fsS http://127.0.0.1:8765/health
+check "am doctor check" am doctor check --json
+check "cm serve answers tools/list" bash -c \
+  "curl -fsS -X POST http://127.0.0.1:8766 -H 'content-type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}' | jq -e '.result.tools | length > 0'"
+check "cm doctor" cm doctor --json
+check "cass health (run 'mise run fw:cass-index' once if FAIL)" cass health --json
+check "sbh status" sbh status --json
+check "sbh ballast pool in ~/.ballast" test -d "$HOME/.ballast"
+check "ntm deps" ntm deps
+
+if (( failed )); then
+  printf '\nSome checks failed. Daemons: pitchfork start agent-mail cm sbh; services setup: mise run fw:bootstrap\n' >&2
+  exit 1
+fi
+printf '\nflywheel stack looks healthy\n'

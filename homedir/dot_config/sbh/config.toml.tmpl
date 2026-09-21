@@ -1,0 +1,29 @@
+# Storage Ballast Helper (managed by chezmoi). Devcontainer only: the daemon
+# runs under pitchfork (config.fw.toml), never `sbh install`.
+# Ballast lives in ~/.ballast on the `home` volume; the pool is capped at
+# file_count * file_size_bytes = 5 GiB.
+
+[scanner]
+root_paths = ["{{ .chezmoi.homeDir }}/proj/active", "{{ .chezmoi.homeDir }}/.cache", "/tmp"]
+cross_devices = false
+protected_paths = ["{{ .chezmoi.homeDir }}/proj/share/*", "{{ .chezmoi.homeDir }}/.ballast"]
+quarantine_enabled = true
+
+[core]
+control_socket_enabled = true
+
+[ballast]
+auto_provision = true
+file_count = 5
+file_size_bytes = 1073741824 # 1 GiB per file
+
+# ~/proj/active is a bind mount from the host: never place a ballast pool there.
+[ballast.overrides."{{ .chezmoi.homeDir }}/proj/active"]
+enabled = false
+
+[policy]
+initial_mode = "observe" # observe | canary | enforce; switch after reviewing `sbh scan`
+kill_switch = false
+
+[paths]
+ballast_dir = "{{ .chezmoi.homeDir }}/.ballast"

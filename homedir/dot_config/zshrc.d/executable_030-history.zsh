@@ -2,4 +2,5 @@ unset HISTFILE
 HISTSIZE=10000
 SAVEHIST=0
 
-command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh --disable-up-arrow)"
+# atuin is initialised by the generated oh-my-zsh plugin (mise task bootstrap:atuin),
+# which also keeps agent-spawned shells out of the history.

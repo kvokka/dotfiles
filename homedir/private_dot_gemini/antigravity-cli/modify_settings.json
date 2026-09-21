@@ -1,0 +1,29 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /*
+  Antigravity CLI (agy) settings. agy rewrites this file itself (model picker,
+  /settings), so chezmoi merges the pinned keys into the current content instead
+  of replacing the file. Same semantics as acfs `agy_locked.py` PINNED_SETTINGS.
+*/ -}}
+{{- $current := dict -}}
+{{- /* .chezmoi.stdin is only set while applying; `chezmoi cat|status` render without it */ -}}
+{{- if and (hasKey .chezmoi "stdin") .chezmoi.stdin -}}
+{{-   $current = fromJson .chezmoi.stdin -}}
+{{- end -}}
+{{- $pinned := dict
+      "allowNonWorkspaceAccess" true
+      "altScreenMode" "never"
+      "artifactReviewPolicy" "always-proceed"
+      "colorScheme" "terminal"
+      "editor" "auto"
+      "effort" "high"
+      "enableTelemetry" false
+      "enableTerminalSandbox" false
+      "model" "Gemini 3.8 Flash (High)"
+      "notifications" false
+      "runningLightSpeed" "medium"
+      "showFeedbackSurvey" false
+      "showTips" false
+      "toolPermission" "always-proceed"
+      "useG1Credits" false
+      "verbosity" "high" -}}
+{{ mergeOverwrite $current $pinned | toPrettyJson }}

@@ -1,0 +1,3 @@
+# beads_viewer; the binary comes from mise, so no update checks.
+updates:
+  check: false
