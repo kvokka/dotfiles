@@ -5,8 +5,14 @@ Template dotfiles repository, managed with [chezmoi](https://chezmoi.io/).
 ## Installation
 
 ```bash
-sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary kvokka
+sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary --source ~/.dotfiles kvokka
 ```
+
+The chezmoi source lives in `~/.dotfiles` instead of the default
+`~/.local/share/chezmoi`: `init` clones the repository there when the
+directory holds no git repository, and skips the clone otherwise. `--source`
+is persisted into `~/.config/chezmoi/chezmoi.yaml`, so later `chezmoi apply`,
+`chezmoi diff` and `chezmoi cd` need no flag.
 
 With connected terminal in process you will be asked:
 
@@ -44,6 +50,19 @@ ships a `pkg` installer. Pre-set it with
 ```bash
 export SUDO_PASSWORD="your_password_here"
 ```
+
+## Local dev container
+
+`~/.config/docker-compose/local-dev/docker-compose.yml` mounts the host
+`~/.dotfiles` at the same path inside the container, and the entrypoint runs
+the install command above against it. Host and container share one checkout:
+edit it on either side, run `chezmoi apply` on the side that should pick the
+change up. Inside the container the git config rewrites `git@github.com:kvokka/`
+to `kvokka-agent/`, so pushes from the container land in the agent fork while
+pushes from the host go to the upstream repository.
+
+`chezmoi apply` reflects the branch checked out in `~/.dotfiles` on both sides:
+keep `master` checked out there and put feature branches in `git worktree`s.
 
 ## Agent stack (Linux devcontainer)
 

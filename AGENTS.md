@@ -11,8 +11,9 @@
 
 - README install command:
   ```sh
-  sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary kvokka
+  sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary --source ~/.dotfiles kvokka
   ```
+- The chezmoi source is `~/.dotfiles` on the host and in the devcontainer, not the default `~/.local/share/chezmoi`: the compose file bind-mounts the host checkout there, and `chezmoi init --source` persists the path into `~/.config/chezmoi/chezmoi.yaml`. `chezmoi init` clones only when the source directory holds no git repository. Both sides apply the checked-out branch of that one checkout, so keep `master` checked out there and work on feature branches in a `git worktree`.
 - Do not run install/bootstrap/`chezmoi apply` casually: they install tools, apply dotfiles, and mutate home state.
 - CI lives in `.github/workflows/ci.yaml`. Push CI is path-filtered; PR CI is not.
 - `run_once_after_100_mise-bootstrap.sh` installs the mise binary (or self-updates one older than the `min_version` of `config.fw.toml`) and runs `mise bootstrap` after apply, once chezmoi has written `~/.config/mise/config.toml`. Post-tools setup (atuin, openspec stores) lives in the mise `bootstrap` task, not in extra chezmoi scripts: chezmoi scripts run with chezmoi's own `PATH`, which has no `~/.local/bin`, and `mise run` installs the whole toolset before a task.
@@ -59,6 +60,7 @@
 - `homedir/dot_config/docker-compose/local-dev/README.md` describes local compose as the devcontainer replacement.
 - The zsh aliases wrap `docker-compose -f "$HOME/.config/docker-compose/local-dev/docker-compose.yml"` through `dc`.
 - Compose entrypoint applies dotfiles in the container and creates the OpenCode worktree symlink, so compose operations are not inspection-only.
+- The host `~/.dotfiles` is mounted at `/home/ubuntu/.dotfiles` and passed as `--source` to the entrypoint's chezmoi one-liner. Keep it outside `~/.local`: docker creates the parent directories of a nested bind mount inside the `home` volume as root, which breaks mise writing to `~/.local`.
 
 ## Telegram Topics
 
