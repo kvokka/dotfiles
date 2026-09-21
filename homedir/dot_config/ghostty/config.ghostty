@@ -60,10 +60,14 @@ palette = 7=#C7C7C7
 palette = 15=#FFFFFF
 
 # -----------------------------------------------------------------------------
-# Link Color
-
+# Keyboard
 # -----------------------------------------------------------------------------
 
+# Option is the Mac's Alt. Without this Ghostty uses it for composing
+# characters (Option+S = ß), so Alt+<key> hotkeys of TUIs (cass, ntm, bv, ...)
+# never reach the application. `true` maps both Option keys; use `left` or
+# `right` to keep one of them for composed characters.
+macos-option-as-alt = left
 
 # Option+Delete = delete word backward (sends ESC + DEL)
 keybind = alt+backspace=text:\x1b\x7f
@@ -72,8 +76,11 @@ keybind = alt+backspace=text:\x1b\x7f
 keybind = super+backspace=text:\x15
 
 # Option+Left Arrow = move word left (sends ESC+b)
-keybind = alt+left=text:\x1bb
 # Option+Right Arrow = move word right (sends ESC+f)
+# Works in every remote shell without zsh bindings for \e[1;3D / \e[1;3C.
+# Side effect: a TUI sees Alt+b / Alt+f instead of Alt+Left / Alt+Right
+# (in cass use Alt+h / Alt+l for pane navigation).
+keybind = alt+left=text:\x1bb
 keybind = alt+right=text:\x1bf
 
 keybind = super+left=previous_tab
