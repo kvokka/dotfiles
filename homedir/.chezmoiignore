@@ -14,7 +14,8 @@
 {{ if ne .chezmoi.os "darwin" }}
 .chezmoiscripts/darwin/**
 .docker/config.json
-Library/Preferences/**
+Library/**
+.orbstack/**
 .config/local-compose
 {{ if not .personal }}
 .config/gh/hosts.yml
