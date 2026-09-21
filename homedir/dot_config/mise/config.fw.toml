@@ -39,7 +39,6 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 "github:Dicklesworthstone/brenner_bot" = "0.4.1"
 "github:Dicklesworthstone/storage_ballast_helper" = "0.6.2"
 "github:Dicklesworthstone/aadc" = "0.1.1"
-agy = "1.2.7" # aqua:google-antigravity/antigravity-cli
 
 # cm (cass-memory) is built from the tagged source tarball: upstream publishes
 # no linux-arm64 binary. `{{ version }}` in platform URLs needs mise >= 2026.9.12.
