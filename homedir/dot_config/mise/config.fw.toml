@@ -27,7 +27,6 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 "~/proj/share/cass-memory/.keep" = { content = "" }
 
 [tools]
-pitchfork = "2.26"
 "github:Dicklesworthstone/ntm" = "1.35.1"
 "github:Dicklesworthstone/beads_rust" = "0.6.0"
 "github:Dicklesworthstone/beads_viewer" = "0.25.0"

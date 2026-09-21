@@ -63,6 +63,7 @@ atuin = '18.22'
 lsd = '1.2'
 
 tmux = '3.7c'
+pitchfork = '2.27.0'
 
 # agent-stack helpers that are useful on every OS; the rest of the stack is in config.fw.toml
 "github:Dicklesworthstone/toon_rust" = "0.2.4"        # `toon` encoder for br/bv/ubs --format toon
