@@ -2,6 +2,11 @@
 
 "npm:agent-browser" = "latest"
 btop = '1.4'                   # upstream releases linux binaries only, macOS pours the bottle
+opencode = "1.18"
+codex = "0"
+claude = "2.1"
+just = "1.58"
+ast-grep = "0.45"
 
 [bootstrap.packages]
 "apt:language-pack-en-base" = "latest"

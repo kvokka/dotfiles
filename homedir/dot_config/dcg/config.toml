@@ -1,0 +1,47 @@
+#:schema https://raw.githubusercontent.com/Dicklesworthstone/destructive_command_guard/main/config.schema.json
+# Destructive Command Guard. core.git, core.filesystem and system.disk are always
+# on; everything else is opt-in. Verify ids with `dcg packs`.
+
+[packs]
+enabled = [
+  "containers.docker",        # docker system prune, volume rm, ...
+  "database.postgresql",      # DROP TABLE / TRUNCATE
+  "cloud.gcp",                # gcloud ... delete
+  "remote.rsync",             # rsync --delete
+  "storage.gcs",
+  "kubernetes.kubectl",
+  "kubernetes.helm",
+  "kubernetes.kustomize",
+  "cdn.cloudflare_workers",
+  "infrastructure.ansible",
+  "infrastructure.pulumi",
+  "infrastructure.terraform",
+  "system.disk",
+  "system.permissions",
+  "ystem.services",
+  "cicd.github_actions",
+  "secrets.aws_secrets",
+  "secrets.vault",
+  "secrets.onepassword",
+  "platform.github",
+  "dns.cloudflare",
+  "email.mailgun",
+  "email.sendgrid",
+  "loadbalancer.haproxy",
+  "loadbalancer.nginx",
+  "loadbalancer.traefik",
+  "messaging.rabbitmq",
+  "monitoring.datadog",
+  "monitoring.pagerduty",
+  "monitoring.prometheus",
+  "payment.stripe",
+  "search.elasticsearch",
+]
+
+[general]
+# Agent sessions run unattended (skipDangerousModePermissionPrompt, OpenCode has
+# no review prompt): a command dcg could not verify in time is denied, not asked.
+unverified_decision = "deny"
+
+[history]
+enabled = true

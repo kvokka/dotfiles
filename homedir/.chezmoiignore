@@ -21,6 +21,23 @@ Library/Preferences/**
 
 {{ if ne .chezmoi.os "linux" }}
 .chezmoiscripts/linux/**
+# flywheel agent stack: Linux devcontainer only (mise config.fw.toml)
+.config/mise/config.fw.toml
+.config/mise/tasks/fw/**
+.config/fw/**
+.config/mcp-agent-mail/**
+.config/dcg/**
+.config/sbh/**
+.config/ru/**
+.config/jfp/**
+.config/ntm/**
+.config/bv/**
+.config/brenner/**
+.config/opencode/plugins/dcg-guard.js
+.config/zshrc.d/250-fw.zsh
+.codex/hooks.json
+.gemini/**
+.claude/**
 {{ end }}
 
 {{ if ne .github_login "kvokka" }}

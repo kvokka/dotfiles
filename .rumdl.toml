@@ -1,3 +1,3 @@
 [global]
-exclude = ["AGENTS.md", "CLAUDE.md", "CHANGELOG.md", "prompts/", "docs/**/*"]
+exclude = ["AGENTS.md", "CLAUDE.md", "CHANGELOG.md", "prompts/", "docs/**/*", "homedir/dot_config/ntm/command_palette.md"] # the palette is ntm data, kept byte-identical to upstream acfs
 disable = ["MD013", "MD033"]
