@@ -124,15 +124,11 @@ run = """
 [ -n "${ATUIN_KEY:-}" ] && [ -n "${ATUIN_PASSWORD:-}" ] || { echo "skip: no ATUIN_KEY/ATUIN_PASSWORD"; exit 0; }
 atuin status >/dev/null 2>&1 || atuin login -u "${ATUIN_USERNAME:-kvokka}" -p "$ATUIN_PASSWORD" -k "$ATUIN_KEY"
 
+# the plugin itself is managed by chezmoi (~/.oh-my-zsh/custom/plugins/atuin);
+# only the version-specific completions are generated here
 d="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/atuin"
 mkdir -p "$d"
 atuin gen-completions --shell zsh --out-dir "$d"
-cat > "$d/atuin.plugin.zsh" <<'EOF'
-(( $+commands[atuin] )) || return
-# shells spawned by coding agents must not pollute the shell history
-[[ -n "${CLAUDECODE:-}${CLAUDE_PROJECT_DIR:-}${CODEX_THREAD_ID:-}${CODEX_CI:-}${AGENT_NAME:-}" ]] && return
-eval "$(atuin init zsh --disable-up-arrow)"
-EOF
 
 atuin sync
 """
