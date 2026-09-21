@@ -21,5 +21,13 @@ agents() {
 }
 
 # Unattended launchers (acfs "vibe mode"); plain `claude`/`codex` keep their defaults.
-(( $+commands[claude] )) && cc() { NODE_OPTIONS="--max-old-space-size=${CLAUDE_HEAP_MB:-16384}" command claude --dangerously-skip-permissions "$@"; }
-(( $+commands[codex] ))  && cod() { command codex --dangerously-bypass-approvals-and-sandbox --search "$@"; }
+(( $+commands[claude] )) && {
+  unalias cc 2>/dev/null
+  cc() {
+    NODE_OPTIONS="--max-old-space-size=${CLAUDE_HEAP_MB:-16384}" command claude --dangerously-skip-permissions "$@"
+  }
+}
+(( $+commands[codex] )) && {
+  unalias cod 2>/dev/null
+  cod() { command codex --dangerously-bypass-approvals-and-sandbox --search "$@"; }
+}
