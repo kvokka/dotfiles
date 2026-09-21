@@ -15,7 +15,7 @@
   ```
 - Do not run install/bootstrap/`chezmoi apply` casually: they install tools, apply dotfiles, and mutate home state.
 - CI lives in `.github/workflows/ci.yaml`. Push CI is path-filtered; PR CI is not.
-- `run_once_after_100_mise-bootstrap.sh` installs the mise binary and runs `mise bootstrap` after apply, once chezmoi has written `~/.config/mise/config.toml`. Post-tools setup (atuin, openspec stores) lives in the mise `bootstrap` task, not in extra chezmoi scripts: chezmoi scripts run with chezmoi's own `PATH`, which has no `~/.local/bin`, and `mise run` installs the whole toolset before a task.
+- `run_once_after_100_mise-bootstrap.sh` installs the mise binary (or self-updates one older than the `min_version` of `config.fw.toml`) and runs `mise bootstrap` after apply, once chezmoi has written `~/.config/mise/config.toml`. Post-tools setup (atuin, openspec stores) lives in the mise `bootstrap` task, not in extra chezmoi scripts: chezmoi scripts run with chezmoi's own `PATH`, which has no `~/.local/bin`, and `mise run` installs the whole toolset before a task.
 - CI light mode passes `DOTFILES_BOOTSTRAP_SKIP=packages,user,tools,task` and `DOTFILES_BOOTSTRAP_TOOLS="chezmoi oh-my-posh fnox"` to that script.
 - Full CI runs on the workflow_dispatch input `full` and on a push of the `full` tag.
 - CI smoke checks are `mise --version`, `mise bootstrap status`, `~/.local/share/mise/shims/chezmoi --version`, and `~/.local/share/mise/shims/chezmoi data`.
@@ -49,7 +49,7 @@
 ## Flywheel Agent Stack (fw)
 
 - The acfs-derived agent stack (ntm, br/bv, Agent Mail `am`, dcg, ubs, cass/cm, sbh, agy, ...) lives in `homedir/dot_config/mise/config.fw.toml`, loaded only in the Linux devcontainer through the `fw` entry of `miserc.toml`; `toon`, `typos` and `fmd` are global tools.
-- Every tool is a pinned `github:` release; `cm` is built from the tagged source tarball in a tool-level `postinstall` (needs mise >= 2026.9.12 for `{{ version }}` in platform URLs).
+- Every tool is a pinned `github:` release; `cm` is built from the tagged source tarball in a tool-level `postinstall` (`{{ version }}` in platform URLs needs mise >= 2026.9.12, enforced by `min_version` in that file).
 - Services (`agent-mail` on 127.0.0.1:8765, `cm` on 8766, `sbh`) are pitchfork daemons declared in `[daemons]`; the container has no systemd. Never run `am service install`, `sbh install`, `dcg install`, `agy install` or any upstream `install.sh`: chezmoi owns all configs and hook files (Claude `settings.json.tmpl`, `dot_codex/hooks.json.tmpl`, `opencode/plugins/dcg-guard.js.tmpl`, `private_dot_gemini/`).
 - Per-repository files (`.mcp.json`, `.codex/config.toml`, `opencode.json`, `.pre-commit-config.yaml`, `AGENTS.md`, `docs/agent-tooling.md`) come from `homedir/dot_config/fw/templates/` via the file task `mise run fw:init`; `mise run fw:doctor` smoke-checks the stack.
 - `homedir/dot_config/fw/templates/scripts/hooks/executable_agent-mail-guard` wraps `am guard check`; `am guard install` is incompatible with the global `core.hooksPath`.

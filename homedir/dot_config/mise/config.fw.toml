@@ -8,6 +8,11 @@
 # Never run the upstream installers, `am service install`, `sbh install`,
 # `dcg install` or `agy install`: chezmoi owns every config and hook file.
 
+# `{{ version }}` in `platforms.*.url` (the `cm` build below). On an older mise
+# every command fails with "mise version … is required" instead of a 404 on a
+# literal `v{{ version }}.tar.gz`; the chezmoi bootstrap script self-updates.
+min_version = "2026.9.12"
+
 [settings]
 experimental = true # `mise daemons`
 
@@ -41,7 +46,7 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 "github:Dicklesworthstone/aadc" = "0.1.1"
 
 # cm (cass-memory) is built from the tagged source tarball: upstream publishes
-# no linux-arm64 binary. `{{ version }}` in platform URLs needs mise >= 2026.9.12.
+# no linux-arm64 binary.
 # A failed postinstall leaves the directory registered as installed; repair with
 # `mise install --force "github:Dicklesworthstone/cass_memory_system"`.
 [tools."github:Dicklesworthstone/cass_memory_system"]

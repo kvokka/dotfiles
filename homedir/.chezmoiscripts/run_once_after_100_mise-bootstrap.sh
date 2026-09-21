@@ -17,6 +17,11 @@ fi
 PATH="$HOME/.local/bin:$PATH"
 export PATH
 
+# An installed mise older than the `min_version` of a config file fails every
+# command that loads the config, `mise bootstrap` included. Only a self-update
+# gets past it, and it works before the config loads.
+mise ls >/dev/null 2>&1 || mise self-update --yes
+
 MISE_JOBS="$(getconf _NPROCESSORS_ONLN 2>/dev/null || nproc)"
 export MISE_JOBS
 
