@@ -26,7 +26,14 @@ done
 check "dcg shim exists (hooks point at it)" test -x "$dcg_shim"
 check "dcg denies 'git reset --hard'" bash -c \
   "printf '%s' '{\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"git reset --hard\"}}' | \"$dcg_shim\" | jq -e '.hookSpecificOutput.permissionDecision == \"deny\"'"
-check "dcg doctor --strict" dcg doctor --strict
+# `dcg doctor` accepts only its own versioned binary path in a hook (the
+# `hook_wiring` check); the hooks point at the version-independent mise shim,
+# verified above, so that check is skipped here. `allowlists` warns whenever
+# no allowlist file exists, which is the intended state.
+check "dcg doctor (config, packs, smoke test)" bash -c \
+  "dcg doctor --format json | jq -e '[.checks[] | select(.id | IN(\"hook_wiring\", \"allowlists\", \"codex_hook\") | not) | select(.status != \"ok\")] | length == 0'"
+check "codex trusts the dcg hook (approve once in Codex, then copy [hooks.state] into private_config.toml.tmpl)" bash -c \
+  "dcg doctor --format json | jq -e '.checks[] | select(.id == \"codex_hook\") | .status == \"ok\"'"
 check "claude hook registered" jq -e '.hooks.PreToolUse[]?.hooks[]? | select(.command == "'"$dcg_shim"'")' "$HOME/.claude/settings.json"
 check "codex hook registered" jq -e '.hooks.PreToolUse[]?.hooks[]? | select(.command == "'"$dcg_shim"'")' "$HOME/.codex/hooks.json"
 check "opencode dcg plugin present" grep -q dcg-opencode-plugin "$HOME/.config/opencode/plugins/dcg-guard.js"

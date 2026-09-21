@@ -18,7 +18,7 @@ enabled = [
   "infrastructure.terraform",
   "system.disk",
   "system.permissions",
-  "ystem.services",
+  "system.services",
   "cicd.github_actions",
   "secrets.aws_secrets",
   "secrets.vault",

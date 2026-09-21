@@ -69,10 +69,15 @@ rm -rf node_modules
 
 # Daemons start with the first `mise activate` shell (auto = ["start"]) and
 # survive the shell; never add "stop": these are shared services.
-# `mise daemons …` needs a project config in cwd; `pitchfork status|logs <name>`
-# works from anywhere.
+# `mise daemons …` needs a project config in cwd (any directory with a
+# mise.toml lists these global daemons too); `pitchfork list|status|logs <name>`
+# works from anywhere. After editing a `run` line below, restart with
+# `mise daemons restart <name>` from such a directory: it re-registers the
+# daemon, while `pitchfork restart` reuses the command it already knows.
 [daemons.agent-mail]
-run = "exec am serve-http --no-tui --host 127.0.0.1 --port 8765 --path /mcp/"
+# --host 0.0.0.0: reachable from the host through the published compose port
+# (localhost:8765) and the OrbStack domain; see ~/.config/mcp-agent-mail/config.env.
+run = "exec am serve-http --no-tui --host 0.0.0.0 --port 8765 --path /mcp/"
 dir = "~/proj/share/agent-mail"
 env = { RUST_LOG = "info" }
 ready_http = "http://127.0.0.1:8765/healthz"

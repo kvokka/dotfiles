@@ -38,6 +38,7 @@ Library/Preferences/**
 .config/opencode/plugins/dcg-guard.js
 .config/zshrc.d/250-fw.zsh
 .codex/hooks.json
+.gemini/config/hooks.json
 .gemini/**
 .claude/**
 {{ end }}

@@ -10,7 +10,7 @@ fi
 # (normal path: `pitchfork status agent-mail`, `pitchfork start agent-mail`).
 amserve() {
   (( $+commands[am] )) || { print -u2 "am is not installed"; return 127; }
-  command am serve-http --no-tui --host "${AGENT_MAIL_HOST:-127.0.0.1}" --port "${AGENT_MAIL_PORT:-8765}" --path /mcp/ "$@"
+  command am serve-http --no-tui --host "${AGENT_MAIL_HOST:-0.0.0.0}" --port "${AGENT_MAIL_PORT:-8765}" --path /mcp/ "$@"
 }
 
 # agents [session] [ntm spawn flags]; the session defaults to the cwd name.
