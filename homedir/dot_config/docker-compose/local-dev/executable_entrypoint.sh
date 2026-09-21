@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 [ -f "$HOME/.local/.dotfiles-applied" ] || \
-sh -c "cd $HOME && $(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary kvokka && \
+sh -c "cd $HOME && $(curl -fsLS get.chezmoi.io/lb)" -- init --apply --force --purge-binary --source "$HOME/.dotfiles" kvokka && \
 touch "$HOME/.local/.dotfiles-applied"
 
 # # Use this block for mitmproxy, #mitmproxy
