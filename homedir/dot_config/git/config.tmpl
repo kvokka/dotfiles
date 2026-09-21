@@ -11,7 +11,7 @@
 
 [core]
 	excludesfile = ~/.config/git/ignore
-	pager = diff-so-fancy | less --tabs=4 -RFX
+	pager = delta
 	attributesfile = ~/.config/git/attributes
 
 	# Treat spaces before tabs and all kinds of trailing whitespace as an error
@@ -32,7 +32,7 @@
 	preloadindex = true
 
 [alias]
-	dsf = "!f() { [ -z \"$GIT_PREFIX\" ] || cd \"$GIT_PREFIX\" && git diff --color \"$@\" | diff-so-fancy  | less --tabs=4 -RFX; }; f"
+	dsf = "!f() { [ -z \"$GIT_PREFIX\" ] || cd \"$GIT_PREFIX\" && git diff --color \"$@\" | delta; }; f"
   cb = "!git branch --merged | egrep -v '(^\\*|master|production)' | xargs git branch -d"
 	vb = version-bump
 [push]
@@ -48,6 +48,16 @@
 [merge]
 	# Include summaries of merged commits in newly created merge commit messages
 	log = true
+	conflictstyle = zdiff3
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true # n / N jump between diff sections
+	line-numbers = true
+	hyperlinks = true
+	pager = less --tabs=4 -RFX
 
 # URL shorthands
 [url "git@github.com:"]
@@ -71,11 +81,6 @@
 	textconv = sops -d
 [diff]
 	interHunkContext = 10
-[color "diff-highlight"]
-	oldNormal = red bold
-	oldHighlight = red bold 52
-	newNormal = green bold
-	newHighlight = green bold 22
 [color "diff"]
 	meta = yellow
 	frag = magenta bold
@@ -83,8 +88,6 @@
 	old = red
 	new = green
 	whitespace = red reverse
-[diff-so-fancy]
-	first-run = false
 [pull]
 	rebase = false
 	default = current

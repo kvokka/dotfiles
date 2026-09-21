@@ -10,7 +10,6 @@ bun = '1.4'
 pnpm = '12.4.0'
 
 "npm:aicommit2" = "latest"
-"npm:diff-so-fancy" = "1.4" # not packaged for Ubuntu noble, and one source serves both hosts
 "npm:@fission-ai/openspec" = { version = "1.13", postinstall = "openspec completion install zsh" }
 "aqua:fallow-rs/fallow" = "3.27"
 
@@ -33,6 +32,7 @@ vale = '3.14'
 
 chezmoi = '2.72'
 bat = '0.26'
+delta = '0.19' # git pager, wired in ~/.config/git/config
 gdu = '5.37' # ncdu has no release binaries at all
 fzf = '0.74'
 fd = '10.4'
