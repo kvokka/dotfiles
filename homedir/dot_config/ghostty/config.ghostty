@@ -116,7 +116,8 @@ link-url = true
 macos-titlebar-style = native
 
 mouse-reporting = true
-keybind = ctrl+shift+r=reset
+# ctrl+shift+r is taken by TUIs (cass: refresh index), so reset moves to Ctrl+Option+Shift+R.
+keybind = ctrl+alt+shift+r=reset
 keybind = ctrl+shift+m=toggle_mouse_reporting
 
 copy-on-select = clipboard
