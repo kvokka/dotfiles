@@ -13,11 +13,6 @@
       "Agent(statusline-setup)"
     ]
   },
-{{- /* dcg (destructive command guard) is part of the Linux-only flywheel
-stack (mise config.fw.toml). The hook targets the mise shim, a path that
-survives version bumps; hook shells do not inherit the interactive PATH,
-so a bare `dcg` would not resolve. */}}
-{{- if eq .chezmoi.os "linux" }}
   "hooks": {
     "PreToolUse": [
       {
@@ -25,14 +20,13 @@ so a bare `dcg` would not resolve. */}}
         "hooks": [
           {
             "type": "command",
-            "command": "{{ .chezmoi.homeDir }}/.local/share/mise/shims/dcg",
+            "command": "~/.local/share/mise/shims/dcg",
             "timeout": 10
           }
         ]
       }
     ]
   },
-{{- end }}
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh",
@@ -49,9 +43,9 @@ so a bare `dcg` would not resolve. */}}
   "enabledPlugins": {
     "org@siam-platform": true,
     "engineering@siam-platform": true,
-    "frontend-design@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": false,
     "claude-codex-bridge@claude-codex-bridge": true,
-    "pohuy@pohuy": true
+    "pohuy@pohuy": false
   },
   "extraKnownMarketplaces": {
     "siam-platform": {
@@ -76,7 +70,7 @@ so a bare `dcg` would not resolve. */}}
     }
   },
   "modelSettings": {
-    "claude-opus-5": {
+    "claude-opus-5-5": {
       "effortLevel": "high"
     },
     "claude-fable-5-1": {
