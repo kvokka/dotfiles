@@ -6,6 +6,7 @@
 - `.chezmoiroot` sets the chezmoi source root to `homedir`; edit managed source files there, not rendered files under `$HOME`.
 - There are no repo package manifests or task-runner files discovered (`package.json`, `pyproject.toml`, `go.mod`, `Makefile`, `justfile`, `Taskfile`). Do not invent npm/pytest/go test commands.
 - Some high-value tracked paths can be absent from this sparse checkout; verify missing tracked files with `git show HEAD:<path>` before concluding they do not exist.
+- `origin` is the fork `kvokka-agent/dotfiles`, where branches are pushed. Open every pull request against `kvokka/dotfiles`, never against the fork: plain `gh pr create` targets the fork, so pass `gh pr create -R kvokka/dotfiles --base master --head kvokka-agent:<branch>`.
 
 ## Setup And CI
 
