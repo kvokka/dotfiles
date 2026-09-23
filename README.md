@@ -75,8 +75,17 @@ daemons (`mise daemons`), started with the first activated shell.
 mise run fw:doctor          # smoke-check tools, hooks and daemons
 mise run fw:init [path]     # bootstrap a repository for agents (AGENTS.md, MCP, hooks, br init)
 mise run fw:cass-index      # first full cass index (slow)
-pitchfork status agent-mail cm sbh
+mise run fw:cass-nightly    # daily cass job by hand: full index + semantic backfill
+pitchfork status agent-mail cm sbh cass-index cass-nightly
 ```
+
+cass is kept fresh by two pitchfork cron jobs instead of the systemd timers of
+`cass schedule install`: `cass-index` runs an incremental `cass index` every 5
+minutes, and `cass-nightly` runs upstream's nightly job (full index plus
+semantic backfill) daily at 10:05 and fails loudly on any failed step.
+`fw:bootstrap` installs the multilingual semantic model; cass 0.8.0 cannot use
+it on ARM64 (upstream #467), so `cass-nightly` and the semantic check of
+`fw:doctor` fail until a cass release with the fix is pinned.
 
 ## CI
 
