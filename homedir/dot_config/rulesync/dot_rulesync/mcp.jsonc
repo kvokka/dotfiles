@@ -10,7 +10,7 @@
     // Unauthenticated on loopback: see ~/.config/mcp-agent-mail/config.env.
     "mcp-agent-mail": { "type": "http", "url": "http://127.0.0.1:8765/mcp/", "networkTimeout": 30000 },
     "cass-memory": { "type": "http", "url": "http://127.0.0.1:8766/", "networkTimeout": 30000 },
-    // WarpGrep code search (daemon `morph`); only `codebase_search` is exposed.
+    // WarpGrep code search (daemon `morph`): `codebase_search`, `github_codebase_search`.
     "morph": { "type": "http", "url": "http://127.0.0.1:8767/mcp", "networkTimeout": 30000 },
   },
   "opencode": {
