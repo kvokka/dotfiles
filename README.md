@@ -57,9 +57,9 @@ export SUDO_PASSWORD="your_password_here"
 `~/.dotfiles` at the same path inside the container, and the entrypoint runs
 the install command above against it. Host and container share one checkout:
 edit it on either side, run `chezmoi apply` on the side that should pick the
-change up. Inside the container the git config rewrites `git@github.com:kvokka/`
-to `kvokka-agent/`, so pushes from the container land in the agent fork while
-pushes from the host go to the upstream repository.
+change up. Both sides push to the upstream repository: the container as the
+`kvokka-agent` collaborator, whose force pushes dcg refuses and whose rewrite or
+deletion of `master` the repository ruleset refuses.
 
 `chezmoi apply` reflects the branch checked out in `~/.dotfiles` on both sides:
 keep `master` checked out there and put feature branches in `git worktree`s.

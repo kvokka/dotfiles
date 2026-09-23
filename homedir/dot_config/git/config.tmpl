@@ -119,11 +119,6 @@ useRelativePaths = true
 [credential "https://gist.github.com"]
     helper = !gh auth git-credential
 
-{{ if not .personal }}
-[url "git@github.com:kvokka-agent/"]
-	insteadOf = git@github.com:kvokka/
-{{ end }}
-
 {{ if eq .github_login "kvokka" }}
 [includeIf "gitdir:**/cat/"]
     path = ~/.config/git/config-checkeatrade
