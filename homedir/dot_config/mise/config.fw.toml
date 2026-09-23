@@ -45,6 +45,13 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 "github:Dicklesworthstone/brenner_bot" = "0.4.1"
 "github:Dicklesworthstone/storage_ballast_helper" = "0.6.2"
 "github:Dicklesworthstone/aadc" = "0.1.1"
+# AI client wiring: rulesync generates the clients' MCP servers and hooks
+# (`ai:sync` below); morph-mcp (stdio only) is served to all of them over HTTP
+# by mcp-proxy as the `morph` daemon. mcp-proxy 0.12.0 fails to import with the
+# mcp 2.x SDK, hence the pin.
+"npm:rulesync" = "17.0.0"
+"npm:@morphllm/morphmcp" = "0.8.213"
+"pipx:mcp-proxy" = { version = "0.12.0", uvx_args = "--with mcp<2" }
 
 # cm (cass-memory) is built from the tagged source tarball: upstream publishes
 # no linux-arm64 binary.
@@ -88,9 +95,21 @@ auto = ["start"]
 
 [daemons.cm]
 # cass-memory MCP server (JSON-RPC over HTTP POST at `/`); registered for every
-# client next to Agent Mail by `mise run ai:sync` (~/.config/rulesync/fw).
+# client next to Agent Mail by `mise run ai:sync` (~/.config/rulesync).
 run = "exec cm serve --host 127.0.0.1 --port 8766"
 ready_port = 8766
+retry = true
+auto = ["start"]
+
+[daemons.morph]
+# WarpGrep code search for every client (`morph` in ~/.config/rulesync). One
+# morph-mcp process serves all sessions: mcp-proxy keeps a single stdio child
+# (supergateway starts one per request). Every tool but `codebase_search` is
+# disabled in the server itself. `fnox exec` supplies MORPH_API_KEY, and
+# --pass-environment hands it and DISABLED_TOOLS to morph-mcp.
+run = "exec fnox exec --replace -- mcp-proxy --host 127.0.0.1 --port 8767 --pass-environment -- morph-mcp"
+env = { DISABLED_TOOLS = "edit_file,github_codebase_search,reflex_list,reflex_predict,reflex_summary,reflex_traces" }
+ready_port = 8767
 retry = true
 auto = ["start"]
 
@@ -103,7 +122,7 @@ auto = ["start"]
 description = "One-time setup of the flywheel services (idempotent)"
 # Daemons are not started here: they auto-start with the first activated shell,
 # and `mise daemons start` needs a project config in cwd. Manual start:
-# `pitchfork start agent-mail cm sbh` after that first shell.
+# `pitchfork start agent-mail cm morph sbh` after that first shell.
 run = """
 set -eu
 [ -d "${CASS_MEMORY_HOME:?}/diary" ] || cm init
@@ -116,6 +135,15 @@ sbh ballast provision
 [tasks."fw:init"]
 description = "Prepare a repository for the agent stack (idempotent)"
 file = "{{ env.HOME }}/.config/mise/tasks/fw/init"
+
+[tasks."ai:sync"]
+description = "Generate MCP servers and hooks for every AI client (rulesync)"
+# Source: ~/.config/rulesync. rulesync replaces only its own keys in each
+# client's user-scope files (MCP server list, hook list) and keeps the rest.
+# Runs after every `chezmoi apply` (run_after_200_ai-sync.sh), because chezmoi
+# rewrites those files whole and drops the generated keys.
+dir = "{{ env.HOME }}/.config/rulesync"
+run = "rulesync generate"
 
 [tasks."fw:doctor"]
 description = "Smoke-check the flywheel agent stack (read-only)"

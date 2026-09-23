@@ -1,26 +1,17 @@
-// MCP servers for every machine. Servers from fw/.rulesync/mcp.jsonc are added
-// on top in the Linux devcontainer; a server name defined in both files takes
-// the fw definition.
+// MCP servers for every client and every repository in the container. Each one
+// is a shared pitchfork daemon from config.fw.toml, reached over HTTP, so no
+// client spawns its own copy and no secret appears in a client config.
 //
 // rulesync owns the whole server list of each client: `claude mcp add -s user`,
 // `codex mcp add` or a hand edit is dropped on the next `mise run ai:sync`.
 // Add servers here.
 {
   "mcpServers": {
-    // WarpGrep code search. Only `codebase_search` is exposed: DISABLED_TOOLS is
-    // read by the server itself, so the same filter holds in every client.
-    // MORPH_API_KEY comes from the environment (fnox): Claude Code and OpenCode
-    // pass their environment to stdio servers; Codex passes only the names in
-    // `envVars`; agy is untested.
-    "morph": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@morphllm/morphmcp@0.8.213"],
-      "env": {
-        "DISABLED_TOOLS": "edit_file,github_codebase_search,reflex_list,reflex_predict,reflex_summary,reflex_traces",
-      },
-      "envVars": ["MORPH_API_KEY"],
-    },
+    // Unauthenticated on loopback: see ~/.config/mcp-agent-mail/config.env.
+    "mcp-agent-mail": { "type": "http", "url": "http://127.0.0.1:8765/mcp/", "networkTimeout": 30000 },
+    "cass-memory": { "type": "http", "url": "http://127.0.0.1:8766/", "networkTimeout": 30000 },
+    // WarpGrep code search (daemon `morph`); only `codebase_search` is exposed.
+    "morph": { "type": "http", "url": "http://127.0.0.1:8767/mcp", "networkTimeout": 30000 },
   },
   "opencode": {
     "mcpServers": {

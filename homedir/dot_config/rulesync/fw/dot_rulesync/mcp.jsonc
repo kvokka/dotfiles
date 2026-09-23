@@ -1,9 +1,0 @@
-// Flywheel services (pitchfork daemons in config.fw.toml), registered for every
-// client and every repository. Merged over base/.rulesync/mcp.jsonc.
-{
-  "mcpServers": {
-    // Unauthenticated on loopback: see ~/.config/mcp-agent-mail/config.env.
-    "mcp-agent-mail": { "type": "http", "url": "http://127.0.0.1:8765/mcp/", "networkTimeout": 30000 },
-    "cass-memory": { "type": "http", "url": "http://127.0.0.1:8766/", "networkTimeout": 30000 },
-  },
-}
