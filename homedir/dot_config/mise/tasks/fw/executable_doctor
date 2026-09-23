@@ -19,6 +19,23 @@ check() { # check <label> <command...>
 }
 dcg_shim="$HOME/.local/share/mise/shims/dcg"
 
+# morph-mcp answers `initialize` without MORPH_API_KEY but then lists no tools,
+# so only tools/list, in the session that initialize opens, shows a working key.
+morph_tools() {
+  local url=http://127.0.0.1:8767/mcp sid
+  local -a hdr=(-H 'content-type: application/json' -H 'accept: application/json, text/event-stream')
+  sid=$(curl -fsS -D - -o /dev/null -X POST "$url" "${hdr[@]}" \
+    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"fw-doctor","version":"1"}}}' |
+    tr -d '\r' | awk -F': ' 'tolower($1) == "mcp-session-id" { print $2 }') || return 1
+  [ -n "$sid" ] || return 1
+  curl -fsS -X POST "$url" "${hdr[@]}" -H "mcp-session-id: $sid" \
+    -d '{"jsonrpc":"2.0","method":"notifications/initialized"}' || return 1
+  curl -fsS -X POST "$url" "${hdr[@]}" -H "mcp-session-id: $sid" \
+    -d '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' |
+    sed -n 's/^data: //p' |
+    jq -e '[.result.tools[].name] | index("codebase_search") and index("github_codebase_search")'
+}
+
 for tool in ntm br bv am dcg ubs cass cm ru jfp brenner sbh aadc agy pitchfork toon typos fmd rulesync morph-mcp mcp-proxy; do
   check "tool: $tool" command -v "$tool"
 done
@@ -51,8 +68,7 @@ check "pitchfork: agent-mail running" bash -c "pitchfork status agent-mail | gre
 check "pitchfork: cm running" bash -c "pitchfork status cm | grep -q running"
 check "pitchfork: sbh running" bash -c "pitchfork status sbh | grep -q running"
 check "pitchfork: morph running" bash -c "pitchfork status morph | grep -q running"
-check "morph answers initialize (tools stay empty until MORPH_API_KEY is set)" bash -c \
-  "curl -fsS -X POST http://127.0.0.1:8767/mcp -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-06-18\",\"capabilities\":{},\"clientInfo\":{\"name\":\"fw-doctor\",\"version\":\"1\"}}}' | sed -n 's/^data: //p' | jq -e '.result.serverInfo'"
+check "morph lists codebase_search and github_codebase_search (needs MORPH_API_KEY)" morph_tools
 check "agent-mail /health ready" curl -fsS http://127.0.0.1:8765/health
 check "am doctor check" am doctor check --json
 check "cm serve answers tools/list" bash -c \

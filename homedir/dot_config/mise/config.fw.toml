@@ -101,17 +101,21 @@ retry = true
 auto = ["start"]
 
 [daemons.morph]
-# WarpGrep code search for every client (`morph` in ~/.config/rulesync). One
-# morph-mcp process serves all sessions: mcp-proxy keeps a single stdio child
-# (supergateway starts one per request). That is safe for `codebase_search`:
-# it searches the `repo_path` of each call, independent of the process cwd and
-# of MCP roots, which only the disabled file tools use. Every tool but
-# `codebase_search` is disabled in the server itself; morph-mcp inherits
-# DISABLED_TOOLS and MORPH_API_KEY (fnox, from the environment).
+# WarpGrep code search for every client (`morph` in ~/.config/rulesync):
+# `codebase_search` over a local repository and `github_codebase_search` over a
+# public GitHub repository, both through the Morph API. One morph-mcp process
+# serves all sessions: mcp-proxy keeps a single stdio child (supergateway starts
+# one per request). That is safe for both tools: each searches the repository
+# named in the call, independent of the process cwd and of MCP roots, which
+# only the disabled file tools use.
+# `fnox exec` decrypts MORPH_API_KEY for the daemon itself: the pitchfork
+# supervisor keeps the environment of whichever process started it, and that
+# one need not have loaded the fnox secrets. Without the key morph-mcp starts
+# and answers `initialize`, but lists no tools.
 # --host: the default `::` would expose the key-bearing server to the compose
 # network. --server stream: Streamable HTTP at /mcp only, no SSE endpoint.
-run = "exec mcp-proxy --host 127.0.0.1 --port 8767 --server stream -- morph-mcp"
-env = { DISABLED_TOOLS = "edit_file,github_codebase_search,reflex_list,reflex_predict,reflex_summary,reflex_traces" }
+run = "exec fnox exec --replace -- mcp-proxy --host 127.0.0.1 --port 8767 --server stream -- morph-mcp"
+env = { DISABLED_TOOLS = "edit_file,reflex_list,reflex_predict,reflex_summary,reflex_traces" }
 ready_port = 8767
 retry = true
 auto = ["start"]

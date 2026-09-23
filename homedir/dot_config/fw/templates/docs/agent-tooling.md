@@ -21,7 +21,7 @@ repository expects.
 | `typos` | Source-code spell checker | Cheap hygiene check on prose and identifiers | `typos` on changed files |
 | `cass` | Coding Agent Session Search: indexes past agent sessions of all CLIs | Reuse solved problems instead of re-solving them | `cass search "<query>" --robot --limit 5`; never bare `cass` |
 | `cm` | cass-memory: procedural memory distilled from sessions; also an MCP server (`http://127.0.0.1:8766/`, `cass-memory`) | Project conventions and past pitfalls in a token budget | `cm context "<task>" --json` before non-trivial work |
-| `morph` | WarpGrep code search: an MCP server (`http://127.0.0.1:8767/mcp`, `morph`) exposing only `codebase_search` | Natural-language search over an unfamiliar codebase, run by a remote subagent | `codebase_search` with the repository's absolute path as `repo_path`; read the returned excerpts, not whole files |
+| `morph` | WarpGrep code search: an MCP server (`http://127.0.0.1:8767/mcp`, `morph`) exposing `codebase_search` and `github_codebase_search` | Natural-language search over an unfamiliar codebase, local or on GitHub, run by a remote subagent | `codebase_search` with the repository's absolute path as `repo_path`; `github_codebase_search` with `owner_repo` (`owner/repo`) for a public GitHub repository that is not checked out; read the returned excerpts, not whole files |
 | `ru` | Repo updater: sync many repositories, detect conflicts | Operator hygiene across projects | Operator only (`ru sync`, `ru status --fetch`) |
 | `jfp` | JeffreysPrompts CLI: curated prompt library | Prompt source for the operator's palette | Operator only |
 | `brenner` | Brenner Bot: multi-agent research sessions with cited sources | Research and hypothesis work, not coding | On request only |
