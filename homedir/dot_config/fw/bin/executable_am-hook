@@ -9,6 +9,11 @@
 #                     JSON `additionalContext` both clients accept there; plain
 #                     PostToolUse stdout never reaches the model
 #
+# Claude Code and Codex pass the hook input as JSON on stdin with
+# `hook_event_name` and `cwd`; the repository is taken from that `cwd`, and
+# `inbox` answers only a PostToolUse input, so a client with another hook
+# protocol (agy) gets no output.
+#
 # The agent is AGENT_NAME, else AGENT_MAIL_AGENT (the names am itself reads),
 # else NTM_AGENT_NAME. Without one, outside a git repository, or when Agent
 # Mail does not know the repository (its absolute path is the project key) or
@@ -21,7 +26,12 @@ mode="${1:-}"
 agent="${AGENT_NAME:-${AGENT_MAIL_AGENT:-${NTM_AGENT_NAME:-}}}"
 [[ -n "$agent" ]] || exit 0
 command -v am >/dev/null 2>&1 || exit 0
-project="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+command -v jq >/dev/null 2>&1 || exit 0
+
+input="$(cat)"
+event="$(jq -r '.hook_event_name // empty' <<<"$input" 2>/dev/null)"
+cwd="$(jq -r '.cwd // empty' <<<"$input" 2>/dev/null)"
+project="$(git -C "${cwd:-$PWD}" rev-parse --show-toplevel 2>/dev/null)" || exit 0
 
 case "$mode" in
 session)
@@ -37,7 +47,7 @@ session)
   [[ -n "$reservations" ]] && printf '\nActive file reservations:\n%s\n' "$reservations"
   ;;
 inbox)
-  command -v jq >/dev/null 2>&1 || exit 0
+  [[ "$event" == "PostToolUse" ]] || exit 0
   # Silent when rate-limited, when there is no unread mail, and on any error.
   reminder="$(am check-inbox --agent "$agent" --project "$project" 2>/dev/null)"
   [[ -n "${reminder//[[:space:]]/}" ]] || exit 0

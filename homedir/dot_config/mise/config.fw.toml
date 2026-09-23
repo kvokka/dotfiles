@@ -104,10 +104,12 @@ auto = ["start"]
 [daemons.morph]
 # WarpGrep code search for every client (`morph` in ~/.config/rulesync). One
 # morph-mcp process serves all sessions: mcp-proxy keeps a single stdio child
-# (supergateway starts one per request). Every tool but `codebase_search` is
-# disabled in the server itself. `fnox exec` supplies MORPH_API_KEY, and
-# --pass-environment hands it and DISABLED_TOOLS to morph-mcp.
-run = "exec fnox exec --replace -- mcp-proxy --host 127.0.0.1 --port 8767 --pass-environment -- morph-mcp"
+# (supergateway starts one per request). That is safe for `codebase_search`:
+# it searches the `repo_path` of each call, independent of the process cwd and
+# of MCP roots, which only the disabled file tools use. Every tool but
+# `codebase_search` is disabled in the server itself; --pass-environment hands
+# DISABLED_TOOLS and MORPH_API_KEY (fnox, from the environment) to morph-mcp.
+run = "exec mcp-proxy --host 127.0.0.1 --port 8767 --pass-environment -- morph-mcp"
 env = { DISABLED_TOOLS = "edit_file,github_codebase_search,reflex_list,reflex_predict,reflex_summary,reflex_traces" }
 ready_port = 8767
 retry = true

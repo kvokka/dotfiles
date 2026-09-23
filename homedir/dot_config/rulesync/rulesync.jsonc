@@ -5,6 +5,13 @@
 {
   "$schema": "https://github.com/dyoshikawa/rulesync/releases/latest/download/config-schema.json",
   "global": true,
-  "targets": ["claudecode", "codexcli", "opencode", "antigravity-cli"],
-  "features": ["mcp", "hooks"],
+  "targets": {
+    "claudecode": ["mcp", "hooks"],
+    "codexcli": ["mcp", "hooks"],
+    "antigravity-cli": ["mcp", "hooks"],
+    // No hooks: rulesync's OpenCode plugin runs a hook command with no stdin
+    // and ignores its result, so dcg would fail open. OpenCode keeps dcg's own
+    // plugin (~/.config/opencode/plugins/dcg-guard.js).
+    "opencode": ["mcp"],
+  },
 }

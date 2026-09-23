@@ -51,7 +51,7 @@ check "pitchfork: agent-mail running" bash -c "pitchfork status agent-mail | gre
 check "pitchfork: cm running" bash -c "pitchfork status cm | grep -q running"
 check "pitchfork: sbh running" bash -c "pitchfork status sbh | grep -q running"
 check "pitchfork: morph running" bash -c "pitchfork status morph | grep -q running"
-check "morph answers initialize (MORPH_API_KEY in fnox if its calls fail)" bash -c \
+check "morph answers initialize (tools stay empty until MORPH_API_KEY is set)" bash -c \
   "curl -fsS -X POST http://127.0.0.1:8767/mcp -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-06-18\",\"capabilities\":{},\"clientInfo\":{\"name\":\"fw-doctor\",\"version\":\"1\"}}}' | sed 's/^data: //' | jq -e 'select(.result) | .result.serverInfo'"
 check "agent-mail /health ready" curl -fsS http://127.0.0.1:8765/health
 check "am doctor check" am doctor check --json
