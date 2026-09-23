@@ -19,24 +19,7 @@ check() { # check <label> <command...>
 }
 dcg_shim="$HOME/.local/share/mise/shims/dcg"
 
-# morph-mcp answers `initialize` without MORPH_API_KEY but then lists no tools,
-# so only tools/list, in the session that initialize opens, shows a working key.
-morph_tools() {
-  local url=http://127.0.0.1:8767/mcp sid
-  local -a hdr=(-H 'content-type: application/json' -H 'accept: application/json, text/event-stream')
-  sid=$(curl -fsS -D - -o /dev/null -X POST "$url" "${hdr[@]}" \
-    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"fw-doctor","version":"1"}}}' |
-    tr -d '\r' | awk -F': ' 'tolower($1) == "mcp-session-id" { print $2 }') || return 1
-  [ -n "$sid" ] || return 1
-  curl -fsS -X POST "$url" "${hdr[@]}" -H "mcp-session-id: $sid" \
-    -d '{"jsonrpc":"2.0","method":"notifications/initialized"}' || return 1
-  curl -fsS -X POST "$url" "${hdr[@]}" -H "mcp-session-id: $sid" \
-    -d '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' |
-    sed -n 's/^data: //p' |
-    jq -e '[.result.tools[].name] | index("codebase_search") and index("github_codebase_search")'
-}
-
-for tool in ntm br bv am dcg ubs cass cm ru jfp brenner sbh aadc agy pitchfork toon typos fmd rulesync morph-mcp mcp-proxy; do
+for tool in ntm br bv am dcg ubs cass cm ru jfp brenner sbh aadc agy pitchfork toon typos fmd rulesync; do
   check "tool: $tool" command -v "$tool"
 done
 
@@ -58,17 +41,15 @@ check "codex hook registered" jq -e '.hooks.PreToolUse[]?.hooks[]? | select(.com
 check "opencode dcg plugin present" grep -q dcg-opencode-plugin "$HOME/.config/opencode/plugins/dcg-guard.js"
 check "agy settings pinned" jq -e '.toolPermission == "always-proceed"' "$HOME/.gemini/antigravity-cli/settings.json"
 check "agy hook registered" jq -e '.rulesync.PreToolUse[]?.hooks[]? | select(.command == "'"$dcg_shim"'")' "$HOME/.gemini/config/hooks.json"
-servers='has("mcp-agent-mail") and has("cass-memory") and has("morph")'
-check "claude MCP: mcp-agent-mail, cass-memory, morph" jq -e ".mcpServers | $servers" "$HOME/.claude.json"
-check "codex MCP: mcp-agent-mail, cass-memory, morph" bash -c \
-  "for s in mcp-agent-mail cass-memory morph; do grep -q \"^\\[mcp_servers\\.\$s\\]\" ~/.codex/config.toml || exit 1; done"
-check "agy MCP: mcp-agent-mail, cass-memory, morph" jq -e ".mcpServers | $servers" "$HOME/.gemini/config/mcp_config.json"
+servers='has("mcp-agent-mail") and has("cass-memory")'
+check "claude MCP: mcp-agent-mail, cass-memory" jq -e ".mcpServers | $servers" "$HOME/.claude.json"
+check "codex MCP: mcp-agent-mail, cass-memory" bash -c \
+  "for s in mcp-agent-mail cass-memory; do grep -q \"^\\[mcp_servers\\.\$s\\]\" ~/.codex/config.toml || exit 1; done"
+check "agy MCP: mcp-agent-mail, cass-memory" jq -e ".mcpServers | $servers" "$HOME/.gemini/config/mcp_config.json"
 
 check "pitchfork: agent-mail running" bash -c "pitchfork status agent-mail | grep -q running"
 check "pitchfork: cm running" bash -c "pitchfork status cm | grep -q running"
 check "pitchfork: sbh running" bash -c "pitchfork status sbh | grep -q running"
-check "pitchfork: morph running" bash -c "pitchfork status morph | grep -q running"
-check "morph lists codebase_search and github_codebase_search (needs MORPH_API_KEY)" morph_tools
 check "agent-mail /health ready" curl -fsS http://127.0.0.1:8765/health
 check "am doctor check" am doctor check --json
 check "cm serve answers tools/list" bash -c \
@@ -80,7 +61,7 @@ check "sbh ballast pool in ~/.ballast" test -d "$HOME/.ballast"
 check "ntm deps" ntm deps
 
 if (( failed )); then
-  printf '\nSome checks failed. Daemons: pitchfork start agent-mail cm morph sbh; services setup: mise run fw:bootstrap\n' >&2
+  printf '\nSome checks failed. Daemons: pitchfork start agent-mail cm sbh; services setup: mise run fw:bootstrap\n' >&2
   exit 1
 fi
 printf '\nflywheel stack looks healthy\n'

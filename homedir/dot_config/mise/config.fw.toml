@@ -46,11 +46,13 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 "github:Dicklesworthstone/storage_ballast_helper" = "0.6.2"
 "github:Dicklesworthstone/aadc" = "0.1.1"
 # AI client wiring: rulesync generates the clients' MCP servers and hooks
-# (`ai:sync` below); morph-mcp (stdio only) is served to all of them over HTTP
-# by mcp-proxy (punkpeye/mcp-proxy, TypeScript) as the `morph` daemon.
+# (`ai:sync` below).
 "npm:rulesync" = "17.0.0"
-"npm:@morphllm/morphmcp" = "0.8.213"
-"npm:mcp-proxy" = "6.7.19"
+# mcp-proxy (punkpeye/mcp-proxy, TypeScript) serves a stdio-only MCP server to
+# every client over HTTP as one shared daemon; unused while no such server is
+# configured. Run it with `--host 127.0.0.1`: its default `::` exposes the
+# server to the compose network.
+# "npm:mcp-proxy" = "latest"
 
 # cm (cass-memory) is built from the tagged source tarball: upstream publishes
 # no linux-arm64 binary.
@@ -100,26 +102,6 @@ ready_port = 8766
 retry = true
 auto = ["start"]
 
-[daemons.morph]
-# WarpGrep code search for every client (`morph` in ~/.config/rulesync):
-# `codebase_search` over a local repository and `github_codebase_search` over a
-# public GitHub repository, both through the Morph API. One morph-mcp process
-# serves all sessions: mcp-proxy keeps a single stdio child (supergateway starts
-# one per request). That is safe for both tools: each searches the repository
-# named in the call, independent of the process cwd and of MCP roots, which
-# only the disabled file tools use.
-# `fnox exec` decrypts MORPH_API_KEY for the daemon itself: the pitchfork
-# supervisor keeps the environment of whichever process started it, and that
-# one need not have loaded the fnox secrets. Without the key morph-mcp starts
-# and answers `initialize`, but lists no tools.
-# --host: the default `::` would expose the key-bearing server to the compose
-# network. --server stream: Streamable HTTP at /mcp only, no SSE endpoint.
-run = "exec fnox exec --replace -- mcp-proxy --host 127.0.0.1 --port 8767 --server stream -- morph-mcp"
-env = { DISABLED_TOOLS = "edit_file,reflex_list,reflex_predict,reflex_summary,reflex_traces" }
-ready_port = 8767
-retry = true
-auto = ["start"]
-
 [daemons.sbh]
 run = "exec sbh daemon"
 retry = true
@@ -129,7 +111,7 @@ auto = ["start"]
 description = "One-time setup of the flywheel services (idempotent)"
 # Daemons are not started here: they auto-start with the first activated shell,
 # and `mise daemons start` needs a project config in cwd. Manual start:
-# `pitchfork start agent-mail cm morph sbh` after that first shell.
+# `pitchfork start agent-mail cm sbh` after that first shell.
 run = """
 set -eu
 [ -d "${CASS_MEMORY_HOME:?}/diary" ] || cm init
