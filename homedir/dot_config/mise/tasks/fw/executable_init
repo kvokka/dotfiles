@@ -99,6 +99,5 @@ if (( ${#added[@]} )); then
 fi
 printf 'Next steps:\n'
 printf '  1. Fill in "Project commands" in AGENTS.md.\n'
-printf '  2. Trust the project in Codex if needed (projects.%q.trust_level in ~/.codex/config.toml).\n' "$target"
-printf '  3. Approve the mcp-agent-mail and cass-memory servers when Claude Code asks (project .mcp.json).\n'
-printf '  4. Make sure the Agent Mail service is running (pitchfork status agent-mail), then: ntm spawn %q --cc=2 --cod=1\n' "$name"
+printf '  2. Make sure the Agent Mail service is running (pitchfork status agent-mail), then: ntm spawn %q --cc=2 --cod=1\n' "$name"
+printf 'The mcp-agent-mail and cass-memory MCP servers are global (mise run ai:sync); nothing to register here.\n'

@@ -1,0 +1,39 @@
+// MCP servers for every machine. Servers from fw/.rulesync/mcp.jsonc are added
+// on top in the Linux devcontainer; a server name defined in both files takes
+// the fw definition.
+//
+// rulesync owns the whole server list of each client: `claude mcp add -s user`,
+// `codex mcp add` or a hand edit is dropped on the next `mise run ai:sync`.
+// Add servers here.
+{
+  "mcpServers": {
+    // WarpGrep code search. Only `codebase_search` is exposed: DISABLED_TOOLS is
+    // read by the server itself, so the same filter holds in every client.
+    // MORPH_API_KEY comes from the environment (fnox): Claude Code and OpenCode
+    // pass their environment to stdio servers; Codex passes only the names in
+    // `envVars`; agy is untested.
+    "morph": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@morphllm/morphmcp@0.8.213"],
+      "env": {
+        "DISABLED_TOOLS": "edit_file,github_codebase_search,reflex_list,reflex_predict,reflex_summary,reflex_traces",
+      },
+      "envVars": ["MORPH_API_KEY"],
+    },
+  },
+  "opencode": {
+    "mcpServers": {
+      // Kept from ~/.config/opencode/opencode.json, all switched off there.
+      "render": {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "mcp-remote", "https://mcp.render.com/mcp", "--header", "Authorization: Bearer ${RENDER_API_KEY}"],
+        "env": { "Authorization": "Bearer ${RENDER_API_KEY}" },
+        "disabled": true,
+      },
+      "browserless-docs": { "type": "http", "url": "https://browserless-docs.mcp.kapa.ai", "disabled": true },
+      "oh-my-posh-validator": { "type": "http", "url": "https://ohmyposh.dev/api/mcp", "disabled": true },
+    },
+  },
+}

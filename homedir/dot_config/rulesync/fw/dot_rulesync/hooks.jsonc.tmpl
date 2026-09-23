@@ -1,0 +1,43 @@
+// Hooks for every client, Linux devcontainer only. This is the only hooks
+// source: rulesync replaces a hooks file wholesale, so a second one in
+// base/.rulesync would hide this file, and an empty one would erase the hooks.
+//
+// Every hook sits in a per-client block because the matchers use each client's
+// own tool names, and because OpenCode is left out on purpose: its generated
+// plugin runs the command with no stdin and ignores the output, so dcg would
+// fail open. OpenCode keeps dcg's own plugin (~/.config/opencode/plugins/dcg-guard.js).
+{
+  "version": 1,
+  "hooks": {},
+  "claudecode": {
+    "hooks": {
+      "preToolUse": [
+        { "matcher": "Bash|PowerShell", "command": "{{ .chezmoi.homeDir }}/.local/share/mise/shims/dcg", "timeout": 10 },
+      ],
+      // SessionStart is the one event whose plain stdout reaches the model in
+      // both Claude Code and Codex; PreToolUse/PostToolUse stdout does not, so
+      // Agent Mail is consulted once per session and not on every tool call.
+      "sessionStart": [
+        { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-hook session", "timeout": 10 },
+      ],
+    },
+  },
+  "codexcli": {
+    "hooks": {
+      "preToolUse": [
+        { "matcher": "Bash", "command": "{{ .chezmoi.homeDir }}/.local/share/mise/shims/dcg", "timeout": 10 },
+      ],
+      "sessionStart": [
+        { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-hook session", "timeout": 10 },
+      ],
+    },
+  },
+  // agy has no sessionStart; its PreToolUse must stay silent unless it blocks.
+  "antigravity-cli": {
+    "hooks": {
+      "preToolUse": [
+        { "matcher": "run_command", "command": "{{ .chezmoi.homeDir }}/.local/share/mise/shims/dcg", "timeout": 6 },
+      ],
+    },
+  },
+}

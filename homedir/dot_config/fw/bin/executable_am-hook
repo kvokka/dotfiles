@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Agent Mail context for AI client hooks, wired by ~/.config/rulesync (fw layer).
+#
+#   am-hook session   print pending acknowledgements and active file
+#                     reservations for this agent in this repository
+#
+# Silent (exit 0, no output) unless all of these hold, so a session that is not
+# an Agent Mail agent pays one bash start and nothing else:
+#   - AGENT_NAME is set (the same variable the Agent Mail git guard reads);
+#   - the working directory is inside a git repository;
+#   - Agent Mail knows that repository (its absolute path as project key) and
+#     that agent.
+# A hook must never break a session, so every failure also exits 0.
+
+set -uo pipefail
+
+mode="${1:-}"
+agent="${AGENT_NAME:-}"
+[[ "$mode" == "session" && -n "$agent" ]] || exit 0
+command -v am >/dev/null 2>&1 || exit 0
+project="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+
+# Exits non-zero when the project or the agent is unknown to Agent Mail.
+acks="$(am acks pending "$project" "$agent" --limit 20 2>/dev/null)" || exit 0
+
+# `am file_reservations active` always appends an attestation line, and prints a
+# placeholder when there is nothing to report; neither is context.
+reservations="$(am file_reservations active "$project" 2>/dev/null |
+  grep -v -e '^reservation_read_attestation:' -e '^No active reservations\.$')"
+
+[[ -n "$acks$reservations" ]] || exit 0
+printf 'Agent Mail (%s in %s)\n' "$agent" "$project"
+[[ -n "$acks" ]] && printf '\nPending acknowledgements:\n%s\n' "$acks"
+[[ -n "$reservations" ]] && printf '\nActive file reservations:\n%s\n' "$reservations"
+exit 0

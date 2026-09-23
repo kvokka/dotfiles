@@ -51,8 +51,18 @@
 
 - The acfs-derived agent stack (ntm, br/bv, Agent Mail `am`, dcg, ubs, cass/cm, sbh, agy, ...) lives in `homedir/dot_config/mise/config.fw.toml`, loaded only in the Linux devcontainer through the `fw` entry of `miserc.toml`; `toon`, `typos` and `fmd` are global tools.
 - Every tool is a pinned `github:` release; `cm` is built from the tagged source tarball in a tool-level `postinstall` (`{{ version }}` in platform URLs needs mise >= 2026.9.12, enforced by `min_version` in that file).
-- Services (`agent-mail` on 127.0.0.1:8765, `cm` on 8766, `sbh`) are pitchfork daemons declared in `[daemons]`; the container has no systemd. Never run `am service install`, `sbh install`, `dcg install`, `agy install` or any upstream `install.sh`: chezmoi owns all configs and hook files (Claude `settings.json.tmpl`, `dot_codex/hooks.json.tmpl`, `opencode/plugins/dcg-guard.js.tmpl`, `private_dot_gemini/`).
-- Per-repository files (`.mcp.json`, `.codex/config.toml`, `opencode.json`, `.pre-commit-config.yaml`, `AGENTS.md`, `docs/agent-tooling.md`) come from `homedir/dot_config/fw/templates/` via the file task `mise run fw:init`; `mise run fw:doctor` smoke-checks the stack.
+- Services (`agent-mail` on 127.0.0.1:8765, `cm` on 8766, `sbh`) are pitchfork daemons declared in `[daemons]`; the container has no systemd. Never run `am service install`, `sbh install`, `dcg install`, `agy install` or any upstream `install.sh`: chezmoi owns the configs, `opencode/plugins/dcg-guard.js.tmpl` included, and the clients' MCP servers and hooks come from rulesync (next section).
+- Per-repository files (`.pre-commit-config.yaml`, `AGENTS.md`, `docs/agent-tooling.md`, `.gitignore`, `.ubsignore`) come from `homedir/dot_config/fw/templates/` via the file task `mise run fw:init`; `mise run fw:doctor` smoke-checks the stack.
+
+## AI Client MCP Servers and Hooks (rulesync)
+
+- One source for Claude Code, Codex, OpenCode and agy: `homedir/dot_config/rulesync/`. `base/dot_rulesync/mcp.jsonc` holds the MCP servers for every machine; `fw/dot_rulesync/` (Linux devcontainer only, ignored elsewhere) adds the flywheel servers and holds the only hooks source. `mise run ai:sync` (`npm:rulesync`, pinned in `config.toml`) writes them into each client's user-scope files; `mise bootstrap` and the chezmoi script `run_after_200_ai-sync.sh` run it.
+- rulesync owns whole keys: the MCP server lists of all four clients (`claude mcp add -s user` or `codex mcp add` entries are dropped on the next run) and the hook lists. It keeps every other key of the files it writes. Add servers and hooks in the source, never in the generated files.
+- Hooks are generated only with the fw tree present: an empty or missing hooks source makes rulesync write an empty hook list. A hooks file in both trees is not merged; the fw one replaces the base one.
+- Hooks live in per-client blocks (matchers use each client's tool names). OpenCode gets none from rulesync: its generated plugin runs a hook command with no stdin and ignores the result, so dcg would fail open there; OpenCode keeps dcg's own plugin.
+- Only `SessionStart` runs Agent Mail (`~/.config/fw/bin/am-hook`): it is the one event whose plain stdout reaches the model in Claude Code and Codex. `am-hook` is silent unless `AGENT_NAME` is set and Agent Mail knows the repository and the agent.
+- Secrets stay in the environment (fnox): Claude Code and OpenCode pass their whole environment to stdio servers (tested); Codex passes only the names in a server's `envVars`; agy is untested. `MORPH_API_KEY` is the one in use.
+- After `ai:sync` changes `~/.codex/hooks.json`, Codex skips the changed hooks until they are approved once in Codex; then copy its new `[hooks.state]` entries into `homedir/dot_codex/private_config.toml.tmpl`.
 - `homedir/dot_config/fw/templates/scripts/hooks/executable_agent-mail-guard` wraps `am guard check`; `am guard install` is incompatible with the global `core.hooksPath`.
 
 ## Local Dev Compose

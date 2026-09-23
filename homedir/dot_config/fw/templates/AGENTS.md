@@ -73,9 +73,10 @@ mutations if the picture looks stale.
 
 ## Coordination: MCP Agent Mail
 
-The `mcp-agent-mail` MCP server is registered for this repository
-(`.mcp.json`, `.codex/config.toml`, `opencode.json`). Use the repository's
-absolute path as `project_key`, and the bead id as the shared identifier.
+The `mcp-agent-mail` MCP server is registered at user scope for every agent
+client on the machine, so this repository carries no MCP configuration of its
+own. Use the repository's absolute path as `project_key`, and the bead id as
+the shared identifier.
 
 1. Register:
    `ensure_project(human_key=<abs repo path>)`,

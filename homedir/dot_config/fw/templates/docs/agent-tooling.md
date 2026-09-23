@@ -36,13 +36,14 @@ repository expects.
 1. `git init -b main` (new repositories only).
 2. `br init` creates `.beads/` with its own `.gitignore`; commit `.beads/`.
 3. `AGENTS.md`, `.ubsignore`, `.gitignore`, `docs/agent-tooling.md` from the template.
-4. MCP registration of Agent Mail and cass-memory per agent: `.mcp.json`
-   (Claude Code), `.codex/config.toml` (Codex, needs the project to be
-   trusted), `opencode.json` (OpenCode). Both services run as pitchfork
-   daemons (`pitchfork status agent-mail cm`); start them before launching agents.
-5. `.pre-commit-config.yaml` + `scripts/hooks/agent-mail-guard`: the global
+4. `.pre-commit-config.yaml` + `scripts/hooks/agent-mail-guard`: the global
    git hook runs `prek`, which runs the reservation guard, `ubs`, `gitleaks`
    and formatters on every commit.
+
+The Agent Mail and cass-memory MCP servers need no per-repository step: they
+are registered at user scope for every agent client. Both services run as
+pitchfork daemons (`pitchfork status agent-mail cm`); start them before
+launching agents.
 
 ## Daily loop
 

@@ -11,6 +11,7 @@ pnpm = '12.4.0'
 
 "npm:aicommit2" = "latest"
 "npm:@fission-ai/openspec" = { version = "1.13", postinstall = "openspec completion install zsh" }
+"npm:rulesync" = "17.0.0" # global MCP servers and hooks for every AI client: `mise run ai:sync`
 "aqua:fallow-rs/fallow" = "3.27"
 
 golang = '1.27'
@@ -110,11 +111,16 @@ for store in ~/proj/active/siam-platform; do
 done
 """
 
+[tasks."ai:sync"]
+description = "Generate global MCP servers and hooks for every AI client (rulesync)"
+file = "{{ env.HOME }}/.config/mise/tasks/ai/sync"
+
 [tasks.bootstrap]
 description = "Global mise bootstrap"
 run = [
   "mise run bootstrap:atuin",
   "mise run openspec:setup:stores",
+  "mise run ai:sync",
   # flywheel stack (config.fw.toml) exists only in the Linux devcontainer
   "if mise tasks ls --json | jq -e 'any(.[]; .name == \"fw:bootstrap\")' >/dev/null; then mise run fw:bootstrap; fi",
 ]
