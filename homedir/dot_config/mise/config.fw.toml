@@ -47,11 +47,10 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 "github:Dicklesworthstone/aadc" = "0.1.1"
 # AI client wiring: rulesync generates the clients' MCP servers and hooks
 # (`ai:sync` below); morph-mcp (stdio only) is served to all of them over HTTP
-# by mcp-proxy as the `morph` daemon. mcp-proxy 0.12.0 fails to import with the
-# mcp 2.x SDK, hence the pin.
+# by mcp-proxy (punkpeye/mcp-proxy, TypeScript) as the `morph` daemon.
 "npm:rulesync" = "17.0.0"
 "npm:@morphllm/morphmcp" = "0.8.213"
-"pipx:mcp-proxy" = { version = "0.12.0", uvx_args = "--with mcp<2" }
+"npm:mcp-proxy" = "6.7.19"
 
 # cm (cass-memory) is built from the tagged source tarball: upstream publishes
 # no linux-arm64 binary.
@@ -107,9 +106,11 @@ auto = ["start"]
 # (supergateway starts one per request). That is safe for `codebase_search`:
 # it searches the `repo_path` of each call, independent of the process cwd and
 # of MCP roots, which only the disabled file tools use. Every tool but
-# `codebase_search` is disabled in the server itself; --pass-environment hands
-# DISABLED_TOOLS and MORPH_API_KEY (fnox, from the environment) to morph-mcp.
-run = "exec mcp-proxy --host 127.0.0.1 --port 8767 --pass-environment -- morph-mcp"
+# `codebase_search` is disabled in the server itself; morph-mcp inherits
+# DISABLED_TOOLS and MORPH_API_KEY (fnox, from the environment).
+# --host: the default `::` would expose the key-bearing server to the compose
+# network. --server stream: Streamable HTTP at /mcp only, no SSE endpoint.
+run = "exec mcp-proxy --host 127.0.0.1 --port 8767 --server stream -- morph-mcp"
 env = { DISABLED_TOOLS = "edit_file,github_codebase_search,reflex_list,reflex_predict,reflex_summary,reflex_traces" }
 ready_port = 8767
 retry = true
