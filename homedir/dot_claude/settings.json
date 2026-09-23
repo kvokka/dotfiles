@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/share/mise/shims/dcg",
+            "command": "$(which dcg)",
             "timeout": 10
           }
         ]
