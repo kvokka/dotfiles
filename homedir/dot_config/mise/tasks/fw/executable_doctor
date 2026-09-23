@@ -56,6 +56,8 @@ check "cm serve answers tools/list" bash -c \
   "curl -fsS -X POST http://127.0.0.1:8766 -H 'content-type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}' | jq -e '.result.tools | length > 0'"
 check "cm doctor" cm doctor --json
 check "cass health (run 'mise run fw:cass-index' once if FAIL)" cass health --json
+check "cass index fresh (cass-index daemon: mise daemons restart cass-index)" bash -c \
+  "cass status --json | jq -e '.index.stale == false'"
 check "sbh status" sbh status --json
 check "sbh ballast pool in ~/.ballast" test -d "$HOME/.ballast"
 check "ntm deps" ntm deps

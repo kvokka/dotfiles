@@ -75,8 +75,12 @@ daemons (`mise daemons`), started with the first activated shell.
 mise run fw:doctor          # smoke-check tools, hooks and daemons
 mise run fw:init [path]     # bootstrap a repository for agents (AGENTS.md, MCP, hooks, br init)
 mise run fw:cass-index      # first full cass index (slow)
-pitchfork status agent-mail cm sbh
+pitchfork status agent-mail cm sbh cass-index
 ```
+
+The `cass-index` daemon is a pitchfork cron job: every 5 minutes it runs an
+incremental `cass index`, so new agent sessions become searchable without the
+systemd timers of `cass schedule install`.
 
 ## CI
 

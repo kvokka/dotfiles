@@ -107,6 +107,21 @@ run = "exec sbh daemon"
 retry = true
 auto = ["start"]
 
+# cass reads the agents' session files only when `cass index` runs; left alone
+# it catches up only after a search finds the index 30 min stale, and answers
+# that search from the old index. Upstream keeps it fresh with systemd timers
+# (`cass schedule install`), which the container lacks, so pitchfork runs the
+# same incremental pass (seconds, ~2 GB RSS while it runs). Not `index --watch`:
+# it holds those ~2 GB for good. The first shell's start arms the schedule; a
+# changed schedule needs `mise daemons restart cass-index`, and `pitchfork clean`
+# drops the stopped daemon between runs, disarming it until the next restart.
+[daemons.cass-index]
+run = "exec cass index --background"
+env = { RUST_LOG = "warn" }
+# pitchfork's cron takes seconds first; a 5-field expression is rejected.
+cron = { schedule = "0 */5 * * * *", retrigger = "finish" }
+auto = ["start"]
+
 [tasks."fw:bootstrap"]
 description = "One-time setup of the flywheel services (idempotent)"
 # Daemons are not started here: they auto-start with the first activated shell,
