@@ -21,6 +21,15 @@ experimental = true # `mise daemons`
 BV_NO_UPDATE_CHECK = "1"
 CASS_DATA_DIR = "{{ env.HOME }}/proj/share/cass"
 CASS_MEMORY_HOME = "{{ env.HOME }}/proj/share/cass-memory"
+# Semantic model of cass (installed by fw:bootstrap). The multilingual MiniLM,
+# not the default English one: on Russian paraphrase queries over our own
+# sessions it put the right session in the top 5 for 11 of 16 queries, against
+# 4 of 16. It is also the only way cass finds Russian text: its lexical index
+# keeps only ASCII and CJK words (up to at least 0.8.0 and main). cass 0.8.0
+# cannot embed with either model on ARM64 (upstream #467, fixed on main after
+# 0.8.0); until a release carries the fix, search stays lexical and `fw:doctor`
+# reports semantic search as not ready.
+CASS_SEMANTIC_EMBEDDER = "multilingual-minilm"
 # Agent Mail archive location. Both the service and `am guard check` (the
 # pre-commit guard) resolve it from the environment, so it has to be exported
 # here and not only in ~/.config/mcp-agent-mail/config.env (which keeps the
@@ -122,16 +131,36 @@ env = { RUST_LOG = "warn" }
 cron = { schedule = "0 */5 * * * *", retrigger = "finish" }
 auto = ["start"]
 
+# Daily at 10:05 local time: upstream's nightly job, a full index (rescans every
+# session file, repairs stats, consolidates the lexical index) plus the semantic
+# backfill: ~2 min and ~4.3 GB peak on ~130k messages, ~8 min the first time
+# (it builds the hash tier for the whole archive). A wrapper retries a busy index
+# lock and fails on any failed step. The start with the first shell runs it at
+# once, which also gives a fresh VM its first full index.
+[daemons.cass-nightly]
+run = "exec ~/.config/mise/tasks/fw/cass-nightly"
+env = { RUST_LOG = "warn" }
+cron = { schedule = "0 5 10 * * *", retrigger = "finish" }
+auto = ["start"]
+
 [tasks."fw:bootstrap"]
 description = "One-time setup of the flywheel services (idempotent)"
 # Daemons are not started here: they auto-start with the first activated shell,
 # and `mise daemons start` needs a project config in cwd. Manual start:
-# `pitchfork start agent-mail cm sbh` after that first shell.
+# `pitchfork start agent-mail cm sbh cass-index cass-nightly` after that first shell.
+# The cass model is downloaded (~460 MB, SHA256-checked by cass) only when
+# missing; the last check fails the bootstrap if it is still not installed.
 run = """
 set -eu
 [ -d "${CASS_MEMORY_HOME:?}/diary" ] || cm init
 sbh config validate
 sbh ballast provision
+cass_model_installed() {
+  cass models status --json | jq -e --arg m "${CASS_SEMANTIC_EMBEDDER:?}" \
+    'any(.models[]; .registry_name == $m and .installed)' >/dev/null
+}
+cass_model_installed || cass models install --model "$CASS_SEMANTIC_EMBEDDER" --yes
+cass_model_installed
 """
 
 # Global file tasks: `[task_config] includes` is ignored in an env config file,
@@ -156,3 +185,7 @@ file = "{{ env.HOME }}/.config/mise/tasks/fw/doctor"
 [tasks."fw:cass-index"]
 description = "Build the cass session index from scratch (slow, run once)"
 run = "cass index --full --json"
+
+[tasks."fw:cass-nightly"]
+description = "Daily cass job: full index + semantic backfill (the cass-nightly daemon)"
+file = "{{ env.HOME }}/.config/mise/tasks/fw/cass-nightly"

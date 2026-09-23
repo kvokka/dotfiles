@@ -19,7 +19,7 @@ repository expects.
 | `ubs` | Ultimate Bug Scanner: multi-language pattern scanner tuned for generated code | Quality gate before every commit (pre-commit hook, findings fail the commit) | `ubs <changed files>` (exit 0 = clean) |
 | `toon` | Token-Optimized Notation encoder | Compact `--format toon` output of `ubs`, `bv`, `br` for agents | Optional output format, e.g. `bv --robot-triage --format toon` |
 | `typos` | Source-code spell checker | Cheap hygiene check on prose and identifiers | `typos` on changed files |
-| `cass` | Coding Agent Session Search: indexes past agent sessions of all CLIs (re-indexed every 5 minutes) | Reuse solved problems instead of re-solving them | `cass search "<query>" --robot --limit 5`; never bare `cass` |
+| `cass` | Coding Agent Session Search: indexes past agent sessions of all CLIs (re-indexed every 5 minutes, fully once a day) | Reuse solved problems instead of re-solving them | `cass search "<query>" --robot --limit 5`; never bare `cass` |
 | `cm` | cass-memory: procedural memory distilled from sessions; also an MCP server (`http://127.0.0.1:8766/`, `cass-memory`) | Project conventions and past pitfalls in a token budget | `cm context "<task>" --json` before non-trivial work |
 | `ru` | Repo updater: sync many repositories, detect conflicts | Operator hygiene across projects | Operator only (`ru sync`, `ru status --fetch`) |
 | `jfp` | JeffreysPrompts CLI: curated prompt library | Prompt source for the operator's palette | Operator only |
