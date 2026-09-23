@@ -37,9 +37,8 @@ Library/**
 .config/bv/**
 .config/brenner/**
 .config/opencode/plugins/dcg-guard.js
+.config/rulesync/**
 .config/zshrc.d/250-fw.zsh
-.codex/hooks.json
-.gemini/config/hooks.json
 .gemini/**
 .claude/**
 {{ end }}

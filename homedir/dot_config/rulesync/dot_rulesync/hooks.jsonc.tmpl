@@ -1,0 +1,21 @@
+// Hooks for Claude Code, Codex and agy (OpenCode gets none, see rulesync.jsonc).
+// rulesync replaces each client's hook list with this file, so every hook the
+// clients should run is listed here.
+{
+  "version": 1,
+  "hooks": {
+    // Shell tool: `Bash` in Claude Code and Codex, `run_command` in agy.
+    "preToolUse": [
+      { "matcher": "Bash|run_command", "command": "{{ .chezmoi.homeDir }}/.local/share/mise/shims/dcg", "timeout": 10 },
+    ],
+    // Agent Mail. Claude Code and Codex show the model plain stdout only from
+    // SessionStart, and from PostToolUse only a JSON `additionalContext`;
+    // am-hook prints the one each event needs. agy has no SessionStart.
+    "sessionStart": [
+      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-hook session", "timeout": 10 },
+    ],
+    "postToolUse": [
+      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-hook inbox", "timeout": 10 },
+    ],
+  },
+}

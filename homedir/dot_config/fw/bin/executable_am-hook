@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Agent Mail context for AI client hooks, wired by ~/.config/rulesync.
+#
+#   am-hook session   SessionStart: pending acknowledgements and active file
+#                     reservations, as plain text (the model sees SessionStart
+#                     stdout in Claude Code and Codex)
+#   am-hook inbox     PostToolUse: unread-mail reminder from `am check-inbox`
+#                     (rate-limited by am, 120 s per agent and project), as the
+#                     JSON `additionalContext` both clients accept there; plain
+#                     PostToolUse stdout never reaches the model
+#
+# Claude Code and Codex pass the hook input as JSON on stdin with
+# `hook_event_name` and `cwd`; the repository is taken from that `cwd`, and
+# `inbox` answers only a PostToolUse input, so a client with another hook
+# protocol (agy) gets no output.
+#
+# The agent is AGENT_NAME, else AGENT_MAIL_AGENT (the names am itself reads),
+# else NTM_AGENT_NAME. Without one, outside a git repository, or when Agent
+# Mail does not know the repository (its absolute path is the project key) or
+# the agent, the hook prints nothing. A hook must never break a session, so
+# every failure exits 0.
+
+set -uo pipefail
+
+mode="${1:-}"
+agent="${AGENT_NAME:-${AGENT_MAIL_AGENT:-${NTM_AGENT_NAME:-}}}"
+[[ -n "$agent" ]] || exit 0
+command -v am >/dev/null 2>&1 || exit 0
+command -v jq >/dev/null 2>&1 || exit 0
+
+input="$(cat)"
+event="$(jq -r '.hook_event_name // empty' <<<"$input" 2>/dev/null)"
+cwd="$(jq -r '.cwd // empty' <<<"$input" 2>/dev/null)"
+project="$(git -C "${cwd:-$PWD}" rev-parse --show-toplevel 2>/dev/null)" || exit 0
+
+case "$mode" in
+session)
+  # Exits non-zero when the project or the agent is unknown to Agent Mail.
+  acks="$(am acks pending "$project" "$agent" --limit 20 2>/dev/null)" || exit 0
+  # `am file_reservations active` always appends an attestation line, and
+  # prints a placeholder when there is nothing to report; neither is context.
+  reservations="$(am file_reservations active "$project" 2>/dev/null |
+    grep -v -e '^reservation_read_attestation:' -e '^No active reservations\.$')"
+  [[ -n "$acks$reservations" ]] || exit 0
+  printf 'Agent Mail (%s in %s)\n' "$agent" "$project"
+  [[ -n "$acks" ]] && printf '\nPending acknowledgements:\n%s\n' "$acks"
+  [[ -n "$reservations" ]] && printf '\nActive file reservations:\n%s\n' "$reservations"
+  ;;
+inbox)
+  [[ "$event" == "PostToolUse" ]] || exit 0
+  # Silent when rate-limited, when there is no unread mail, and on any error.
+  reminder="$(am check-inbox --agent "$agent" --project "$project" 2>/dev/null)"
+  [[ -n "${reminder//[[:space:]]/}" ]] || exit 0
+  jq -n --arg ctx "$reminder" \
+    '{hookSpecificOutput: {hookEventName: "PostToolUse", additionalContext: $ctx}}'
+  ;;
+esac
+exit 0

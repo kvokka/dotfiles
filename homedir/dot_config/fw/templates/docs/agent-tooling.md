@@ -21,6 +21,7 @@ repository expects.
 | `typos` | Source-code spell checker | Cheap hygiene check on prose and identifiers | `typos` on changed files |
 | `cass` | Coding Agent Session Search: indexes past agent sessions of all CLIs | Reuse solved problems instead of re-solving them | `cass search "<query>" --robot --limit 5`; never bare `cass` |
 | `cm` | cass-memory: procedural memory distilled from sessions; also an MCP server (`http://127.0.0.1:8766/`, `cass-memory`) | Project conventions and past pitfalls in a token budget | `cm context "<task>" --json` before non-trivial work |
+| `morph` | WarpGrep code search: an MCP server (`http://127.0.0.1:8767/mcp`, `morph`) exposing only `codebase_search` | Natural-language search over an unfamiliar codebase, run by a remote subagent | `codebase_search` with the repository's absolute path as `repo_path`; read the returned excerpts, not whole files |
 | `ru` | Repo updater: sync many repositories, detect conflicts | Operator hygiene across projects | Operator only (`ru sync`, `ru status --fetch`) |
 | `jfp` | JeffreysPrompts CLI: curated prompt library | Prompt source for the operator's palette | Operator only |
 | `brenner` | Brenner Bot: multi-agent research sessions with cited sources | Research and hypothesis work, not coding | On request only |
@@ -36,13 +37,14 @@ repository expects.
 1. `git init -b main` (new repositories only).
 2. `br init` creates `.beads/` with its own `.gitignore`; commit `.beads/`.
 3. `AGENTS.md`, `.ubsignore`, `.gitignore`, `docs/agent-tooling.md` from the template.
-4. MCP registration of Agent Mail and cass-memory per agent: `.mcp.json`
-   (Claude Code), `.codex/config.toml` (Codex, needs the project to be
-   trusted), `opencode.json` (OpenCode). Both services run as pitchfork
-   daemons (`pitchfork status agent-mail cm`); start them before launching agents.
-5. `.pre-commit-config.yaml` + `scripts/hooks/agent-mail-guard`: the global
+4. `.pre-commit-config.yaml` + `scripts/hooks/agent-mail-guard`: the global
    git hook runs `prek`, which runs the reservation guard, `ubs`, `gitleaks`
    and formatters on every commit.
+
+The Agent Mail, cass-memory and morph MCP servers need no per-repository step:
+they are registered at user scope for every agent client. All three run as
+pitchfork daemons (`pitchfork status agent-mail cm morph`); start them before
+launching agents.
 
 ## Daily loop
 

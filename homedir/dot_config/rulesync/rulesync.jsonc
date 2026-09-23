@@ -1,0 +1,17 @@
+// MCP servers and hooks for every AI client in the Linux devcontainer, where all
+// coding runs. `mise run ai:sync` (config.fw.toml) generates them from
+// .rulesync/ next to this file into each client's user-scope files; edit the
+// source there, never the generated files.
+{
+  "$schema": "https://github.com/dyoshikawa/rulesync/releases/latest/download/config-schema.json",
+  "global": true,
+  "targets": {
+    "claudecode": ["mcp", "hooks"],
+    "codexcli": ["mcp", "hooks"],
+    "antigravity-cli": ["mcp", "hooks"],
+    // No hooks: rulesync's OpenCode plugin runs a hook command with no stdin
+    // and ignores its result, so dcg would fail open. OpenCode keeps dcg's own
+    // plugin (~/.config/opencode/plugins/dcg-guard.js).
+    "opencode": ["mcp"],
+  },
+}
