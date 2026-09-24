@@ -85,8 +85,12 @@ bun build src/cm.ts --compile --outfile bin/cm
 rm -rf node_modules
 """
 
-# Daemons start with the first `mise activate` shell (auto = ["start"]) and
-# survive the shell; never add "stop": these are shared services.
+# Services start with the first `mise activate` shell (auto = ["start"]) and
+# survive the shell; never add "stop": these are shared services. Cron daemons
+# take no `auto`: every new shell in a fresh project session starts its `auto`
+# daemons that are not running, and a cron daemon is not running between runs,
+# so each shell would run the job at once. The supervisor arms their schedules
+# from the config mise registers.
 # `mise daemons …` needs a project config in cwd (any directory with a
 # mise.toml lists these global daemons too); `pitchfork list|status|logs <name>`
 # works from anywhere. After editing a `run` line below, restart with
@@ -121,33 +125,30 @@ auto = ["start"]
 # that search from the old index. Upstream keeps it fresh with systemd timers
 # (`cass schedule install`), which the container lacks, so pitchfork runs the
 # same incremental pass (seconds, ~2 GB RSS while it runs). Not `index --watch`:
-# it holds those ~2 GB for good. The first shell's start arms the schedule; a
-# changed schedule needs `mise daemons restart cass-index`, and `pitchfork clean`
-# drops the stopped daemon between runs, disarming it until the next restart.
+# it holds those ~2 GB for good. On a fresh VM the first run builds the whole
+# index. A changed schedule needs `mise daemons restart cass-index`.
 [daemons.cass-index]
 run = "exec cass index --background"
 env = { RUST_LOG = "warn" }
 # pitchfork's cron takes seconds first; a 5-field expression is rejected.
 cron = { schedule = "0 */5 * * * *", retrigger = "finish" }
-auto = ["start"]
 
 # Daily at 10:05 local time: upstream's nightly job, a full index (rescans every
 # session file, repairs stats, consolidates the lexical index) plus the semantic
 # backfill: ~2 min and ~4.3 GB peak on ~130k messages, ~8 min the first time
 # (it builds the hash tier for the whole archive). A wrapper retries a busy index
-# lock and fails on any failed step. The start with the first shell runs it at
-# once, which also gives a fresh VM its first full index.
+# lock and fails on any failed step. Run it by hand with `mise run fw:cass-nightly`.
 [daemons.cass-nightly]
 run = "exec ~/.config/mise/tasks/fw/cass-nightly"
 env = { RUST_LOG = "warn" }
 cron = { schedule = "0 5 10 * * *", retrigger = "finish" }
-auto = ["start"]
 
 [tasks."fw:bootstrap"]
 description = "One-time setup of the flywheel services (idempotent)"
-# Daemons are not started here: they auto-start with the first activated shell,
-# and `mise daemons start` needs a project config in cwd. Manual start:
-# `pitchfork start agent-mail cm sbh cass-index cass-nightly` after that first shell.
+# Daemons are not started here: services auto-start with the first activated
+# shell, cron daemons run on their schedules, and `mise daemons start` needs a
+# project config in cwd. Manual start of the services after that first shell:
+# `pitchfork start agent-mail cm sbh`.
 # The cass model is downloaded (~460 MB, SHA256-checked by cass) only when
 # missing; the last check fails the bootstrap if it is still not installed.
 run = """

@@ -58,8 +58,8 @@ check "cm doctor" cm doctor --json
 check "cass health (run 'mise run fw:cass-index' once if FAIL)" cass health --json
 check "cass index fresh (cass-index daemon: mise daemons restart cass-index)" bash -c \
   "cass status --json | jq -e '.index.stale == false'"
-# A cron daemon is `stopped` between successful runs; `errored` or absent
-# (never started, or dropped by `pitchfork clean`) means no schedule runs.
+# A cron daemon is `stopped` between successful runs and `errored` after a
+# failed one; the supervisor runs it on schedule either way.
 check "pitchfork: cass-index scheduled, last run ok" bash -c \
   "pitchfork status cass-index | grep -q -E 'Status: (running|stopped)'"
 check "pitchfork: cass-nightly scheduled, last run ok (pitchfork logs cass-nightly)" bash -c \
@@ -75,7 +75,7 @@ check "sbh ballast pool in ~/.ballast" test -d "$HOME/.ballast"
 check "ntm deps" ntm deps
 
 if (( failed )); then
-  printf '\nSome checks failed. Daemons: pitchfork start agent-mail cm sbh cass-index cass-nightly; services setup: mise run fw:bootstrap\n' >&2
+  printf '\nSome checks failed. Services: pitchfork start agent-mail cm sbh; services setup: mise run fw:bootstrap\n' >&2
   exit 1
 fi
 printf '\nflywheel stack looks healthy\n'

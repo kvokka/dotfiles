@@ -69,7 +69,8 @@ keep `master` checked out there and put feature branches in `git worktree`s.
 The agent-management stack ported from [acfs](https://github.com/Dicklesworthstone/agentic_coding_flywheel_setup)
 is declared in `homedir/dot_config/mise/config.fw.toml` and enabled only inside
 the devcontainer (`miserc.toml`, env `fw`). Background services run as pitchfork
-daemons (`mise daemons`), started with the first activated shell.
+daemons (`mise daemons`): services start with the first activated shell, cron
+jobs run on their schedules.
 
 ```bash
 mise run fw:doctor          # smoke-check tools, hooks and daemons
