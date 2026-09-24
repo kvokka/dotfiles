@@ -10,6 +10,7 @@ x-common-base: &common-base
   volumes:
     - home:/home/ubuntu:cached
     - ~/proj/active:/home/ubuntu/proj/active:cached
+    - ~/proj/share:/home/ubuntu/proj/share:cached
     - ~/.dotfiles:/home/ubuntu/.dotfiles:cached # chezmoi source, shared with the host
     - ~/.secrets/shared:/home/ubuntu/.secrets/shared:ro
     - ~/.openclaw:/home/ubuntu/.openclaw
