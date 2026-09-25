@@ -5,9 +5,12 @@
 A trauma is a regex on shell commands that the trauma guard (~/.config/fw/bin/
 trauma-guard) blocks for every agent, registered by the owner with
 `cm trauma add` after a command did real damage. cass-memory's own scan
-(`cm audit --trauma`) cannot see executed commands (upstream #83), so this reads
-the raw Claude Code and Codex session files written since the last run and
-collects three signals:
+(`cm audit --trauma`, executed commands since upstream #83) matches only its
+fixed generic patterns (rm -rf, git reset --hard, DROP TABLE, ...), which dcg
+already blocks, in at most 50 sessions found by an apology search, and without
+timestamps; it cannot find a project-specific incident such as parallel agents
+overwriting one shared --body-file. So this reads the raw Claude Code and Codex
+session files written since the last run and collects three signals:
   * explicit: an agent's own `Trauma candidate: <regex> - <what happened>` line
     (the cass-memory instruction block asks for it after a damaging command);
   * complaint: an owner message that reacts to damage ("что ты наделал",

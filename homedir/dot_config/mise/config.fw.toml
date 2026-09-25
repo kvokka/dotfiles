@@ -72,13 +72,16 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 # cm (cass-memory) is built from a source tarball: upstream publishes no
 # linux-arm64 binary. Pinned to a main commit, not v0.2.14: main fixes reflect
 # ingesting cm's own LLM calls (#76), silent cass timeouts on a large archive
-# (#78), zero reflection counters (#72) and ignored config.yaml (#75). Back to a
-# tag once 0.2.15 is released. The `http:` backend, because `github:` insists on
-# a release for its SLSA check. Open upstream questions: #81-#85.
+# (#78), zero reflection counters (#72), ignored config.yaml (#75), the guard's
+# hard-coded store (#82), `audit --trauma` blind to executed commands (#83), and
+# the random reflect batch and empty-session diary calls (#85). Back to a tag
+# once 0.2.15 is released. The `http:` backend, because `github:` insists on a
+# release for its SLSA check. Still open upstream: project-scoped learning (#81)
+# and re-reflecting a session that grew (#85).
 # A failed postinstall leaves the directory registered as installed; repair with
 # `mise install --force "http:cass-memory"`.
 [tools."http:cass-memory"]
-version = "5feb8c310db3b56e36ace55b7752ebb7661a5279"
+version = "3e4c814534d19fc0cfed9f3fee4f872b11b567b2"
 depends = ["bun"]
 strip_components = 1
 bin_path = "bin"

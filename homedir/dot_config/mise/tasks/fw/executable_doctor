@@ -19,16 +19,18 @@ check() { # check <label> <command...>
 }
 dcg_shim="$HOME/.local/share/mise/shims/dcg"
 fwbin="$HOME/.config/fw/bin"
-# The trauma guard must deny a registered pattern: a throwaway store with one
-# active trauma.
+# The trauma guard must deny a registered pattern, in Claude's and agy's format,
+# also inside a chained command and despite an undecodable line in the store:
+# a throwaway store with one active trauma.
 trauma_probe() {
-  local store rc
+  local store rc=0
   store="$(mktemp -d)" || return 1
-  printf '%s\n' '{"id":"probe","pattern":"^doctor-probe","status":"active"}' >"$store/traumas.jsonl"
-  printf '%s' '{"tool_name":"Bash","tool_input":{"command":"doctor-probe x"},"cwd":"/"}' |
+  printf 'bad \xff line\n%s\n' '{"id":"probe","pattern":"^doctor-probe","status":"active"}' >"$store/traumas.jsonl"
+  printf '%s' '{"tool_name":"Bash","tool_input":{"command":"cd / && doctor-probe x"},"cwd":"/"}' |
     CASS_MEMORY_HOME="$store" "$fwbin/trauma-guard" |
-    jq -e '.hookSpecificOutput.permissionDecision == "deny"'
-  rc=$?
+    jq -e '.hookSpecificOutput.permissionDecision == "deny"' || rc=1
+  printf '%s' '{"toolCall":{"name":"run_command","args":{"CommandLine":"doctor-probe x"}},"workspacePaths":["/"]}' |
+    CASS_MEMORY_HOME="$store" "$fwbin/trauma-guard" | jq -e '.decision == "deny"' || rc=1
   rm -f "$store/traumas.jsonl" && rmdir "$store"
   return "$rc"
 }

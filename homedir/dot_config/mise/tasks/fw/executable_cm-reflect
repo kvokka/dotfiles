@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 #MISE description="Reflect finished agent sessions into the cass-memory playbook (run by the cm-reflect daemon)"
 #
-# The cass-memory learning queue. `cm reflect` alone picks at most 5 sessions of
-# a lookback window in no stable order (upstream #85) and never revisits a
-# session it has reflected, even one still running, so this runs the queue
-# itself, one `cm reflect --session` per session:
+# The cass-memory learning queue. `cm reflect` alone takes the 5 oldest sessions
+# of its lookback window per run, with no idle filter, and never revisits a
+# session it has reflected, even one that was still running then (upstream #85,
+# part a, open: re-reading a grown transcript would count its feedback twice).
+# So this runs the queue itself, one `cm reflect --session` per session:
 #   1. every session cass knows, minus the ones cm already processed
 #      ($CASS_MEMORY_HOME/reflections/global.processed.log);
 #   2. minus the ones changed in the last CM_REFLECT_IDLE_MINUTES (default 120):
 #      they may still be running;
 #   3. trivial sessions (at most CM_REFLECT_MIN_MESSAGES messages, default 4)
-#      are only marked processed (`cm onboard mark-done`), without an LLM call;
+#      are only marked processed (`cm onboard mark-done`), without an LLM call
+#      (cm itself skips only exports under 50 characters);
 #   4. the rest, oldest first, until CM_REFLECT_BUDGET_SECONDS (default 1500)
 #      are spent; each call commits on its own, so a stop loses nothing.
 # A session that failed CM_REFLECT_MAX_FAILURES times (default 3) is skipped
