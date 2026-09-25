@@ -6,6 +6,10 @@ if (( $+commands[ntm] )); then
   eval "$(ntm shell zsh)"
 fi
 
+if (( $+commands[cass] )); then
+  eval "$(cass completions zsh)"
+fi
+
 # Foreground fallback when the pitchfork daemon is not running
 # (normal path: `pitchfork status agent-mail`, `pitchfork start agent-mail`).
 amserve() {
