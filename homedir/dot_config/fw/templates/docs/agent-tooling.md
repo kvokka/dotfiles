@@ -50,10 +50,9 @@ daemons (`pitchfork status agent-mail cm`); start them before launching agents.
 
 The instructions for these tools are not in `AGENTS.md`: they belong to the
 machine, not to the repository. Each client gets them at session start from
-`~/.config/fw/instructions/` (Claude Code and Codex through SessionStart hooks,
-again after compaction; OpenCode through `instructions`), and a block appears only where its tool applies, e.g.
-the Beads block only in a repository with `.beads/`. The first prompt of a
-session also gets the cass-memory rules relevant to it.
+`~/.config/fw/instructions/` (Claude Code and Codex through a SessionStart
+hook, again after compaction; OpenCode through `instructions`). The first
+prompt of a session also gets the cass-memory rules relevant to it.
 
 ## Daily loop
 

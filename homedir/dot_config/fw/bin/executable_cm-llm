@@ -14,9 +14,8 @@ PI_CODING_AGENT_DIR="$HOME/.config/fw/pi/cm"
 PI_OFFLINE=1 PI_SKIP_VERSION_CHECK=1 PI_TELEMETRY=0
 export PI_CODING_AGENT_DIR PI_OFFLINE PI_SKIP_VERSION_CHECK PI_TELEMETRY
 
-pi="$(command -v pi || echo "$HOME/.local/share/mise/shims/pi")"
 # settings.json has no key for session persistence, context files or project
 # trust; the other switches repeat it, so a stray file cannot load resources.
-exec "$pi" --print --offline \
+exec pi --print --offline \
   --no-session --no-context-files --no-approve \
   --no-tools --no-extensions --no-skills --no-prompt-templates --no-themes
