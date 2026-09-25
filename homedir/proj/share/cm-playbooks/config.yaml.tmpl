@@ -1,0 +1,43 @@
+# cass-memory (cm) global config, managed by chezmoi; the store around it is
+# $CASS_MEMORY_HOME (config.fw.toml). `cm init` leaves an existing config.yaml
+# alone. Unset keys keep cm's defaults (`cm --info` prints the resolved config).
+schema_version: 1
+
+# LLM for reflection: pi through `cm-llm` (~/.config/fw/bin), model and
+# reasoning effort live in its profile (~/.config/fw/pi/cm). `model` is ignored
+# by the cli provider. Budget caps do not apply to cli providers.
+provider: cli
+cliCommand: {{ .chezmoi.homeDir }}/.config/fw/bin/cm-llm
+# Where cm runs its LLM subprocess (#76); pi keeps no session there anyway.
+cliSubprocessCwd: {{ .chezmoi.homeDir }}/proj/share/cm-playbooks/.llm-cwd
+# Per call and per operation across retries; a high-effort call takes ~10-60 s.
+llmTimeoutMs: 600000
+llmTotalTimeoutMs: 1800000
+
+# One reflector pass per session: passes 2-3 re-send the same diary.
+maxReflectorIterations: 1
+# Days of cass history `cm context` searches (the default 7 finds nothing for a
+# repository idle for a week). The reflect queue picks its sessions itself.
+sessionLookbackDays: 30
+
+# Sessions to leave out of reflection (substring match on the session path).
+# cm's default list also excludes Claude Code subagent transcripts
+# ("/subagents/agent-a", "/subagents/workflows/"); they are included here on
+# purpose, because subagents do most of the work and hit their own pitfalls.
+# A rule's origin stays visible in its `sourceSessions` (a subagent path
+# contains "/subagents/"); `mise run fw:cm-report` splits the rules by origin.
+# cm's own LLM calls are excluded unconditionally (#76), whatever this list says.
+sessionExcludePatterns:
+  - prompt_suggestion
+  - prompt-suggestion
+  - auto_complete
+  - auto-complete
+  - inline_completion
+  - inline-completion
+
+# Related sessions of every agent enrich the diary (empty list = all agents).
+crossAgent:
+  enabled: true
+  consentGiven: true
+  agents: []
+  auditLog: true

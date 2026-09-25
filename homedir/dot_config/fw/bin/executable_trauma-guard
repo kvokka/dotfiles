@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+"""cass-memory trauma guard: a PreToolUse hook for shell commands.
+
+Blocks a shell command that matches an active trauma, a regex the owner
+registered after a command caused real damage (`cm trauma add`). Wired by
+~/.config/rulesync for Claude Code, Codex and agy, and by the OpenCode plugin
+~/.config/opencode/plugins/cass-memory.js.
+
+Our copy of cass-memory's trauma_guard.py (`cm guard --install`), which reads a
+hard-coded ~/.cass-memory (upstream #82) and knows only Claude's input:
+  * global traumas: $CASS_MEMORY_HOME/traumas.jsonl (else
+    $XDG_DATA_HOME/cass-memory, else ~/.cass-memory), as cm itself resolves it;
+  * project traumas: <git root>/.cass/traumas.jsonl (`--scope project`), the
+    git root taken from the hook input's cwd (agy: its first workspace path);
+  * input and verdict in each client's format: Claude Code and Codex send
+    `tool_name` + `tool_input.command` and read `hookSpecificOutput`; agy sends
+    `toolCall.args.CommandLine` and reads `{"decision": "deny"}`.
+agy needs an explicit allow; the others read silence as allow.
+Only `status: active` entries count (`cm trauma heal <id>` deactivates one).
+Matching is a case-insensitive `re.search`, as upstream. Every failure allows
+the command: a broken guard must not stop work; dcg stays the hard gate.
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+
+def global_dir():
+    if os.environ.get("CASS_MEMORY_HOME"):
+        return Path(os.environ["CASS_MEMORY_HOME"]).expanduser()
+    if os.environ.get("XDG_DATA_HOME"):
+        return Path(os.environ["XDG_DATA_HOME"]).expanduser() / "cass-memory"
+    return Path.home() / ".cass-memory"
+
+
+def git_root(cwd):
+    try:
+        out = subprocess.run(
+            ["git", "-C", cwd, "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, timeout=3,
+        )
+    except Exception:
+        return None
+    return Path(out.stdout.strip()) if out.returncode == 0 and out.stdout.strip() else None
+
+
+def active_traumas(path):
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return []
+    found = []
+    for line in lines:
+        try:
+            entry = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(entry, dict) and entry.get("status") == "active" and entry.get("pattern"):
+            found.append(entry)
+    return found
+
+
+STATE = {"agy": False, "decided": False}
+
+
+def main():
+    try:
+        data = json.load(sys.stdin)
+    except ValueError:
+        return
+    if not isinstance(data, dict):
+        return
+
+    agy = STATE["agy"] = isinstance(data.get("toolCall"), dict)
+    if agy:
+        call = data["toolCall"]
+        if call.get("name") != "run_command":
+            return
+        command = (call.get("args") or {}).get("CommandLine")
+        paths = data.get("workspacePaths") or []
+        cwd = paths[0] if paths else os.getcwd()
+    else:
+        if data.get("tool_name") not in ("Bash", "run_command"):
+            return
+        command = (data.get("tool_input") or {}).get("command")
+        cwd = data.get("cwd") or os.getcwd()
+    if not isinstance(command, str) or not command:
+        return
+
+    traumas = active_traumas(global_dir() / "traumas.jsonl")
+    root = git_root(cwd)
+    if root:
+        traumas += active_traumas(root / ".cass" / "traumas.jsonl")
+
+    for trauma in traumas:
+        try:
+            if not re.search(trauma["pattern"], command, re.IGNORECASE):
+                continue
+        except re.error:
+            continue
+        trigger = trauma.get("trigger_event") if isinstance(trauma.get("trigger_event"), dict) else {}
+        reason = (
+            "BLOCKED by a cass-memory trauma: this command matches a pattern that "
+            "already caused real damage.\n"
+            f"Pattern: {trauma['pattern']}\n"
+            f"Why: {trigger.get('human_message') or 'no reason recorded'}\n"
+            f"Incident: {trigger.get('session_path') or 'unknown'}\n"
+            f"Trauma id: {trauma.get('id', 'unknown')} ({trauma.get('severity', 'CRITICAL')})\n"
+            "Do another way that avoids the pattern. Never heal, remove or edit a "
+            "trauma yourself; if this command is truly required, stop and ask the owner."
+        )
+        if agy:
+            print(json.dumps({"decision": "deny", "reason": reason}))
+        else:
+            print(json.dumps({"hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": reason,
+            }}))
+        STATE["decided"] = True
+        return
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception:
+        pass
+    # agy treats a PreToolUse answer without a decision (even `{}`) as a deny.
+    if STATE["agy"] and not STATE["decided"]:
+        print(json.dumps({"decision": "allow"}))
+    sys.exit(0)

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Instruction block of one local tool for an AI client session, wired as a
+# SessionStart hook per tool by ~/.config/rulesync (Claude Code, Codex):
+#
+#   fw-context <tool>    prints ~/.config/fw/instructions/<tool>.md
+#
+# The flywheel tools exist only on this machine, so their instructions live
+# here instead of in each repository's AGENTS.md, and a block is printed only
+# where it applies: the tool is installed, and for `beads` the repository has a
+# .beads/ directory, for `ubs` the session is in a git repository. SessionStart
+# fires on startup, resume, /clear and after compaction, so the blocks come
+# back after the context is compacted. Plain stdout is what both clients add to
+# the model's context there. agy reads the same files as always-on rules and
+# OpenCode through `instructions` in opencode.json.
+#
+# The hook input (JSON on stdin) gives the session's `cwd`. A hook must never
+# break a session: every failure prints nothing and exits 0.
+
+set -uo pipefail
+
+tool="${1:-}"
+block="$HOME/.config/fw/instructions/$tool.md"
+[[ -n "$tool" && -f "$block" ]] || exit 0
+
+cwd="$(jq -r '.cwd // empty' 2>/dev/null)"
+cwd="${cwd:-$PWD}"
+repo="$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null)"
+
+case "$tool" in
+cm) command -v cm >/dev/null 2>&1 || exit 0 ;;
+cass) command -v cass >/dev/null 2>&1 || exit 0 ;;
+agent-mail) command -v am >/dev/null 2>&1 || exit 0 ;;
+beads) [[ -n "$repo" && -d "$repo/.beads" ]] && command -v br >/dev/null 2>&1 || exit 0 ;;
+ubs) [[ -n "$repo" ]] && command -v ubs >/dev/null 2>&1 || exit 0 ;;
+*) exit 0 ;;
+esac
+
+cat "$block"
+exit 0

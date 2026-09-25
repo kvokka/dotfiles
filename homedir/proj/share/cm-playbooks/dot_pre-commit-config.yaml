@@ -1,0 +1,11 @@
+# cass-memory store: only secret scanning. The files are written by cm (JSON
+# without a final newline, YAML it formats itself), so the global formatters
+# would fail every commit of the cm-reflect queue. cm redacts secrets before it
+# writes, gitleaks is the second line.
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
+        entry: gitleaks protect -v --redact --staged
+        require_serial: true

@@ -1,0 +1,20 @@
+{
+  "defaultProvider": "myproxy",
+  "defaultModel": "gpt-6-luna",
+  "defaultThinkingLevel": "high",
+  "defaultTools": [],
+  "packages": [],
+  "extensions": [],
+  "skills": [],
+  "prompts": [],
+  "themes": [],
+  "enableSkillCommands": false,
+  "defaultProjectTrust": "never",
+  "enableInstallTelemetry": false,
+  "enableAnalytics": false,
+  "quietStartup": true,
+  "cacheWarming": "off",
+  "compaction": { "enabled": false },
+  "retry": { "enabled": true, "maxRetries": 2 },
+  "httpIdleTimeoutMs": 240000
+}

@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+#MISE description="Reflect finished agent sessions into the cass-memory playbook (run by the cm-reflect daemon)"
+#
+# The cass-memory learning queue. `cm reflect` alone picks at most 5 sessions of
+# a lookback window in no stable order (upstream #85) and never revisits a
+# session it has reflected, even one still running, so this runs the queue
+# itself, one `cm reflect --session` per session:
+#   1. every session cass knows, minus the ones cm already processed
+#      ($CASS_MEMORY_HOME/reflections/global.processed.log);
+#   2. minus the ones changed in the last CM_REFLECT_IDLE_MINUTES (default 120):
+#      they may still be running;
+#   3. trivial sessions (at most CM_REFLECT_MIN_MESSAGES messages, default 4)
+#      are only marked processed (`cm onboard mark-done`), without an LLM call;
+#   4. the rest, oldest first, until CM_REFLECT_BUDGET_SECONDS (default 1500)
+#      are spent; each call commits on its own, so a stop loses nothing.
+# A session that failed CM_REFLECT_MAX_FAILURES times (default 3) is skipped
+# and listed by `mise run fw:cm-report`. Then pending outcomes are applied and
+# the store is committed to its git repository.
+#
+# Sessions of Claude Code subagents are included: cm's exclude list comes from
+# `sessionExcludePatterns` in $CASS_MEMORY_HOME/config.yaml, which drops cm's
+# default subagent patterns (see the comment there). `--session` bypasses cm's
+# own filter, so the same patterns are applied here.
+#
+# Needs MY_CLI_LLM_PROXY_API_KEY for cm-llm: the daemon runs it under
+# `fnox exec` (config.fw.toml), as does `mise run fw:cm-reflect`.
+
+set -euo pipefail
+
+home="${CASS_MEMORY_HOME:?CASS_MEMORY_HOME is not set}"
+idle_min="${CM_REFLECT_IDLE_MINUTES:-120}"
+min_messages="${CM_REFLECT_MIN_MESSAGES:-4}"
+budget="${CM_REFLECT_BUDGET_SECONDS:-1500}"
+max_failures="${CM_REFLECT_MAX_FAILURES:-3}"
+processed="$home/reflections/global.processed.log"
+failures="$home/reflections/queue-failures.json"
+
+# cm treats a git repository around its cwd as the project (repo .cass/); the
+# queue belongs to no project, and the store itself is a git repository.
+cd "$HOME"
+
+exec 9>"$home/.cm-reflect.lock"
+if ! flock -n 9; then
+  echo "another cm-reflect run holds the lock; skipping" >&2
+  exit 0
+fi
+
+mkdir -p "$home/reflections"
+[[ -f "$failures" ]] || echo '{}' >"$failures"
+
+# Exclude patterns: config.yaml, else cm's defaults (`cm --info` does not print
+# the resolved config).
+excludes="$(yq -o=json -I=0 '.sessionExcludePatterns' "$home/config.yaml" 2>/dev/null || true)"
+if [[ -z "$excludes" || "$excludes" == "null" ]]; then
+  excludes='["prompt_suggestion","prompt-suggestion","auto_complete","auto-complete","inline_completion","inline-completion","/subagents/agent-a","/subagents/workflows/"]'
+fi
+
+# Queue: source path, message count, oldest first. cass timeline groups are an
+# object keyed by hour in no stable order, so sort explicitly.
+queue="$(
+  cass timeline --since 3650d --json |
+    jq -r --argjson ex "$excludes" --slurpfile processed_paths <(
+      [[ -f "$processed" ]] && jq -R 'fromjson? | .sessionPath // empty' "$processed" || true
+    ) --argjson fail "$(cat "$failures")" --argjson maxf "$max_failures" '
+      ($processed_paths | map({key: ., value: true}) | from_entries) as $seen
+      | [.groups[][]]
+      | map(select(.source_path != null))
+      | unique_by(.source_path)
+      | map(select($seen[.source_path] | not))
+      | map(select(.source_path as $p | ($ex | map(ascii_downcase) | any(. as $e | $p | ascii_downcase | contains($e))) | not))
+      | map(select(($fail[.source_path] // 0) < $maxf))
+      | sort_by(.started_at // 0)
+      | .[] | "\(.message_count // 0)\t\(.source_path)"'
+)"
+
+now="$(date +%s)"
+started="$now"
+reflected=0 marked=0 failed=0 skipped_busy=0
+while IFS=$'\t' read -r messages path; do
+  [[ -n "$path" ]] || continue
+  if (($(date +%s) - started >= budget)); then
+    echo "time budget of ${budget}s spent; the rest waits for the next run"
+    break
+  fi
+  [[ -f "$path" ]] || continue
+  mtime="$(stat -c %Y "$path")"
+  if ((now - mtime < idle_min * 60)); then
+    skipped_busy=$((skipped_busy + 1))
+    continue
+  fi
+  if ((messages <= min_messages)); then
+    cm onboard mark-done "$path" --json >/dev/null && marked=$((marked + 1))
+    continue
+  fi
+  # stdout is the JSON envelope; cm's warnings go to stderr. A failed session
+  # is reported in .data.errors with success still true (#78).
+  if out="$(cm reflect --session "$path" --json 2>"$home/.cm-reflect.stderr")" &&
+    jq -e '.success == true and ((.data.errors // []) | length == 0)' <<<"$out" >/dev/null 2>&1; then
+    reflected=$((reflected + 1))
+    printf 'ok   %s %s\n' "$path" \
+      "$(jq -c '.data.global // {} | with_entries(select(.value | type == "number"))' <<<"$out" 2>/dev/null)"
+  else
+    failed=$((failed + 1))
+    printf 'FAIL %s\n%s\n%s\n' "$path" "$(jq -c '.data.errors // .error // empty' <<<"$out" 2>/dev/null)" \
+      "$(tail -c 600 "$home/.cm-reflect.stderr")" >&2
+    jq --arg p "$path" '.[$p] = ((.[$p] // 0) + 1)' "$failures" >"$failures.tmp" && mv "$failures.tmp" "$failures"
+  fi
+done <<<"$queue"
+
+# Outcomes recorded over MCP (cm_outcome) wait in outcomes.jsonl until applied.
+cm outcome-apply --json >/dev/null 2>&1 || echo "cm outcome-apply failed (non-fatal)" >&2
+
+printf 'reflected %d, marked trivial %d, failed %d, still active %d\n' \
+  "$reflected" "$marked" "$failed" "$skipped_busy"
+
+# One writer of the store's git index at a time (cm-trauma-scan takes it too).
+if [[ -d "$home/.git" ]]; then
+  exec 8>"$home/.git-commit.lock"
+  flock 8
+  if [[ -n "$(git -C "$home" status --porcelain)" ]]; then
+    git -C "$home" add -A
+    git -C "$home" -c user.name="cm-reflect" -c user.email="cm-reflect@localhost" \
+      commit -q -m "reflect: $reflected sessions, $marked trivial, $failed failed"
+  fi
+fi

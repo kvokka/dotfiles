@@ -1,7 +1,7 @@
 # Flywheel agent stack (ported from acfs). Linux devcontainer only: this file is
 # loaded through the `fw` entry of the env list in miserc.toml, so dropping `fw`
 # there disables the whole stack. Every tool is a pinned upstream release; the
-# only build is `cm` (no linux-arm64 asset upstream), see [tools.…cass_memory_system].
+# only build is `cm`, from a pinned commit (see [tools."http:cass-memory"]).
 #
 # Background services run under pitchfork (`mise daemons`), the only mise-native
 # supervisor that works without systemd (PID 1 is tini in the container).
@@ -20,7 +20,9 @@ experimental = true # `mise daemons`
 [env]
 BV_NO_UPDATE_CHECK = "1"
 CASS_DATA_DIR = "{{ env.HOME }}/proj/share/cass"
-CASS_MEMORY_HOME = "{{ env.HOME }}/proj/share/cass-memory"
+# cass-memory store: playbook, diary, traumas; a local git repository, committed
+# after every reflect run (tasks/fw/cm-reflect). Its config.yaml is chezmoi's.
+CASS_MEMORY_HOME = "{{ env.HOME }}/proj/share/cm-playbooks"
 # Semantic model of cass (installed by fw:bootstrap). The multilingual MiniLM,
 # not the default English one: on Russian paraphrase queries over our own
 # sessions it put the right session in the top 5 for 11 of 16 queries, against
@@ -39,7 +41,6 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 [dotfiles]
 "~/proj/share/agent-mail/.keep" = { content = "" }
 "~/proj/share/cass/.keep" = { content = "" }
-"~/proj/share/cass-memory/.keep" = { content = "" }
 
 [tools]
 "github:Dicklesworthstone/ntm" = "1.35.1"
@@ -54,6 +55,11 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 "github:Dicklesworthstone/brenner_bot" = "0.4.1"
 "github:Dicklesworthstone/storage_ballast_helper" = "0.6.2"
 "github:Dicklesworthstone/aadc" = "0.1.1"
+# pi: minimal agent harness for one-shot LLM calls (a prompt in, text out, no
+# tools, no session). One profile per purpose under ~/.config/fw/pi/<name>,
+# selected with PI_CODING_AGENT_DIR; `cm-llm` (the `cm` profile) is cass-memory's
+# LLM. Reach for it instead of a full coding agent when a job only needs text.
+"github:earendil-works/pi" = "0.87.1"
 # AI client wiring: rulesync generates the clients' MCP servers and hooks
 # (`ai:sync` below).
 "npm:rulesync" = "17.0.0"
@@ -63,17 +69,21 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 # server to the compose network.
 # "npm:mcp-proxy" = "latest"
 
-# cm (cass-memory) is built from the tagged source tarball: upstream publishes
-# no linux-arm64 binary.
+# cm (cass-memory) is built from a source tarball: upstream publishes no
+# linux-arm64 binary. Pinned to a main commit, not v0.2.14: main fixes reflect
+# ingesting cm's own LLM calls (#76), silent cass timeouts on a large archive
+# (#78), zero reflection counters (#72) and ignored config.yaml (#75). Back to a
+# tag once 0.2.15 is released. The `http:` backend, because `github:` insists on
+# a release for its SLSA check. Open upstream questions: #81-#85.
 # A failed postinstall leaves the directory registered as installed; repair with
-# `mise install --force "github:Dicklesworthstone/cass_memory_system"`.
-[tools."github:Dicklesworthstone/cass_memory_system"]
-version = "0.2.14"
+# `mise install --force "http:cass-memory"`.
+[tools."http:cass-memory"]
+version = "5feb8c310db3b56e36ace55b7752ebb7661a5279"
 depends = ["bun"]
 strip_components = 1
 bin_path = "bin"
-platforms.linux-x64.url = "https://github.com/Dicklesworthstone/cass_memory_system/archive/refs/tags/v{{ version }}.tar.gz"
-platforms.linux-arm64.url = "https://github.com/Dicklesworthstone/cass_memory_system/archive/refs/tags/v{{ version }}.tar.gz"
+platforms.linux-x64.url = "https://github.com/Dicklesworthstone/cass_memory_system/archive/{{ version }}.tar.gz"
+platforms.linux-arm64.url = "https://github.com/Dicklesworthstone/cass_memory_system/archive/{{ version }}.tar.gz"
 postinstall = """
 set -eu
 cd "$MISE_TOOL_INSTALL_PATH"
@@ -110,6 +120,9 @@ auto = ["start"]
 [daemons.cm]
 # cass-memory MCP server (JSON-RPC over HTTP POST at `/`); registered for every
 # client next to Agent Mail by `mise run ai:sync` (~/.config/rulesync).
+# Deliberately started without the LLM proxy key (no `fnox exec`): agents read
+# memory and give feedback here, and the MCP `memory_reflect` fails instead of
+# racing the cm-reflect queue, the only place reflection runs.
 run = "exec cm serve --host 127.0.0.1 --port 8766"
 ready_port = 8766
 retry = true
@@ -143,17 +156,36 @@ run = "exec ~/.config/mise/tasks/fw/cass-nightly"
 env = { RUST_LOG = "warn" }
 cron = { schedule = "0 5 10 * * *", retrigger = "finish" }
 
+# cass-memory learning queue: reflects finished sessions into the playbook
+# through pi (`cm-llm`), then commits the store. See tasks/fw/cm-reflect.
+[daemons.cm-reflect]
+run = "exec fnox exec -- ~/.config/mise/tasks/fw/cm-reflect"
+cron = { schedule = "0 */30 * * * *", retrigger = "finish" }
+
+# Daily at 11:15: trauma candidates from yesterday's sessions (agents' own
+# `Trauma candidate:` lines, owner complaints and agent admissions after a
+# shell command) into $CASS_MEMORY_HOME/trauma-candidates.md for review.
+# Nothing is activated here; `cm trauma add` is the owner's call.
+[daemons.cm-trauma-scan]
+run = "exec fnox exec -- ~/.config/mise/tasks/fw/cm-trauma-scan"
+cron = { schedule = "0 15 11 * * *", retrigger = "finish" }
+
 [tasks."fw:bootstrap"]
 description = "One-time setup of the flywheel services (idempotent)"
 # Daemons are not started here: services auto-start with the first activated
 # shell, cron daemons run on their schedules, and `mise daemons start` needs a
 # project config in cwd. Manual start of the services after that first shell:
 # `pitchfork start agent-mail cm sbh`.
+# The cass-memory store is a local git repository (no remote yet). `cm init`
+# keeps the chezmoi-managed config.yaml (it writes config.json only when no
+# config file exists); --no-interactive skips its trauma-scan and Claude hook
+# prompts (our trauma guard is wired by rulesync instead).
 # The cass model is downloaded (~460 MB, SHA256-checked by cass) only when
 # missing; the last check fails the bootstrap if it is still not installed.
 run = """
 set -eu
-[ -d "${CASS_MEMORY_HOME:?}/diary" ] || cm init
+[ -d "${CASS_MEMORY_HOME:?}/diary" ] || cm init --no-interactive
+[ -d "$CASS_MEMORY_HOME/.git" ] || git -C "$CASS_MEMORY_HOME" init -q -b main
 sbh config validate
 sbh ballast provision
 cass_model_installed() {
@@ -175,9 +207,11 @@ description = "Generate MCP servers and hooks for every AI client (rulesync)"
 # Source: ~/.config/rulesync. rulesync replaces only its own keys in each
 # client's user-scope files (MCP server list, hook list) and keeps the rest.
 # Runs after every `chezmoi apply` (run_after_200_ai-sync.sh), because chezmoi
-# rewrites those files whole and drops the generated keys.
+# rewrites those files whole and drops the generated keys. agy's hooks.json is
+# the exception: rulesync rewrites it whole, and agy-cm-hook then adds the
+# cass-memory hook rulesync cannot express (see that script).
 dir = "{{ env.HOME }}/.config/rulesync"
-run = "rulesync generate"
+run = ["rulesync generate", "~/.config/fw/bin/agy-cm-hook"]
 
 [tasks."fw:doctor"]
 description = "Smoke-check the flywheel agent stack (read-only)"
@@ -190,3 +224,15 @@ run = "cass index --full --json"
 [tasks."fw:cass-nightly"]
 description = "Daily cass job: full index + semantic backfill (the cass-nightly daemon)"
 file = "{{ env.HOME }}/.config/mise/tasks/fw/cass-nightly"
+
+[tasks."fw:cm-reflect"]
+description = "Reflect finished agent sessions into the cass-memory playbook (the cm-reflect daemon)"
+run = "fnox exec -- ~/.config/mise/tasks/fw/cm-reflect"
+
+[tasks."fw:cm-trauma-scan"]
+description = "Collect trauma candidates from recent sessions for review (the cm-trauma-scan daemon)"
+run = "fnox exec -- ~/.config/mise/tasks/fw/cm-trauma-scan"
+
+[tasks."fw:cm-report"]
+description = "cass-memory report: rules by origin (main session / subagent), queue backlog, traumas"
+file = "{{ env.HOME }}/.config/mise/tasks/fw/cm-report"

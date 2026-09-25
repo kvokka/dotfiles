@@ -1,0 +1,77 @@
+// cass-memory for OpenCode: the two hooks the other clients get from rulesync
+// (~/.config/rulesync), which cannot drive OpenCode (its generated plugin runs
+// a command without stdin and ignores the result). Both run the same scripts:
+//   * tool.execute.before: every bash command goes through trauma-guard, which
+//     denies a pattern the owner registered after real damage (`cm trauma add`);
+//   * chat.message: the first user message of a session gets the cass-memory
+//     context for its text (cm-context-hook, once per session) as a synthetic
+//     text part.
+// The instruction blocks come from `instructions` in opencode.json. Any failure
+// allows the command and adds nothing; dcg-guard.js stays the hard gate.
+const HOME = "{{ .chezmoi.homeDir }}";
+const TRAUMA_GUARD = `${HOME}/.config/fw/bin/trauma-guard`;
+const CM_CONTEXT_HOOK = `${HOME}/.config/fw/bin/cm-context-hook`;
+
+async function run(bin, input, timeoutMs) {
+  const proc = Bun.spawn([bin], {
+    stdin: new TextEncoder().encode(JSON.stringify(input)),
+    stdout: "pipe",
+    stderr: "ignore",
+  });
+  const timer = setTimeout(() => proc.kill(), timeoutMs);
+  try {
+    const text = await new Response(proc.stdout).text();
+    await proc.exited;
+    return text.trim();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export const CassMemory = async ({ directory }) => {
+  return {
+    "tool.execute.before": async (input, output) => {
+      if (!input || input.tool !== "bash") return;
+      const command = output?.args?.command;
+      if (typeof command !== "string" || command.length === 0) return;
+      let verdict;
+      try {
+        const text = await run(TRAUMA_GUARD, { tool_name: "Bash", tool_input: { command }, cwd: directory }, 10000);
+        verdict = text ? JSON.parse(text).hookSpecificOutput : undefined;
+      } catch (err) {
+        console.error(`[cass-memory] trauma guard could not run: ${err}`);
+        return;
+      }
+      if (verdict?.permissionDecision === "deny") {
+        throw new Error(verdict.permissionDecisionReason || "Blocked by a cass-memory trauma");
+      }
+    },
+
+    "chat.message": async (input, output) => {
+      const parts = output?.parts;
+      if (!input?.sessionID || !Array.isArray(parts)) return;
+      const prompt = parts
+        .filter((p) => p?.type === "text" && !p.synthetic && typeof p.text === "string")
+        .map((p) => p.text)
+        .join("\n");
+      if (!prompt.trim()) return;
+      let block;
+      try {
+        block = await run(CM_CONTEXT_HOOK, { session_id: `opencode-${input.sessionID}`, prompt, cwd: directory }, 15000);
+      } catch (err) {
+        console.error(`[cass-memory] context hook could not run: ${err}`);
+        return;
+      }
+      if (!block) return;
+      // Parts get their ids before this hook runs, so the new one needs its own.
+      parts.push({
+        id: `prt_${Date.now().toString(16)}${Math.random().toString(36).slice(2, 10)}`,
+        sessionID: input.sessionID,
+        messageID: input.messageID ?? output.message?.id,
+        type: "text",
+        text: block,
+        synthetic: true,
+      });
+    },
+  };
+};

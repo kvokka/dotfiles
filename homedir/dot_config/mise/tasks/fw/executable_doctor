@@ -18,8 +18,22 @@ check() { # check <label> <command...>
   fi
 }
 dcg_shim="$HOME/.local/share/mise/shims/dcg"
+fwbin="$HOME/.config/fw/bin"
+# The trauma guard must deny a registered pattern: a throwaway store with one
+# active trauma.
+trauma_probe() {
+  local store rc
+  store="$(mktemp -d)" || return 1
+  printf '%s\n' '{"id":"probe","pattern":"^doctor-probe","status":"active"}' >"$store/traumas.jsonl"
+  printf '%s' '{"tool_name":"Bash","tool_input":{"command":"doctor-probe x"},"cwd":"/"}' |
+    CASS_MEMORY_HOME="$store" "$fwbin/trauma-guard" |
+    jq -e '.hookSpecificOutput.permissionDecision == "deny"'
+  rc=$?
+  rm -f "$store/traumas.jsonl" && rmdir "$store"
+  return "$rc"
+}
 
-for tool in ntm br bv am dcg ubs cass cm ru jfp brenner sbh aadc agy pitchfork toon typos fmd rulesync; do
+for tool in ntm br bv am dcg ubs cass cm pi ru jfp brenner sbh aadc agy pitchfork toon typos fmd rulesync; do
   check "tool: $tool" command -v "$tool"
 done
 
@@ -47,6 +61,25 @@ check "codex MCP: mcp-agent-mail, cass-memory" bash -c \
   "for s in mcp-agent-mail cass-memory; do grep -q \"^\\[mcp_servers\\.\$s\\]\" ~/.codex/config.toml || exit 1; done"
 check "agy MCP: mcp-agent-mail, cass-memory" jq -e ".mcpServers | $servers" "$HOME/.gemini/config/mcp_config.json"
 
+# Agent instructions and cass-memory hooks (rulesync, agy-cm-hook, the OpenCode
+# plugin and instructions); a hook FAIL is fixed by `mise run ai:sync`.
+for block in cm cass agent-mail beads ubs; do
+  check "instruction block: $block" test -s "$HOME/.config/fw/instructions/$block.md"
+done
+for client in "$HOME/.claude/settings.json" "$HOME/.codex/hooks.json"; do
+  check "hooks in $client: trauma-guard, fw-context, cm-context-hook" jq -e \
+    --arg g "$fwbin/trauma-guard" --arg c "$fwbin/fw-context cm" --arg p "$fwbin/cm-context-hook" \
+    '[.hooks[][]?.hooks[]?.command] | (index($g) != null) and (index($c) != null) and (index($p) != null)' "$client"
+done
+check "agy hooks: trauma-guard (rulesync), cass-memory PreInvocation (agy-cm-hook)" jq -e \
+  --arg g "$fwbin/trauma-guard" --arg p "$fwbin/cm-context-hook" \
+  '([.rulesync.PreToolUse[]?.hooks[]?.command] | index($g) != null) and (."cass-memory".PreInvocation[0].command == $p)' \
+  "$HOME/.gemini/config/hooks.json"
+check "agy always-on rule with the instruction blocks" grep -q 'trigger: always_on' "$HOME/.gemini/config/rules/fw-agent-stack.md"
+check "opencode cass-memory plugin" test -f "$HOME/.config/opencode/plugins/cass-memory.js"
+check "opencode instructions include the blocks" grep -q 'fw/instructions' "$HOME/.config/opencode/opencode.json"
+check "trauma-guard denies an active trauma" trauma_probe
+
 check "pitchfork: agent-mail running" bash -c "pitchfork status agent-mail | grep -q running"
 check "pitchfork: cm running" bash -c "pitchfork status cm | grep -q running"
 check "pitchfork: sbh running" bash -c "pitchfork status sbh | grep -q running"
@@ -55,6 +88,17 @@ check "am doctor check" am doctor check --json
 check "cm serve answers tools/list" bash -c \
   "curl -fsS -X POST http://127.0.0.1:8766 -H 'content-type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}' | jq -e '.result.tools | length > 0'"
 check "cm doctor" cm doctor --json
+check "cm store is a git repository (\$CASS_MEMORY_HOME)" test -d "${CASS_MEMORY_HOME:-/nonexistent}/.git"
+check "cm config: provider cli through cm-llm" yq -e '.provider == "cli" and (.cliCommand | test("cm-llm$"))' \
+  "${CASS_MEMORY_HOME:-/nonexistent}/config.yaml"
+check "pi profile cm rendered (~/.config/fw/pi/cm/models.json)" test -s "$HOME/.config/fw/pi/cm/models.json"
+# One tiny LLM call through pi and the proxy; fnox holds the key.
+check "cm-llm answers through pi and the proxy" bash -c \
+  "echo 'Reply with the single word: pong' | fnox exec -- '$fwbin/cm-llm' | grep -qi pong"
+check "pitchfork: cm-reflect scheduled, last run ok (pitchfork logs cm-reflect)" bash -c \
+  "pitchfork status cm-reflect | grep -q -E 'Status: (running|stopped)'"
+check "pitchfork: cm-trauma-scan scheduled, last run ok (pitchfork logs cm-trauma-scan)" bash -c \
+  "pitchfork status cm-trauma-scan | grep -q -E 'Status: (running|stopped)'"
 check "cass health (run 'mise run fw:cass-index' once if FAIL)" cass health --json
 check "cass index fresh (cass-index daemon: mise daemons restart cass-index)" bash -c \
   "cass status --json | jq -e '.index.stale == false'"

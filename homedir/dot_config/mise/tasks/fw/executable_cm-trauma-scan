@@ -1,0 +1,279 @@
+#!/usr/bin/env python3
+#MISE description="Collect trauma candidates from recent agent sessions for review (run by the cm-trauma-scan daemon)"
+"""Trauma candidates for the owner to review; nothing is activated here.
+
+A trauma is a regex on shell commands that the trauma guard (~/.config/fw/bin/
+trauma-guard) blocks for every agent, registered by the owner with
+`cm trauma add` after a command did real damage. cass-memory's own scan
+(`cm audit --trauma`) cannot see executed commands (upstream #83), so this reads
+the raw Claude Code and Codex session files written since the last run and
+collects three signals:
+  * explicit: an agent's own `Trauma candidate: <regex> - <what happened>` line
+    (the cass-memory instruction block asks for it after a damaging command);
+  * complaint: an owner message that reacts to damage ("что ты наделал",
+    "верни", "you deleted", ...);
+  * admission: an agent message that admits damage ("I accidentally", "затёр").
+Complaints and admissions go to the `cm` pi profile (cm-llm) with the commands
+that preceded them; it returns a regex only for a shell command that caused the
+damage and that dcg does not already block. Everything lands in
+$CASS_MEMORY_HOME/trauma-candidates.md with a ready `cm trauma add` line, and the
+store is committed. Needs MY_CLI_LLM_PROXY_API_KEY (`fnox exec`, as the daemon
+and `mise run fw:cm-trauma-scan` do). First run: the last CM_TRAUMA_SCAN_DAYS
+days (default 1).
+"""
+import datetime as dt
+import fcntl
+import glob
+import json
+import os
+import re
+import shlex
+import subprocess
+import sys
+from pathlib import Path
+
+HOME = Path.home()
+STORE = Path(os.environ["CASS_MEMORY_HOME"])
+STATE = STORE / "reflections" / "trauma-scan.json"
+REPORT = STORE / "trauma-candidates.md"
+CM_LLM = os.environ.get("CM_LLM", str(HOME / ".config/fw/bin/cm-llm"))
+MAX_LLM_CALLS = int(os.environ.get("CM_TRAUMA_SCAN_MAX_CALLS", "40"))
+
+# At the start of a line, the regex in backticks, as the instruction block asks;
+# a sentence that merely mentions the format does not match.
+EXPLICIT = re.compile(r"^[ \t]*(?:[-*][ \t]+)?Trauma candidate:[ \t]*`(?P<pattern>[^`\n]+)`[ \t]+(?:-|—|–)[ \t]+(?P<why>[^\n]+)$", re.M)
+COMPLAINT = re.compile(
+    r"what (?:did|have) you (?:do|done)|why (?:did|would) you|you (?:deleted|broke|removed|wiped|lost|destroyed|reset|nuked|overwrote|merged|pushed)|"
+    r"верни|сломал|нахуя|нахрена|зачем ты|что ты (?:сделал|наделал|натворил)|"
+    r"ты (?:удалил|снёс|снес|сломал|затёр|затер|потерял|грохнул|смержил|замерджил|запушил|перезаписал)|"
+    r"где (?:мои|мой|моя|файл|изменени)|откати|кто (?:тебе )?разрешил|я не просил|какого (?:хрена|черта|чёрта|хуя)|пропал|пропали|исчез",
+    re.I,
+)
+ADMISSION = re.compile(
+    r"\bI (?:accidentally|mistakenly|inadvertently)\b|\bmy (?:mistake|bad)\b|I made (?:a|an) (?:mistake|error)|"
+    r"\bI (?:just )?(?:deleted|wiped|destroyed|clobbered|overwrote|nuked|discarded|lost|broke)\b|"
+    r"(?:was|were|got|been) (?:clobbered|overwritten|wiped|destroyed)\b|\bdata loss\b|"
+    r"случайно|моя ошибка|мой косяк|я (?:удалил|снёс|снес|затёр|затер|сломал|потерял|перезаписал|грохнул)|затёр|перезатер",
+    re.I,
+)
+PROMPT = """You review an incident from a coding-agent session. Decide whether one specific
+shell command pattern did real damage (lost or overwritten work, a broken
+repository or environment, a wrong publication such as a PR or issue with
+someone else's content, deleted data) and must be blocked for all future agents
+by a regex on the command line.
+
+Answer candidate=false when the complaint or admission is not about a shell
+command (code edits, reasoning, wording), when nothing was damaged, or when the
+command is one of the generic destructive commands another guard already blocks
+(rm -rf, git reset --hard, git clean -f, git checkout --, git push --force,
+git branch -D, git stash drop/clear).
+
+Otherwise write the narrowest Python regex (matched case-insensitively with
+re.search against the whole command line) that catches the damaging form and
+lets routine safe use through. scope is "project" when the damage depends on one
+repository, else "global".
+
+Return JSON only: {"candidate": boolean, "pattern": string|null,
+"severity": "CRITICAL"|"FATAL", "scope": "global"|"project",
+"reason": string (one sentence: what happened), "command": string|null (the
+command from the context that the pattern matches)}.
+
+Incident ({kind}) in {path} at {ts}, working directory {cwd}:
+{context}
+"""
+
+
+def text_of(x):
+    if isinstance(x, str):
+        return x
+    if isinstance(x, list):
+        return "\n".join(text_of(i) for i in x)
+    if isinstance(x, dict):
+        return text_of(x.get("text") or x.get("content") or "")
+    return ""
+
+
+def claude_events(path):
+    cwd = None
+    for line in open(path, errors="replace"):
+        try:
+            d = json.loads(line)
+        except ValueError:
+            continue
+        ts, cwd = d.get("timestamp") or "", d.get("cwd") or cwd
+        msg = d.get("message") if isinstance(d.get("message"), dict) else {}
+        content = msg.get("content")
+        if d.get("type") == "assistant" and isinstance(content, list):
+            for it in content:
+                if not isinstance(it, dict):
+                    continue
+                if it.get("type") == "text":
+                    yield {"k": "asst", "ts": ts, "cwd": cwd, "text": it.get("text", "")}
+                elif it.get("type") == "tool_use" and it.get("name") == "Bash":
+                    cmd = (it.get("input") or {}).get("command")
+                    if cmd:
+                        yield {"k": "cmd", "ts": ts, "cwd": cwd, "text": cmd}
+        elif d.get("type") == "user" and isinstance(content, str) and not d.get("isMeta"):
+            if not content.lstrip().startswith(("<", "Caveat:", "[Request interrupted", "This session is being continued")):
+                yield {"k": "user", "ts": ts, "cwd": cwd, "text": content}
+
+
+def codex_events(path):
+    for line in open(path, errors="replace"):
+        try:
+            d = json.loads(line)
+        except ValueError:
+            continue
+        p = d.get("payload")
+        if not isinstance(p, dict):
+            continue
+        ts = d.get("timestamp") or ""
+        if p.get("type") == "item_completed" and isinstance(p.get("item"), dict):
+            it = p["item"]
+            if it.get("type") == "CommandExecution":
+                cmd = it.get("command")
+                if isinstance(cmd, list):
+                    cmd = cmd[-1] if len(cmd) >= 3 and cmd[1] in ("-lc", "-c") else " ".join(map(str, cmd))
+                yield {"k": "cmd", "ts": ts, "cwd": (it.get("cwd") or "").replace("file://", ""), "text": cmd or ""}
+            elif it.get("type") == "UserMessage":
+                yield {"k": "user", "ts": ts, "cwd": None, "text": text_of(it.get("content"))}
+            elif it.get("type") == "AgentMessage":
+                yield {"k": "asst", "ts": ts, "cwd": None, "text": text_of(it.get("content"))}
+        elif p.get("type") == "function_call" and p.get("name") in ("shell", "exec_command", "local_shell"):
+            try:
+                a = json.loads(p.get("arguments") or "{}")
+            except ValueError:
+                a = {}
+            cmd = a.get("cmd") or a.get("command")
+            if isinstance(cmd, list):
+                cmd = cmd[-1] if len(cmd) >= 3 and cmd[1] in ("-lc", "-c") else " ".join(map(str, cmd))
+            if cmd:
+                yield {"k": "cmd", "ts": ts, "cwd": a.get("workdir"), "text": cmd}
+
+
+def ask_llm(kind, path, event, before):
+    context = "\n".join(
+        f"[{e['k']}] {e['text'][:800]}" for e in before[-10:]
+    ) + f"\n[{event['k']}] {event['text'][:1500]}"
+    prompt = PROMPT  # str.format would trip over the JSON braces
+    for key, value in (("kind", kind), ("path", path), ("ts", event["ts"]),
+                       ("cwd", event.get("cwd") or "?"), ("context", context)):
+        prompt = prompt.replace("{" + key + "}", value)
+    try:
+        out = subprocess.run([CM_LLM], input=prompt, capture_output=True, text=True, timeout=600, cwd=str(HOME))
+        answer = json.loads(out.stdout.strip().removeprefix("```json").removesuffix("```").strip())
+    except Exception as err:  # noqa: BLE001 - one bad call must not stop the scan
+        print(f"llm failed for {path} {event['ts']}: {err}", file=sys.stderr)
+        return None
+    if not isinstance(answer, dict) or not answer.get("candidate") or not answer.get("pattern"):
+        return None
+    try:
+        rx = re.compile(answer["pattern"], re.I)
+    except re.error:
+        return None
+    if answer.get("command") and not rx.search(answer["command"]):
+        return None
+    return answer
+
+
+def add_line(c):
+    parts = ["cm", "trauma", "add", c["pattern"], "--severity", c.get("severity") or "CRITICAL",
+             "--scope", c.get("scope") or "global", "--message", c.get("reason") or ""]
+    line = " ".join(shlex.quote(p) for p in parts)
+    if c.get("scope") == "project" and c.get("repo"):
+        line = f"cd {shlex.quote(c['repo'])} && {line}"
+    return line
+
+
+def repo_of(cwd):
+    if not cwd:
+        return None
+    r = subprocess.run(["git", "-C", cwd, "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    return r.stdout.strip() or None
+
+
+def main():
+    state = json.loads(STATE.read_text()) if STATE.exists() else {}
+    days = int(os.environ.get("CM_TRAUMA_SCAN_DAYS", "1"))
+    since = state.get("last_run") or (
+        dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=days)
+    ).strftime("%Y-%m-%dT%H:%M:%S")
+    run_started = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+    since_epoch = dt.datetime.fromisoformat(since).replace(tzinfo=dt.timezone.utc).timestamp()
+
+    files = [(claude_events, f) for f in glob.glob(str(HOME / ".claude/projects/**/*.jsonl"), recursive=True)]
+    files += [(codex_events, f) for f in glob.glob(str(HOME / ".codex/sessions/**/*.jsonl"), recursive=True)]
+    candidates, checked, calls = [], 0, 0
+    for parse, path in files:
+        if os.path.getmtime(path) < since_epoch:
+            continue
+        before = []
+        for ev in parse(path):
+            if ev["ts"] and ev["ts"][:19] < since:
+                before = (before + [ev])[-20:]
+                continue
+            kind = None
+            if ev["k"] == "asst" and (m := EXPLICIT.search(ev["text"])):
+                pattern = m.group("pattern").strip()
+                try:
+                    re.compile(pattern)
+                except re.error:
+                    pattern = None
+                if pattern and re.fullmatch(r"<[^<>]+>", pattern):  # the format's placeholder
+                    pattern = None
+                if pattern:
+                    candidates.append({"source": "explicit", "pattern": pattern, "severity": "CRITICAL",
+                                       "scope": "global", "reason": m.group("why").strip(),
+                                       "path": path, "ts": ev["ts"], "quote": m.group(0)})
+            elif ev["k"] == "user" and len(ev["text"]) < 4000 and COMPLAINT.search(ev["text"]):
+                kind = "owner complaint"
+            elif ev["k"] == "asst" and ADMISSION.search(ev["text"]):
+                kind = "agent admission"
+            if kind and any(e["k"] == "cmd" for e in before[-10:]):
+                checked += 1
+                if calls < MAX_LLM_CALLS:
+                    calls += 1
+                    verdict = ask_llm(kind, path, ev, before)
+                    if verdict:
+                        cwd = ev.get("cwd") or next((e["cwd"] for e in reversed(before) if e.get("cwd")), None)
+                        verdict.update(source=kind, path=path, ts=ev["ts"], quote=ev["text"][:300], repo=repo_of(cwd))
+                        candidates.append(verdict)
+            before = (before + [ev])[-20:]
+
+    if candidates:
+        lines = [f"\n## Scan {run_started}Z: {len(candidates)} candidate(s), {checked} incident(s) checked\n"]
+        for c in candidates:
+            lines += [
+                f"### {c.get('reason') or c['pattern']}",
+                f"- source: {c['source']}; severity {c.get('severity')}; scope {c.get('scope')}"
+                + (f" ({c['repo']})" if c.get("scope") == "project" and c.get("repo") else ""),
+                f"- pattern: `{c['pattern']}`",
+                f"- incident: `{c['path']}` at {c['ts']}",
+                f"- quote: {c['quote'].strip()[:300]!r}",
+                f"- activate: `{add_line(c)}`",
+                "",
+            ]
+        if not REPORT.exists():
+            REPORT.write_text(
+                "# Trauma candidates\n\nWritten by `mise run fw:cm-trauma-scan`. Review each one; "
+                "activate with its `cm trauma add` line, or delete the section.\n"
+            )
+        with REPORT.open("a") as fh:
+            fh.write("\n".join(lines))
+    STATE.parent.mkdir(parents=True, exist_ok=True)
+    STATE.write_text(json.dumps({"last_run": run_started}) + "\n")
+    print(f"{len(candidates)} candidate(s), {checked} incident(s) checked, {calls} LLM call(s)")
+
+    if (STORE / ".git").exists():
+        # One writer of the store's git index at a time (cm-reflect takes it too).
+        lock = open(STORE / ".git-commit.lock", "w")
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        subprocess.run(["git", "-C", str(STORE), "add", "-A"], check=False)
+        if subprocess.run(["git", "-C", str(STORE), "diff", "--cached", "--quiet"]).returncode:
+            subprocess.run(["git", "-C", str(STORE), "-c", "user.name=cm-trauma-scan",
+                            "-c", "user.email=cm-trauma-scan@localhost", "commit", "-q",
+                            "-m", f"trauma scan: {len(candidates)} candidate(s)"], check=False)
+
+
+if __name__ == "__main__":
+    main()
