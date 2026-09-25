@@ -64,13 +64,10 @@ check "agy MCP: mcp-agent-mail, cass-memory" jq -e ".mcpServers | $servers" "$HO
 # Agent instructions and cass-memory hooks (rulesync, the OpenCode plugin and
 # instructions); a hook FAIL is fixed by `mise run ai:sync`, a guard FAIL by
 # `mise run fw:bootstrap`.
-for block in cm cass agent-mail beads ubs; do
-  check "instruction block: $block" test -s "$HOME/.config/fw/instructions/$block.md"
-done
 for client in "$HOME/.claude/settings.json" "$HOME/.codex/hooks.json"; do
-  check "hooks in $client: trauma_guard.py, fw-context, cm-context-hook" jq -e \
-    --arg g "$guard" --arg c "$fwbin/fw-context cm" --arg p "$fwbin/cm-context-hook" \
-    '[.hooks[][]?.hooks[]?.command] | (index($g) != null) and (index($c) != null) and (index($p) != null)' "$client"
+  check "hooks in $client: trauma_guard.py, instruction blocks, cm-context-hook" jq -e \
+    --arg g "$guard" --arg p "$fwbin/cm-context-hook" \
+    '[.hooks[][]?.hooks[]?.command] | (index($g) != null) and (index($p) != null) and any(contains("fw/instructions/"))' "$client"
 done
 check "opencode cass-memory plugin" test -f "$HOME/.config/opencode/plugins/cass-memory.js"
 check "opencode instructions include the blocks" grep -q 'fw/instructions' "$HOME/.config/opencode/opencode.json"

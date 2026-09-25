@@ -37,6 +37,7 @@
 - Chezmoi filename prefixes are semantic: `dot_`, `private_`, `exact_`, and `executable_` affect rendered targets. Preserve them when moving or adding managed files.
 - Several `.json` files are intentionally JSONC/JSON5-like. For example, `homedir/dot_config/opencode/opencode.json` contains comments and trailing commas. Do not normalize these to strict JSON unless explicitly asked.
 - A managed config of a third-party tool carries only the values that differ from the tool's defaults, never a copy of its default or generated config. Check each key against the tool's source or docs, and leave out any key that equals its default. A default value is kept only when the tool would otherwise rewrite the file itself; a comment next to it names the reason.
+- Scripts, hooks and tasks call a tool directly. Never check whether it is installed (`command -v`, a fallback to a shim path, a wrapper that skips when it is missing): mise installs every tool before a task runs, or fails with its own error. Checking the installation is the job of `fw:doctor` alone. Likewise, use a tool's own output format (e.g. `--format markdown`) rather than re-rendering its JSON.
 
 ## OpenCode And OpenClaw
 
@@ -61,7 +62,7 @@
 - The cass-memory config is the dotfile `homedir/dot_config/cass-memory/config.yaml.tmpl`, and `fw:bootstrap` links it into the store (`~/.cass-memory/config.yaml`). cm writes its config back on its own (`cm privacy`, `cm doctor --fix`, the budget on a first reflect) and replaces the link with a copy; the next bootstrap restores the link.
 - Learning is cm's own: the `cm-reflect` cron daemon runs `cm reflect` through `cm-llm`, subagent sessions included. The `cm` MCP daemon runs without the LLM key on purpose, so an agent's `memory_reflect` fails.
 - Traumas are command regexes the owner activates with `cm trauma add` after real damage. cass-memory's own guard blocks them: `fw:bootstrap` generates it with `cm guard --install` in a throwaway project and installs it as `~/.claude/hooks/trauma_guard.py`. The script is the same for every project apart from the store path baked into it, and rulesync registers it for Claude Code and Codex. Never let an agent heal, remove or add a trauma.
-- Tool instructions for agents live in `homedir/dot_config/fw/instructions/<tool>.md`, not in repository AGENTS.md files: SessionStart hooks (`fw/bin/fw-context <tool>`) print them for Claude Code and Codex, and `instructions` in `opencode.json` loads them for OpenCode. The first prompt of a session gets `cm context` from `fw/bin/cm-context-hook`.
+- Tool instructions for agents live in `homedir/dot_config/fw/instructions/<tool>.md`, not in repository AGENTS.md files: a SessionStart hook (`cat` of the blocks) prints them for Claude Code and Codex, and `instructions` in `opencode.json` loads them for OpenCode. The first prompt of a session gets `cm context` from `fw/bin/cm-context-hook`.
 
 ## AI Client MCP Servers and Hooks (rulesync)
 

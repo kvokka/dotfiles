@@ -25,8 +25,6 @@ set -uo pipefail
 mode="${1:-}"
 agent="${AGENT_NAME:-${AGENT_MAIL_AGENT:-${NTM_AGENT_NAME:-}}}"
 [[ -n "$agent" ]] || exit 0
-command -v am >/dev/null 2>&1 || exit 0
-command -v jq >/dev/null 2>&1 || exit 0
 
 input="$(cat)"
 event="$(jq -r '.hook_event_name // empty' <<<"$input" 2>/dev/null)"

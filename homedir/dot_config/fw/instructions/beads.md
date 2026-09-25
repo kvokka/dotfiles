@@ -1,6 +1,6 @@
 ## Work tracking: Beads (`br`) and triage (`bv`)
 
-`.beads/` in this repository is the single source of truth for task status, priority and dependencies, committed with the code. `br` never runs git.
+Only in a repository with a `.beads/` directory. There `.beads/` is the single source of truth for task status, priority and dependencies, committed with the code. `br` never runs git.
 
 ```bash
 br ready --brief --json                 # unblocked work, pick the highest priority
