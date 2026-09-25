@@ -1,0 +1,22 @@
+#!/bin/sh
+# cm-llm: the LLM of cass-memory (`cliCommand` in its config.yaml).
+# Reads cm's prompt on stdin and prints only the model's final text: pi with the
+# `cm` profile (~/.config/fw/pi/cm: provider, model gpt-6-luna, reasoning effort
+# high, system prompt), no tools, no context files, no session file.
+#
+# cm calls it from `cm reflect` (the cm-reflect daemon), which runs under
+# `fnox exec` for the proxy key; without the key it fails with a clear error.
+# Another one-shot job gets its own profile directory next to `cm`.
+set -eu
+
+: "${MY_CLI_LLM_PROXY_API_KEY:?cm-llm: MY_CLI_LLM_PROXY_API_KEY is not set (run under fnox exec)}"
+PI_CODING_AGENT_DIR="$HOME/.config/fw/pi/cm"
+PI_OFFLINE=1 PI_SKIP_VERSION_CHECK=1 PI_TELEMETRY=0
+export PI_CODING_AGENT_DIR PI_OFFLINE PI_SKIP_VERSION_CHECK PI_TELEMETRY
+
+pi="$(command -v pi || echo "$HOME/.local/share/mise/shims/pi")"
+# settings.json has no key for session persistence, context files or project
+# trust; the other switches repeat it, so a stray file cannot load resources.
+exec "$pi" --print --offline \
+  --no-session --no-context-files --no-approve \
+  --no-tools --no-extensions --no-skills --no-prompt-templates --no-themes

@@ -9,6 +9,11 @@ just = "1.58"
 ast-grep = "0.45"
 agy = "1.2.7" # aqua:google-antigravity/antigravity-cli
 
+[env]
+# agy updates its own binary in place on start, inside mise's install dir, so
+# the pin above would silently drift (1.2.7 became 1.2.10 on the first run).
+AGY_CLI_DISABLE_AUTO_UPDATE = "1"
+
 [bootstrap.packages]
 "apt:language-pack-en-base" = "latest"
 "apt:coreutils" = "latest"

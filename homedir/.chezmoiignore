@@ -37,7 +37,9 @@ Library/**
 .config/bv/**
 .config/brenner/**
 .config/opencode/plugins/dcg-guard.js
+.config/opencode/plugins/cass-memory.js
 .config/rulesync/**
+.config/cass-memory/**
 .config/zshrc.d/250-fw.zsh
 .gemini/**
 .claude/**

@@ -12,7 +12,7 @@ State as of 2026-09-24. The pin is cass 0.8.0, set in `~/.config/mise/config.fw.
   - `cass schedule install` needs systemd, and the container has none.
   - `cass index --watch` keeps 1.9 GB resident.
   - Stale-on-read auto-refresh answers from the old index.
-- **Model:** `CASS_SEMANTIC_EMBEDDER=multilingual-minilm`. `fw:bootstrap` installs it into `$CASS_DATA_DIR/models`: it downloads only when missing and fails loudly on error.
+- **Model:** `CASS_SEMANTIC_EMBEDDER=multilingual-minilm`. `fw:bootstrap` installs it into the data dir (`~/.local/share/coding-agent-search`, a link to `~/proj/share/cass`) under `models/`: it downloads only when missing and fails loudly on error.
   - It was chosen over `all-MiniLM-L6-v2` on Russian and English paraphrase queries over real sessions: expected session in the top 5 for 11 of 16 queries, against 4 of 16. Do not re-evaluate.
 - **Checks:** `mise run fw:doctor` covers:
   - index freshness;

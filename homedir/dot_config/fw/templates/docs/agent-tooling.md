@@ -20,7 +20,9 @@ repository expects.
 | `toon` | Token-Optimized Notation encoder | Compact `--format toon` output of `ubs`, `bv`, `br` for agents | Optional output format, e.g. `bv --robot-triage --format toon` |
 | `typos` | Source-code spell checker | Cheap hygiene check on prose and identifiers | `typos` on changed files |
 | `cass` | Coding Agent Session Search: indexes past agent sessions of all CLIs (re-indexed every 5 minutes, fully once a day) | Reuse solved problems instead of re-solving them | `cass search "<query>" --robot --limit 5`; never bare `cass`; setup status and pending upstream fixes: `docs/update_notes/cass.md` |
-| `cm` | cass-memory: procedural memory distilled from sessions; also an MCP server (`http://127.0.0.1:8766/`, `cass-memory`) | Project conventions and past pitfalls in a token budget | `cm context "<task>" --json` before non-trivial work |
+| `cm` | cass-memory: rules and pitfalls learned from past sessions (reflected once a day, at noon); also an MCP server (`http://127.0.0.1:8766/`, `cass-memory`) | Project conventions and past pitfalls in a token budget | Rules for the task arrive with the first prompt; `cm_context` / `cm context "<task>" --json`, `cm_feedback`, `Lessons for memory:` at the end |
+| trauma guard | cass-memory traumas: command patterns the owner registered after real damage (`cm trauma add`), blocked for Claude Code and Codex by cass-memory's own guard hook | Stops a repeat of a known incident that generic guards do not know | Transparent; only the owner adds or heals a trauma |
+| `pi` | Minimal agent harness for one-shot LLM calls (no tools, no session), one profile per job | Cheap text generation for tooling, e.g. cass-memory's reflection | Operator and tooling only |
 | `ru` | Repo updater: sync many repositories, detect conflicts | Operator hygiene across projects | Operator only (`ru sync`, `ru status --fetch`) |
 | `jfp` | JeffreysPrompts CLI: curated prompt library | Prompt source for the operator's palette | Operator only |
 | `brenner` | Brenner Bot: multi-agent research sessions with cited sources | Research and hypothesis work, not coding | On request only |
@@ -44,10 +46,19 @@ The Agent Mail and cass-memory MCP servers need no per-repository step: they
 are registered at user scope for every agent client. Both run as pitchfork
 daemons (`pitchfork status agent-mail cm`); start them before launching agents.
 
+## Instructions for agents
+
+The instructions for these tools are not in `AGENTS.md`: they belong to the
+machine, not to the repository. Each client gets them at session start from
+`~/.config/fw/instructions/` (Claude Code and Codex through SessionStart hooks,
+again after compaction; OpenCode through `instructions`), and a block appears only where its tool applies, e.g.
+the Beads block only in a repository with `.beads/`. The first prompt of a
+session also gets the cass-memory rules relevant to it.
+
 ## Daily loop
 
 1. Operator: `bv --robot-triage`, then `ntm spawn <project> --cc=2 --cod=1`.
-2. Agent: read `AGENTS.md`, `register_agent` in Agent Mail, `cm context`.
+2. Agent: read `AGENTS.md` and the tool instructions of the session, `register_agent` in Agent Mail; the cass-memory rules for the task are already in the first prompt.
 3. Agent: `bv --robot-next` or `br ready --brief --json`, claim with `br update <id> --status in_progress`.
 4. Agent: `file_reservation_paths(...)` with the bead id as `reason`, announce in thread `<bead id>`.
 5. Agent: implement in a narrow slice; run project checks.
@@ -55,4 +66,4 @@ daemons (`pitchfork status agent-mail cm`); start them before launching agents.
 7. Agent: commit with the bead id in the message; the guard verifies reservations.
 8. Agent: `git pull --rebase && git push`; release reservations; completion message.
 9. Operator every 10-15 minutes: `bv --robot-next`, Agent Mail inbox, `ntm activity <project> --watch`.
-10. End of session: remaining work filed as beads, nothing left unpushed.
+10. End of session: remaining work filed as beads, nothing left unpushed, durable lessons listed under `Lessons for memory:` in the final reply.

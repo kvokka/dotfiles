@@ -1,0 +1,41 @@
+# cass-memory (cm) global config: only what differs from cm's defaults.
+# cm reads its config only from its store (~/.cass-memory, a link to
+# ~/proj/share/cass-memory); fw:bootstrap links ~/.cass-memory/config.yaml to
+# this file, so the config stays a dotfile and the store holds only memory.
+# A config.json in the store would take precedence over this file.
+
+# LLM for reflection: pi through `cm-llm` (~/.config/fw/bin); model and
+# reasoning effort live in its profile (~/.config/fw/pi/cm).
+provider: cli
+cliCommand: {{ .chezmoi.homeDir }}/.config/fw/bin/cm-llm
+# Per call and per operation across retries (default 120 s each): a
+# high-effort call on a long session can take minutes.
+llmTimeoutMs: 600000
+llmTotalTimeoutMs: 1800000
+# On the first reflect cm writes the budget into a config file that lacks it
+# (#68), which would replace the link with a copy. These are cm's defaults;
+# budget caps do not apply to the cli provider anyway.
+budget:
+  dailyLimit: 1.0
+  monthlyLimit: 20.0
+
+# Days of history for reflect and `cm context` (default 7: `cm context` then
+# finds nothing for a repository idle for a week).
+sessionLookbackDays: 30
+# cm's default list minus "/subagents/agent-a" and "/subagents/workflows/":
+# Claude Code subagent sessions are reflected too, because subagents do most of
+# the work and hit their own pitfalls. A rule learned from one keeps the
+# subagent transcript path (".../subagents/...") in its `sourceSessions`.
+sessionExcludePatterns:
+  - prompt_suggestion
+  - prompt-suggestion
+  - auto_complete
+  - auto-complete
+  - inline_completion
+  - inline-completion
+  - -cass-memory-llm-subprocess-cwd/
+
+# Related sessions of every agent enrich the diary (default: off).
+crossAgent:
+  enabled: true
+  consentGiven: true

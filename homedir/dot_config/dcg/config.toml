@@ -42,6 +42,11 @@ enabled = [
 # Agent sessions run unattended (skipDangerousModePermissionPrompt, OpenCode has
 # no review prompt): a command dcg could not verify in time is denied, not asked.
 unverified_decision = "deny"
+# No self-heal: on every call dcg would rewrite its entry in
+# ~/.claude/settings.json to its own form (matcher `Bash|PowerShell`, versioned
+# binary path), overwriting the rulesync-generated hook (mise shim). rulesync
+# owns the hook lists (`mise run ai:sync`).
+self_heal_hook = false
 
 [history]
 enabled = true

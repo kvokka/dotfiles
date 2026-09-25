@@ -100,4 +100,4 @@ fi
 printf 'Next steps:\n'
 printf '  1. Fill in "Project commands" in AGENTS.md.\n'
 printf '  2. Make sure the Agent Mail service is running (pitchfork status agent-mail), then: ntm spawn %q --cc=2 --cod=1\n' "$name"
-printf 'The mcp-agent-mail and cass-memory MCP servers are global (mise run ai:sync); nothing to register here.\n'
+printf 'The MCP servers (mcp-agent-mail, cass-memory) and the agent instructions of the tools are global (mise run ai:sync); nothing to register here.\n'

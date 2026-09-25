@@ -5,14 +5,32 @@
   "version": 1,
   "hooks": {
     // Shell tool: `Bash` in Claude Code and Codex, `run_command` in agy.
+    // trauma_guard.py is cass-memory's own guard (`cm guard --install`, copied
+    // by fw:bootstrap): it blocks the patterns the owner registered after real
+    // damage (`cm trauma add`). Only `Bash`: it answers nothing to agy's input,
+    // and agy takes a silent PreToolUse hook as a deny.
     "preToolUse": [
       { "matcher": "Bash|run_command", "command": "{{ .chezmoi.homeDir }}/.local/share/mise/shims/dcg", "timeout": 10 },
+      { "matcher": "Bash", "command": "{{ .chezmoi.homeDir }}/.claude/hooks/trauma_guard.py", "timeout": 10 },
     ],
-    // Agent Mail. Claude Code and Codex show the model plain stdout only from
-    // SessionStart, and from PostToolUse only a JSON `additionalContext`;
-    // am-hook prints the one each event needs. agy has no SessionStart.
+    // Instruction blocks of the local tools (~/.config/fw/instructions), one
+    // hook per tool, each printed only where its tool applies; SessionStart
+    // also fires after compaction, so they come back. Then Agent Mail state.
+    // Claude Code and Codex show the model plain stdout only from SessionStart
+    // and UserPromptSubmit, and from PostToolUse only a JSON
+    // `additionalContext`; am-hook prints the one each event needs. agy has
+    // neither SessionStart nor UserPromptSubmit.
     "sessionStart": [
+      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/fw-context cm", "timeout": 10 },
+      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/fw-context cass", "timeout": 10 },
+      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/fw-context agent-mail", "timeout": 10 },
+      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/fw-context beads", "timeout": 10 },
+      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/fw-context ubs", "timeout": 10 },
       { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-hook session", "timeout": 10 },
+    ],
+    // cass-memory rules for the task, once, on the first prompt of a session.
+    "beforeSubmitPrompt": [
+      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/cm-context-hook", "timeout": 15 },
     ],
     "postToolUse": [
       { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-hook inbox", "timeout": 10 },
