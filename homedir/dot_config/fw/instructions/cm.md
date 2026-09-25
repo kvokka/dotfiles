@@ -6,5 +6,4 @@ Rules learned from earlier agent sessions on this machine, served by the MCP ser
 - When you act on a rule, name its id in your reply: "Following b-xxxx: ...". Only ids written in the conversation are graded.
 - When a rule clearly helped or misled you, call `cm_feedback(bulletId="b-xxxx", helpful=true, reason="...")` (or `harmful=true`).
 - When you finish a task and learned something durable (a pitfall, a convention, a command that works), end your final reply with a `Lessons for memory:` list, one imperative line per lesson; name the repository when a lesson holds only there. Lessons are learned from the transcript later; do not add rules yourself.
-- If a shell command you ran did real damage (lost or overwritten work, a broken repository, a publication with wrong content), add a line that starts with: Trauma candidate: `<regex matching the command>` - <what happened>. The owner decides whether to block that pattern for every agent.
 - Never call `memory_reflect` or `cm_outcome`, never write `[cass: ...]` markers into files, never run `cm trauma heal`, `cm trauma remove` or `cm playbook add`. A command blocked by a trauma needs another approach or the owner.

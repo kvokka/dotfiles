@@ -19,10 +19,12 @@ experimental = true # `mise daemons`
 
 [env]
 BV_NO_UPDATE_CHECK = "1"
-CASS_DATA_DIR = "{{ env.HOME }}/proj/share/cass"
-# cass-memory store: playbook, diary, traumas; a local git repository, committed
-# after every reflect run (tasks/fw/cm-reflect). Its config.yaml is chezmoi's.
-CASS_MEMORY_HOME = "{{ env.HOME }}/proj/share/cm-playbooks"
+# No CASS_DATA_DIR or CASS_MEMORY_HOME: cass and cass-memory keep their default
+# data dirs, which fw:bootstrap links to ~/proj/share (it outlives the
+# container). Both tools have code paths that ignore those variables: the cass
+# TUI writes macros under ~/.local/share/coding-agent-search, `cm init` writes a
+# literal ~/.cass-memory/playbook.yaml into config.json, and the MCP daemon and
+# hooks need not run with mise's environment.
 # Semantic model of cass (installed by fw:bootstrap). The multilingual MiniLM,
 # not the default English one: on Russian paraphrase queries over our own
 # sessions it put the right session in the top 5 for 11 of 16 queries, against
@@ -41,6 +43,7 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 [dotfiles]
 "~/proj/share/agent-mail/.keep" = { content = "" }
 "~/proj/share/cass/.keep" = { content = "" }
+"~/proj/share/cass-memory/.keep" = { content = "" }
 
 [tools]
 "github:Dicklesworthstone/ntm" = "1.35.1"
@@ -124,8 +127,8 @@ auto = ["start"]
 # cass-memory MCP server (JSON-RPC over HTTP POST at `/`); registered for every
 # client next to Agent Mail by `mise run ai:sync` (~/.config/rulesync).
 # Deliberately started without the LLM proxy key (no `fnox exec`): agents read
-# memory and give feedback here, and the MCP `memory_reflect` fails instead of
-# racing the cm-reflect queue, the only place reflection runs.
+# memory and give feedback here, and the MCP `memory_reflect` fails, so
+# reflection runs only in the cm-reflect job.
 run = "exec cm serve --host 127.0.0.1 --port 8766"
 ready_port = 8766
 retry = true
@@ -159,19 +162,16 @@ run = "exec ~/.config/mise/tasks/fw/cass-nightly"
 env = { RUST_LOG = "warn" }
 cron = { schedule = "0 5 10 * * *", retrigger = "finish" }
 
-# cass-memory learning queue: reflects finished sessions into the playbook
-# through pi (`cm-llm`), then commits the store. See tasks/fw/cm-reflect.
+# Daily at 12:00: cass-memory's own reflection, the cron job its README
+# suggests. cm picks the oldest unprocessed sessions of the lookback window
+# (config.yaml) and learns rules through pi (`cm-llm`, key from fnox); 50 a day
+# instead of the default 5 drains the backlog. A session still running at noon
+# is reflected as it stands and never again (upstream #85, open). From $HOME:
+# only the global store is used, never a repository's .cass/.
 [daemons.cm-reflect]
-run = "exec fnox exec -- ~/.config/mise/tasks/fw/cm-reflect"
-cron = { schedule = "0 */30 * * * *", retrigger = "finish" }
-
-# Daily at 11:15: trauma candidates from yesterday's sessions (agents' own
-# `Trauma candidate:` lines, owner complaints and agent admissions after a
-# shell command) into $CASS_MEMORY_HOME/trauma-candidates.md for review.
-# Nothing is activated here; `cm trauma add` is the owner's call.
-[daemons.cm-trauma-scan]
-run = "exec fnox exec -- ~/.config/mise/tasks/fw/cm-trauma-scan"
-cron = { schedule = "0 15 11 * * *", retrigger = "finish" }
+run = "exec fnox exec -- cm reflect --max-sessions 50 --json"
+dir = "~"
+cron = { schedule = "0 0 12 * * *", retrigger = "finish" }
 
 [tasks."fw:bootstrap"]
 description = "One-time setup of the flywheel services (idempotent)"
@@ -179,16 +179,41 @@ description = "One-time setup of the flywheel services (idempotent)"
 # shell, cron daemons run on their schedules, and `mise daemons start` needs a
 # project config in cwd. Manual start of the services after that first shell:
 # `pitchfork start agent-mail cm sbh`.
-# The cass-memory store is a local git repository (no remote yet). `cm init`
-# keeps the chezmoi-managed config.yaml (it writes config.json only when no
-# config file exists); --no-interactive skips its trauma-scan and Claude hook
-# prompts (our trauma guard is wired by rulesync instead).
+# The default data dirs of cass and cass-memory become links into ~/proj/share
+# (see [env]); a default dir holding anything but empty directories stops the
+# bootstrap, its content is the owner's to move. The cass-memory config is the
+# dotfile ~/.config/cass-memory/config.yaml, linked into the store again on
+# every run; a config.json there (an older `cm init`) would shadow it, so it
+# stops the bootstrap too. `cm init --no-interactive` skips the trauma scan and
+# the per-project hook prompts.
+# The trauma guard is cass-memory's own: `cm guard --install` writes the same
+# script into every project apart from the store path it bakes in, so it is
+# generated once in a throwaway project, refreshed on every run (a new cm
+# brings its new guard), and rulesync registers it for Claude Code and Codex.
 # The cass model is downloaded (~460 MB, SHA256-checked by cass) only when
 # missing; the last check fails the bootstrap if it is still not installed.
 run = """
 set -eu
-[ -d "${CASS_MEMORY_HOME:?}/diary" ] || cm init --no-interactive
-[ -d "$CASS_MEMORY_HOME/.git" ] || git -C "$CASS_MEMORY_HOME" init -q -b main
+link_dir() { # link_dir <default data dir> <dir in ~/proj/share>
+  [ -L "$1" ] && return
+  [ ! -d "$1" ] || find "$1" -depth -type d -empty -delete
+  mkdir -p "$2" "$(dirname "$1")"
+  ln -sT "$2" "$1"
+}
+link_dir "$HOME/.local/share/coding-agent-search" "$HOME/proj/share/cass"
+link_dir "$HOME/.cass-memory" "$HOME/proj/share/cass-memory"
+if [ -e "$HOME/.cass-memory/config.json" ]; then
+  echo "~/.cass-memory/config.json shadows config.yaml; remove it" >&2
+  exit 1
+fi
+ln -sfn "$HOME/.config/cass-memory/config.yaml" "$HOME/.cass-memory/config.yaml"
+[ -d "$HOME/.cass-memory/diary" ] || cm init --no-interactive
+guard_tmp="$(mktemp -d)"
+mkdir "$guard_tmp/.claude"
+(cd "$guard_tmp" && cm guard --install --json >/dev/null)
+mkdir -p "$HOME/.claude/hooks"
+install -m 755 "$guard_tmp/.claude/hooks/trauma_guard.py" "$HOME/.claude/hooks/trauma_guard.py"
+rm -rf "$guard_tmp"
 sbh config validate
 sbh ballast provision
 cass_model_installed() {
@@ -210,11 +235,9 @@ description = "Generate MCP servers and hooks for every AI client (rulesync)"
 # Source: ~/.config/rulesync. rulesync replaces only its own keys in each
 # client's user-scope files (MCP server list, hook list) and keeps the rest.
 # Runs after every `chezmoi apply` (run_after_200_ai-sync.sh), because chezmoi
-# rewrites those files whole and drops the generated keys. agy's hooks.json is
-# the exception: rulesync rewrites it whole, and agy-cm-hook then adds the
-# cass-memory hook rulesync cannot express (see that script).
+# rewrites those files whole and drops the generated keys.
 dir = "{{ env.HOME }}/.config/rulesync"
-run = ["rulesync generate", "~/.config/fw/bin/agy-cm-hook"]
+run = "rulesync generate"
 
 [tasks."fw:doctor"]
 description = "Smoke-check the flywheel agent stack (read-only)"
@@ -229,13 +252,6 @@ description = "Daily cass job: full index + semantic backfill (the cass-nightly 
 file = "{{ env.HOME }}/.config/mise/tasks/fw/cass-nightly"
 
 [tasks."fw:cm-reflect"]
-description = "Reflect finished agent sessions into the cass-memory playbook (the cm-reflect daemon)"
-run = "fnox exec -- ~/.config/mise/tasks/fw/cm-reflect"
-
-[tasks."fw:cm-trauma-scan"]
-description = "Collect trauma candidates from recent sessions for review (the cm-trauma-scan daemon)"
-run = "fnox exec -- ~/.config/mise/tasks/fw/cm-trauma-scan"
-
-[tasks."fw:cm-report"]
-description = "cass-memory report: rules by origin (main session / subagent), queue backlog, traumas"
-file = "{{ env.HOME }}/.config/mise/tasks/fw/cm-report"
+description = "Reflect agent sessions into the cass-memory playbook now (the cm-reflect daemon); extra args go to cm reflect, e.g. -- --days 90 --max-sessions 200"
+dir = "~"
+run = "fnox exec -- cm reflect --json"

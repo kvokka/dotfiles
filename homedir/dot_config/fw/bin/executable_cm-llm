@@ -4,7 +4,7 @@
 # `cm` profile (~/.config/fw/pi/cm: provider, model gpt-6-luna, reasoning effort
 # high, system prompt), no tools, no context files, no session file.
 #
-# cm calls it from `cm reflect` (the cm-reflect queue), which runs under
+# cm calls it from `cm reflect` (the cm-reflect daemon), which runs under
 # `fnox exec` for the proxy key; without the key it fails with a clear error.
 # Another one-shot job gets its own profile directory next to `cm`.
 set -eu

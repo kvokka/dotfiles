@@ -1,62 +1,43 @@
 #!/usr/bin/env bash
 # cass-memory context for the first prompt of a session: runs
-# `cm context "<prompt>"` in the session's repository and adds the relevant
+# `cm context "<prompt>"` for the session's repository and adds the relevant
 # rules, pitfalls and pointers to past sessions to the model's context, once.
-#
-#   Claude Code, Codex  UserPromptSubmit hook (~/.config/rulesync): input has
-#                       session_id, prompt, cwd; plain stdout reaches the model.
-#   agy                 PreInvocation hook (no prompt event): input has
-#                       conversationId, transcriptPath, workspacePaths; the
-#                       prompt is the first USER_EXPLICIT record of the
-#                       transcript; the block goes back as an injected user
-#                       message (an ephemeral one lasts a single model call).
-#   OpenCode            the cass-memory plugin passes Claude-shaped input.
+# A UserPromptSubmit hook in Claude Code and Codex (~/.config/rulesync): input
+# has session_id, prompt and cwd, plain stdout reaches the model. OpenCode's
+# cass-memory plugin passes the same input.
 #
 # Once per session: a marker per session id under $XDG_RUNTIME_DIR (or /tmp).
-# A slash command does not count as the first prompt. The CLI runs inside the
-# repository, so a committed <repo>/.cass/playbook.yaml is merged in; the
-# workspace filter is the main checkout, so a git worktree sees the rules of
-# its repository. Silent when there is nothing relevant, on timeout (8 s) and
-# on any error: a hook must never break a session.
+# A slash command does not count as the first prompt. The workspace filter is
+# the main checkout, so a git worktree sees the history of its repository. cm
+# runs from $HOME: only its global store is used, never a repository's .cass/.
+# Silent when there is nothing relevant, on timeout (8 s) and on any error: a
+# hook must never break a session.
 
 set -uo pipefail
 
 command -v cm >/dev/null 2>&1 || exit 0
 input="$(cat)"
-agy=0
-if jq -e 'has("conversationId")' >/dev/null 2>&1 <<<"$input"; then
-  agy=1
-  id="$(jq -r '.conversationId // empty' <<<"$input")"
-  cwd="$(jq -r '.workspacePaths[0] // empty' <<<"$input")"
-  transcript="$(jq -r '.transcriptPath // empty' <<<"$input")"
-  prompt=""
-  [[ -f "$transcript" ]] && prompt="$(jq -r 'select(.type == "USER_INPUT" and .source == "USER_EXPLICIT") | .content' "$transcript" 2>/dev/null |
-    head -c 4000 | sed -e 's#</\?USER_REQUEST>##g' -e '/<ADDITIONAL_METADATA>/,$d')"
-else
-  id="$(jq -r '.session_id // empty' <<<"$input")"
-  cwd="$(jq -r '.cwd // empty' <<<"$input")"
-  prompt="$(jq -r '.prompt // empty' <<<"$input")"
-fi
-done_json() { ((agy)) && echo '{}'; exit 0; }
-[[ -n "$id" ]] || done_json
+id="$(jq -r '.session_id // empty' <<<"$input")"
+cwd="$(jq -r '.cwd // empty' <<<"$input")"
+prompt="$(jq -r '.prompt // empty' <<<"$input")"
+[[ -n "$id" ]] || exit 0
 prompt="$(tr -s '[:space:]' ' ' <<<"$prompt" | head -c 600)"
-[[ -n "${prompt// /}" && "${prompt# }" != /* ]] || done_json
+[[ -n "${prompt// /}" && "${prompt# }" != /* ]] || exit 0
 
 marker_dir="${XDG_RUNTIME_DIR:-/tmp}/fw-cm-context-$(id -u)"
-mkdir -p "$marker_dir" 2>/dev/null || done_json
-mkdir "$marker_dir/$id" 2>/dev/null || done_json # already injected
+mkdir -p "$marker_dir" 2>/dev/null || exit 0
+mkdir "$marker_dir/$id" 2>/dev/null || exit 0 # already injected
 
 cwd="${cwd:-$PWD}"
-top="$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null)"
-workspace="$top"
+workspace="$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null)"
 common="$(git -C "$cwd" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"
 [[ "$common" == */.git ]] && workspace="${common%/.git}"
 
 args=(context "$prompt" --limit 8 --history 3 --json)
 [[ -n "$workspace" ]] && args+=(--workspace "$workspace")
-out="$(cd "${top:-$cwd}" 2>/dev/null && timeout 8 cm "${args[@]}" 2>/dev/null)" || done_json
+out="$(cd "$HOME" && timeout 8 cm "${args[@]}" 2>/dev/null)" || exit 0
 
-block="$(jq -r --arg ws "${workspace:-$cwd}" '
+jq -r --arg ws "${workspace:-$cwd}" '
   .data as $d
   | ($d.relevantBullets // [] | map(select((.isNegative // false) or .kind == "anti_pattern" | not))) as $rules
   | ($d.antiPatterns // []) as $pits
@@ -68,13 +49,5 @@ block="$(jq -r --arg ws "${workspace:-$cwd}" '
       (if ($pits | length) > 0 then "Pitfalls:", ($pits[] | "- \(.id): \(.content)") else empty end),
       (if ($hist | length) > 0 then "Related sessions (cass view <path> -n <line> --json):",
         ($hist[] | "- \((.title // "") | .[0:80]) [\(.agent // "?")] \(.source_path // .sessionPath):\(.line_number // 1)") else empty end),
-      "</cm-context>" ] | join("\n") end' <<<"$out" 2>/dev/null)"
-[[ -n "$block" ]] || done_json
-
-if ((agy)); then
-  jq -cn --arg m "[auto-context from cass-memory]
-$block" '{injectSteps: [{userMessage: $m}]}'
-else
-  printf '%s\n' "$block"
-fi
+      "</cm-context>" ] | join("\n") end' <<<"$out" 2>/dev/null
 exit 0

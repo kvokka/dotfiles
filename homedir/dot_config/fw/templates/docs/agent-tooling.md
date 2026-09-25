@@ -20,8 +20,8 @@ repository expects.
 | `toon` | Token-Optimized Notation encoder | Compact `--format toon` output of `ubs`, `bv`, `br` for agents | Optional output format, e.g. `bv --robot-triage --format toon` |
 | `typos` | Source-code spell checker | Cheap hygiene check on prose and identifiers | `typos` on changed files |
 | `cass` | Coding Agent Session Search: indexes past agent sessions of all CLIs (re-indexed every 5 minutes, fully once a day) | Reuse solved problems instead of re-solving them | `cass search "<query>" --robot --limit 5`; never bare `cass`; setup status and pending upstream fixes: `docs/update_notes/cass.md` |
-| `cm` | cass-memory: rules and pitfalls learned from past sessions (a queue reflects finished sessions every 30 minutes); also an MCP server (`http://127.0.0.1:8766/`, `cass-memory`) | Project conventions and past pitfalls in a token budget | Rules for the task arrive with the first prompt; `cm_context` / `cm context "<task>" --json`, `cm_feedback`, `Lessons for memory:` at the end |
-| trauma guard | cass-memory traumas: command patterns the owner registered after real damage (`cm trauma add`), blocked for every agent by a hook | Stops a repeat of a known incident that generic guards do not know | Transparent; an agent reports `Trauma candidate: ...`, the owner decides |
+| `cm` | cass-memory: rules and pitfalls learned from past sessions (reflected once a day, at noon); also an MCP server (`http://127.0.0.1:8766/`, `cass-memory`) | Project conventions and past pitfalls in a token budget | Rules for the task arrive with the first prompt; `cm_context` / `cm context "<task>" --json`, `cm_feedback`, `Lessons for memory:` at the end |
+| trauma guard | cass-memory traumas: command patterns the owner registered after real damage (`cm trauma add`), blocked for Claude Code and Codex by cass-memory's own guard hook | Stops a repeat of a known incident that generic guards do not know | Transparent; only the owner adds or heals a trauma |
 | `pi` | Minimal agent harness for one-shot LLM calls (no tools, no session), one profile per job | Cheap text generation for tooling, e.g. cass-memory's reflection | Operator and tooling only |
 | `ru` | Repo updater: sync many repositories, detect conflicts | Operator hygiene across projects | Operator only (`ru sync`, `ru status --fetch`) |
 | `jfp` | JeffreysPrompts CLI: curated prompt library | Prompt source for the operator's palette | Operator only |
@@ -51,8 +51,7 @@ daemons (`pitchfork status agent-mail cm`); start them before launching agents.
 The instructions for these tools are not in `AGENTS.md`: they belong to the
 machine, not to the repository. Each client gets them at session start from
 `~/.config/fw/instructions/` (Claude Code and Codex through SessionStart hooks,
-again after compaction; Antigravity through an always-on global rule; OpenCode
-through `instructions`), and a block appears only where its tool applies, e.g.
+again after compaction; OpenCode through `instructions`), and a block appears only where its tool applies, e.g.
 the Beads block only in a repository with `.beads/`. The first prompt of a
 session also gets the cass-memory rules relevant to it.
 

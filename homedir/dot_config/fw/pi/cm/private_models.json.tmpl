@@ -1,26 +1,17 @@
 // pi profile `cm` (cass-memory's LLM, run by ~/.config/fw/bin/cm-llm): the
 // proxy Codex uses (`myproxy` in ~/.codex/config.toml). pi interpolates $VAR
 // only in apiKey and headers, not in baseUrl, so baseUrl is rendered by chezmoi
-// from the same data as the Codex config. Limits and thinkingLevelMap follow
-// pi's bundled catalog entry for gpt-6-luna.
+// from the same data as the Codex config. Only what differs from pi's model
+// defaults: reasoning (else thinking is clamped to off) and the limits of pi's
+// bundled catalog entry for gpt-6-luna.
 {
   "providers": {
     "myproxy": {
-      "name": "My CLI LLM proxy",
       "baseUrl": {{ .my_cli_llm_proxy.url | toJson }},
       "api": "openai-responses",
       "apiKey": "$MY_CLI_LLM_PROXY_API_KEY",
       "models": [
-        {
-          "id": "gpt-6-luna",
-          "name": "GPT-6 Luna (proxy)",
-          "reasoning": true,
-          "thinkingLevelMap": { "off": "none", "minimal": null, "low": "low", "medium": "medium", "high": "high", "xhigh": "xhigh", "max": "max" },
-          "input": ["text"],
-          "contextWindow": 272000,
-          "maxTokens": 128000,
-          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
-        }
+        { "id": "gpt-6-luna", "reasoning": true, "contextWindow": 272000, "maxTokens": 128000 }
       ]
     }
   }
