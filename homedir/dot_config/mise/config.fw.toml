@@ -197,6 +197,10 @@ set -eu
 link_dir() { # link_dir <default data dir> <dir in ~/proj/share>
   [ -L "$1" ] && return
   [ ! -d "$1" ] || find "$1" -depth -type d -empty -delete
+  if [ -e "$1" ]; then
+    echo "fw:bootstrap: $1 is not empty; move its content into $2 and run again" >&2
+    exit 1
+  fi
   mkdir -p "$2" "$(dirname "$1")"
   ln -sT "$2" "$1"
 }
