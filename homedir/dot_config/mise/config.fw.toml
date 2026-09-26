@@ -189,6 +189,14 @@ run = "exec fnox exec -- cm reflect --max-sessions 50 --json"
 dir = "~"
 cron = { schedule = "0 0 12 * * *", retrigger = "finish" }
 
+# Daily at 11:30: retire the Agent Mail identities of harness subagents that no
+# subagent used for a day (am-subagent, wired as SubagentStart/SubagentStop
+# hooks by rulesync), through the agent-mail daemon's MCP endpoint. Not
+# `am agents reap`: it would retire busy ntm pane agents too (see am-subagent).
+[daemons.am-subagent-reap]
+run = "exec ~/.config/fw/bin/am-subagent reap http://127.0.0.1:8765/mcp/"
+cron = { schedule = "0 30 11 * * *", retrigger = "finish" }
+
 [tasks."fw:bootstrap"]
 description = "One-time setup of the flywheel services (idempotent)"
 # Daemons are not started here: services auto-start with the first activated
