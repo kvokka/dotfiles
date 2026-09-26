@@ -40,17 +40,6 @@
 - Scripts, hooks and tasks call a tool directly. Never check whether it is installed (`command -v`, a fallback to a shim path, a wrapper that skips when it is missing): mise installs every tool before a task runs, or fails with its own error. Checking the installation is the job of `fw:doctor` alone. Likewise, use a tool's own output format (e.g. `--format markdown`) rather than re-rendering its JSON.
 - Comments describe the setup as it is and why. They never say where or when something was fixed or broken: no upstream issue numbers, release versions, "fixed on main", "until X ships" or "the first run showed". That history belongs in the commit and PR message. Once a fix is in and works, drop the note.
 
-## OpenCode And OpenClaw
-
-- Managed OpenCode config is `homedir/dot_config/opencode/opencode.json`; plugins include `oh-my-openagent` and `cc-safety-net`, and the default model is `openai/gpt-5.5`.
-- `cc-safety-net` is configured to block `git push -f` and `git push --force`.
-- For OpenClaw ACP topics, keep OpenClaw `agentId` as `opencode`; `sisyphus` is the internal OpenCode/oh-my-opencode agent.
-- The ACP command must stay:
-  ```sh
-  env OPENCODE_DEFAULT_AGENT=sisyphus opencode acp
-  ```
-- Do not replace it with `opencode --agent=sisyphus acp`; `opencode acp` has its own option parser and does not accept that flag.
-
 ## Flywheel Agent Stack (fw)
 
 - The acfs-derived agent stack (ntm, br/bv, Agent Mail `am`, dcg, ubs, cass/cm, sbh, agy, ...) lives in `homedir/dot_config/mise/config.fw.toml`, loaded only in the Linux devcontainer through the `fw` entry of `miserc.toml`; `toon`, `typos` and `fmd` are global tools.
@@ -85,10 +74,3 @@
 - The zsh aliases wrap `docker-compose -f "$HOME/.config/docker-compose/local-dev/docker-compose.yml"` through `dc`.
 - Compose entrypoint applies dotfiles in the container and creates the OpenCode worktree symlink, so compose operations are not inspection-only.
 - The host `~/.dotfiles` is mounted at `/home/ubuntu/.dotfiles` and passed as `--source` to the entrypoint's chezmoi one-liner. Keep it outside `~/.local`: docker creates the parent directories of a nested bind mount inside the `home` volume as root, which breaks mise writing to `~/.local`.
-
-## Telegram Topics
-
-- `homedir/private_dot_openclaw/skills/telegram-topics/SKILL.md` is the authority for OpenClaw Telegram topic workflows.
-- `scripts/topic_config.py check` is not passive; it sends and deletes probe messages because Telegram lacks a read-only forum-topic lookup.
-- `scripts/topic_config.py delete` deletes Telegram topics before config cleanup. Topic `1` is protected General/root topic; never delete it.
-- For ACP project topics, the helper creates worktrees under `$WORKDIR`; never delete a source project directory when cleaning up a topic.

@@ -12,8 +12,6 @@ x-common-base: &common-base
     - ~/proj/active:/home/ubuntu/proj/active:cached
     - ~/proj/share:/home/ubuntu/proj/share:cached
     - ~/.dotfiles:/home/ubuntu/.dotfiles:cached # chezmoi source, shared with the host
-    - ~/.secrets/shared:/home/ubuntu/.secrets/shared:ro
-    - ~/.openclaw:/home/ubuntu/.openclaw
     - /var/run/docker.sock:/var/run/docker.sock
     - brew:/home/linuxbrew:cached
   extra_hosts:
