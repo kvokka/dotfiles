@@ -51,7 +51,7 @@ repository expects.
 
 The Agent Mail and cass-memory MCP servers need no per-repository step: they
 are registered at user scope for every agent client. Both run as pitchfork
-daemons (`pitchfork status agent-mail cm`); start them before launching agents.
+daemons (`pitchfork list`); start them before launching agents.
 
 ## Instructions for agents
 
