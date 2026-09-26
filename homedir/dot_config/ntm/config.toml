@@ -1,4 +1,3 @@
-# chezmoi:template:left-delimiter="[%" right-delimiter="%]"
 # ntm (Named Tmux Manager) configuration, managed by chezmoi.
 #
 # This file deliberately breaks the "only values that differ from the default"
@@ -16,12 +15,12 @@
 # next `chezmoi apply` reverts such a change; keep one by moving it into the
 # dotfiles. `ntm level` writes ~/.config/ntm/proficiency.json instead.
 #
-# The source is a chezmoi template with its own delimiters: ntm's agent
-# commands below are Go templates themselves.
+# A plain file, not a chezmoi template: ntm expands `~` in projects_base, and
+# the `{{ }}` in the agent commands below are ntm's own Go templates.
 
 # Base directory for projects
 # projects_base = "~/ntm_Dev"
-projects_base = "[% .chezmoi.homeDir %]/proj/active"
+projects_base = "~/proj/active"
 
 # UI Theme (mocha, macchiato, nord, latte, auto)
 # theme = "auto"

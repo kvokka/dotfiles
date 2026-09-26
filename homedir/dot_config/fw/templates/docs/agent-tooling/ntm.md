@@ -1,6 +1,6 @@
 # ntm
 
-How ntm (Named Tmux Manager) runs an agent swarm on this machine and which parts of its setup look odd but are deliberate. The settings and their reasons are in `~/.config/ntm/config.toml` and `~/.config/mise/config.fw.toml` (dotfiles: `homedir/dot_config/ntm/config.toml.tmpl`, `homedir/dot_config/mise/config.fw.toml`). Open upstream problems and the release check are in [upstream-todo.md](upstream-todo.md#ntm).
+How ntm (Named Tmux Manager) runs an agent swarm on this machine and which parts of its setup look odd but are deliberate. The settings and their reasons are in `~/.config/ntm/config.toml` and `~/.config/mise/config.fw.toml` (dotfiles: `homedir/dot_config/ntm/config.toml`, `homedir/dot_config/mise/config.fw.toml`). Open upstream problems and the release check are in [upstream-todo.md](upstream-todo.md#ntm).
 
 ## How it works
 
