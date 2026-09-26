@@ -108,7 +108,7 @@ check "cass model installed: ${CASS_SEMANTIC_EMBEDDER:-unset} (mise run fw:boots
   "cass models status --json | jq -e --arg m \"\${CASS_SEMANTIC_EMBEDDER:?}\" 'any(.models[]; .registry_name == \$m and .installed)'"
 # `.semantic.can_search` is already true with the hash tier alone, which
 # cass never uses unless asked; only the published quality tier is the model.
-check "cass semantic search ready (needs a cass release with the ARM64 fix, upstream #467)" bash -c \
+check "cass semantic search ready (mise run fw:cass-nightly)" bash -c \
   "cass status --json | jq -e '.semantic.quality_tier_published'"
 check "sbh status" sbh status --json
 check "sbh ballast pool in ~/.ballast" test -d "$HOME/.ballast"

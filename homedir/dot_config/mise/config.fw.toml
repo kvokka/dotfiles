@@ -29,10 +29,8 @@ BV_NO_UPDATE_CHECK = "1"
 # not the default English one: on Russian paraphrase queries over our own
 # sessions it put the right session in the top 5 for 11 of 16 queries, against
 # 4 of 16. It is also the only way cass finds Russian text: its lexical index
-# keeps only ASCII and CJK words (up to at least 0.8.0 and main). cass 0.8.0
-# cannot embed with either model on ARM64 (upstream #467, fixed on main after
-# 0.8.0); until a release carries the fix, search stays lexical and `fw:doctor`
-# reports semantic search as not ready.
+# keeps only ASCII and CJK words (up to at least 0.9.0). cass 0.9.0 embeds with
+# it on ARM64 (upstream #467).
 CASS_SEMANTIC_EMBEDDER = "multilingual-minilm"
 # Agent Mail archive location. Both the service and `am guard check` (the
 # pre-commit guard) resolve it from the environment, so it has to be exported
@@ -146,8 +144,11 @@ auto = ["start"]
 # same incremental pass (seconds, ~2 GB RSS while it runs). Not `index --watch`:
 # it holds those ~2 GB for good. On a fresh VM the first run builds the whole
 # index. A changed schedule needs `mise daemons restart cass-index`.
+# --semantic embeds the new sessions too (~6 s a pass on 0.9.0): without it the
+# nightly vectors no longer match the database after the first new session,
+# and cass turns semantic search off until the next night.
 [daemons.cass-index]
-run = "exec cass index --background"
+run = "exec cass index --background --semantic"
 env = { RUST_LOG = "warn" }
 # pitchfork's cron takes seconds first; a 5-field expression is rejected.
 cron = { schedule = "0 */5 * * * *", retrigger = "finish" }
@@ -197,6 +198,10 @@ set -eu
 link_dir() { # link_dir <default data dir> <dir in ~/proj/share>
   [ -L "$1" ] && return
   [ ! -d "$1" ] || find "$1" -depth -type d -empty -delete
+  if [ -e "$1" ]; then
+    echo "fw:bootstrap: $1 is not empty; move its content into $2 and run again" >&2
+    exit 1
+  fi
   mkdir -p "$2" "$(dirname "$1")"
   ln -sT "$2" "$1"
 }

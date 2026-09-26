@@ -1,11 +1,11 @@
 # cass update notes
 
-State as of 2026-09-24. The pin is cass 0.8.0, set in `~/.config/mise/config.fw.toml` (in the dotfiles repo: `homedir/dot_config/mise/config.fw.toml`, kvokka/dotfiles PR #8). Read this before changing the cass setup: the work below is done and measured.
+State as of 2026-09-26. The pin is cass 0.9.0, set in `~/.config/mise/config.fw.toml` (in the dotfiles repo: `homedir/dot_config/mise/config.fw.toml`, kvokka/dotfiles PR #8, #12). Read this before changing the cass setup: the work below is done and measured.
 
 ## Done, do not redo
 
 - **Freshness** comes from two pitchfork cron daemons:
-  - `cass-index` runs `cass index --background` every 5 minutes.
+  - `cass-index` runs `cass index --background --semantic` every 5 minutes. `--semantic` embeds new sessions as well (~6 s a pass). Without it, the vectors stop matching the database after the first new session, and cass turns semantic search off until the next night.
   - `cass-nightly` runs `mise run fw:cass-nightly` daily at 10:05 local time. That wrapper calls `cass schedule run --job nightly --force`, which does a full index plus semantic backfill.
 
   Rejected alternatives:
@@ -21,12 +21,9 @@ State as of 2026-09-24. The pin is cass 0.8.0, set in `~/.config/mise/config.fw.
   - semantic quality tier published.
 - **Session retention:** Claude Code `cleanupPeriodDays` is already 99999, so transcripts stay on disk for cass to index.
 
-## Expected failures on 0.8.0 (upstream, not our setup)
+## Expected failures (upstream, not our setup)
 
-- **`cass-nightly` is `errored` every day.** Its `semantic-backfill:quality` step exits 20. The full-index step still succeeds.
-  - Cause: on ARM64 cass rejects `multilingual-minilm` as `unknown embedder`, and MiniLM fails its "producer certificate" check.
-  - Upstream: cass #467, fixed on `main` (frankensearch 0.6.1), not yet released.
-- **`fw:doctor` fails "cass semantic search ready".** `.semantic.quality_tier_published` is false.
+- Semantic search on ARM64 (cass #467) is fixed in 0.9.0 (frankensearch 0.6.1). The first quality backfill ran on 2026-09-26.
 - **Lexical search never matches Cyrillic, or any word that is neither ASCII nor CJK.**
   - Cause: frankensearch-quill `CassAnalyzer` only tokenizes `[A-Za-z0-9]` and CJK.
   - One such word empties a mixed query: `mcp` finds 400 hits, `морф mcp` finds 0.
@@ -38,7 +35,6 @@ State as of 2026-09-24. The pin is cass 0.8.0, set in `~/.config/mise/config.fw.
 ## When a new cass release ships
 
 1. **Check the release for the fixes.**
-   - Semantic (#467): does `Cargo.lock` pin frankensearch 0.6.1 or newer?
    - Cyrillic: is `CassAnalyzer::analyze` in `crates/frankensearch-quill/src/scribe.rs` still limited to `is_ascii_alphanumeric()` and CJK?
 2. **Try it on a copy of the data dir first.**
    - Run `cass models backfill --tier quality --embedder multilingual-minilm --batch-conversations 1 --json`.
@@ -47,8 +43,7 @@ State as of 2026-09-24. The pin is cass 0.8.0, set in `~/.config/mise/config.fw.
 4. **Run the first backfill:** `mise run fw:cass-nightly`.
    - The first quality backfill over ~130k messages takes an estimated 1-2 h at idle priority.
    - Afterwards `fw:doctor` should be all green.
-5. **Only once semantic works:** consider adding `--semantic` to the `cass-index` run, so new sessions get vectors before the next nightly. Measure the cost first. On 0.8.0, `--semantic` makes the whole index run fail (exit 9), so do not add it before then.
-6. **If the release fixes the tokenizer:** rebuild the lexical index with `mise run fw:cass-index` (full), unless the changelog says it rebuilds by itself.
+5. **If the release fixes the tokenizer:** rebuild the lexical index with `mise run fw:cass-index` (full), unless the changelog says it rebuilds by itself.
 
 ## Gotchas
 
@@ -68,3 +63,5 @@ State as of 2026-09-24. The pin is cass 0.8.0, set in `~/.config/mise/config.fw.
   | full | ~85 s | 4.1 GB |
   | nightly | ~105 s | 4.3 GB |
   | first nightly | ~8.5 min (builds the hash tier) | — |
+  | first `index --semantic` after the quality backfill (0.9.0) | ~72 min | — |
+  | incremental `--background --semantic` (0.9.0) | ~6 s | — |
