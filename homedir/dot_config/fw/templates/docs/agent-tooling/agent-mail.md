@@ -1,11 +1,12 @@
 # Agent Mail
 
-How MCP Agent Mail runs on this machine and which parts of its setup look odd but are deliberate. The settings and their reasons are in `~/.config/mise/config.fw.toml` and `~/.config/mcp-agent-mail/config.env` (dotfiles: `homedir/dot_config/mise/config.fw.toml`, `homedir/dot_config/mcp-agent-mail/config.env.tmpl`). Open upstream problems and the release check are in [upstream-todo.md](upstream-todo.md#agent-mail).
+How MCP Agent Mail runs on this machine and which parts of its setup look odd but are deliberate. The settings and their reasons are in `~/.config/mise/config.fw.toml`, `~/.config/mcp-agent-mail/config.env` and `~/.config/mcp-agent-mail/tui.tmux.conf` (dotfiles: `homedir/dot_config/mise/config.fw.toml` and the files in `homedir/dot_config/mcp-agent-mail/`). Open upstream problems and the release check are in [upstream-todo.md](upstream-todo.md#agent-mail).
 
 ## How it works
 
 - **Pin:** `am` 0.3.36 (`mcp_agent_mail_rust`, which also ships `mcp-agent-mail`) in `~/.config/mise/config.fw.toml`.
-- **Service:** the pitchfork daemon `agent-mail`, `am serve-http --no-tui` on 0.0.0.0:8765, MCP at `/mcp/`, registered for every client by `mise run ai:sync`. Data: the SQLite database and the git archive (`STORAGE_ROOT`) under `~/proj/share/agent-mail`.
+- **Service:** the pitchfork daemon `agent-mail`, `am serve-http` with its TUI on 0.0.0.0:8765, MCP at `/mcp/`, registered for every client by `mise run ai:sync`. am runs in the session `am` of a private tmux server (socket `agent-mail`) that the daemon holds in the foreground. Data: the SQLite database and the git archive (`STORAGE_ROOT`) under `~/proj/share/agent-mail`.
+- **TUI:** `mise run fw:am-tui` attaches to the running server's TUI from any terminal or tmux pane. Detach with Ctrl-\ (or the default prefix, C-b d); the server keeps running, at about 3% of a core while nobody is attached. The window takes the size of the last attached terminal. The TUI saves its preferences and dismissed hints under `~/proj/share/agent-mail/tui/` (`CONSOLE_PERSIST_PATH`), not in the managed `config.env`.
 - **Web UI:** <http://localhost:8765/mail> from the macOS host: projects, agents, threads, reservations, and the HumanOverseer compose page. `ntm mail send <repo> ...` is the same overseer from the shell.
 - **Terminal views:** `am robot status`, `am robot inbox --project <repo> --agent <name>`, `am robot reservations`, `am robot agents`, `am robot thread <id>`, and `am tui-dump` for the snapshot the TUI would show.
 - **Identity:**
@@ -23,7 +24,9 @@ How MCP Agent Mail runs on this machine and which parts of its setup look odd bu
 
 ## Quirks
 
-- **No interactive TUI beside the daemon.** The TUI renders only inside the serving process, and one server owns the storage root. `am` in a terminal next to the daemon offers a read-only attach, which reprints `am robot tui-dump` every second, or a takeover. Never take over: it kills the pitchfork daemon's server, and am starts only a systemd or launchd service again afterwards. Use the web UI and the `am robot` views.
+- **Quitting the TUI stops the server for every agent.** `q`, Esc Esc and Ctrl-C Ctrl-C end `am serve-http` itself; pitchfork starts it again within about 10 s. Detach instead. am's own Ctrl-D ("detach headless") would drop the TUI until the next restart, so the tmux config turns it off.
+- **The server logs to the TUI.** Its event console holds the log, and `pitchfork logs agent-mail` stays nearly empty; read the state with `am tui-dump` and `am robot ...`.
+- **No second `am` server and no takeover.** The TUI renders only inside the serving process, and one server owns the storage root. `am` in a terminal next to the daemon offers a read-only attach or a takeover; a takeover kills the daemon's server, and am starts only a systemd or launchd service again afterwards. Use `mise run fw:am-tui`.
 - **No product bus or build slot tools.** Their eight tools only return an error while `WORKTREES_ENABLED` is off (the default, kept), so the tool filter in `config.env` (`TOOLS_FILTER_*`, clusters `product_bus` and `build_slots`) drops them from `tools/list`. The server reads the filter once at start: `pitchfork restart agent-mail` after a change.
 - **`/web-dashboard` answers 501:** the browser mirror of the TUI is deferred upstream.
 - **MCP calls carry no tmux pane.** Over HTTP the server learns the caller's pane only from an explicit `pane_id` (`macro_start_session`, `resolve_pane_identity`), so an agent in an ntm pane must pass `$TMUX_PANE` or use the name the hook printed; a bare `register_agent` mints a second identity.

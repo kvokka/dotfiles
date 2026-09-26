@@ -59,7 +59,7 @@ Pin: 1.35.1. Setup notes: [ntm.md](ntm.md). No upstream issue exists yet for any
 
 Pin: `mcp_agent_mail_rust` 0.3.36. Setup notes: [agent-mail.md](agent-mail.md). File references are to the `v0.3.36` tag.
 
-- **`/web-dashboard` returns 501.** The browser mirror of the TUI is deferred (`docs/SPEC-browser-parity-contract-deferred.md`, tracker `br-il53l`; the routes are in `crates/mcp-agent-mail-server/src/lib.rs`). The interactive TUI exists only in the serving process, so the headless daemon has none.
+- **`/web-dashboard` returns 501.** The browser mirror of the TUI is deferred (`docs/SPEC-browser-parity-contract-deferred.md`, tracker `br-il53l`; the routes are in `crates/mcp-agent-mail-server/src/lib.rs`). The interactive TUI exists only in the serving process, so it is reached only through the daemon's tmux server (`mise run fw:am-tui`).
   - Check: `curl -s -o /dev/null -w '%{http_code}' localhost:8765/web-dashboard`.
   - When it serves the mirror: link it from [agent-mail.md](agent-mail.md).
 - **MCP over HTTP carries no tmux pane.** The server learns the caller's pane only from an explicit `pane_id` or an `X-Tmux-Pane` header that the clients do not send, so an agent in an ntm pane that calls `register_agent` without it gets a second identity. Related proposal: [issue #279](https://github.com/Dicklesworthstone/mcp_agent_mail_rust/issues/279) (session-bound identity).

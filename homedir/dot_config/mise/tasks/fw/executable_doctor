@@ -69,6 +69,7 @@ check "opencode instructions include the blocks" grep -q 'fw/instructions' "$HOM
 check "trauma guard denies an active trauma" trauma_probe
 
 check "pitchfork: agent-mail running" bash -c "pitchfork status agent-mail | grep -q running"
+check "agent-mail tmux session for the TUI (mise run fw:am-tui)" tmux -L agent-mail has-session -t am
 check "pitchfork: cm running" bash -c "pitchfork status cm | grep -q running"
 check "pitchfork: sbh running" bash -c "pitchfork status sbh | grep -q running"
 check "agent-mail /health ready" curl -fsS http://127.0.0.1:8765/health

@@ -104,9 +104,17 @@ rm -rf node_modules
 # `mise daemons restart <name>` from such a directory: it re-registers the
 # daemon, while `pitchfork restart` reuses the command it already knows.
 [daemons.agent-mail]
-# --host 0.0.0.0: reachable from the host through the published compose port
+# am renders its interactive TUI only inside the serving process, so the server
+# runs in the session `am` of a private foreground tmux server (socket
+# `agent-mail`), and `mise run fw:am-tui` attaches to it. The tmux config
+# (~/.config/mcp-agent-mail/tui.tmux.conf) holds the am command line: --host
+# 0.0.0.0 makes it reachable from the host through the published compose port
 # (localhost:8765) and the OrbStack domain; see ~/.config/mcp-agent-mail/config.env.
-run = "exec am serve-http --no-tui --host 0.0.0.0 --port 8765 --path /mcp/"
+# `tmux -D` reads that config, which starts am, only when the first client
+# connects: the loop is that client. tmux exits 0 once am quits, and pitchfork
+# retries only a failed exit, hence `exit 1`. Stopping the daemon kills the
+# process group, and tmux takes am down with it.
+run = "tmux -L agent-mail -f ~/.config/mcp-agent-mail/tui.tmux.conf -D & while ! tmux -L agent-mail has-session -t am 2>/dev/null; do kill -0 $! || exit 1; sleep 0.2; done; wait $!; exit 1"
 dir = "~/proj/share/agent-mail"
 env = { RUST_LOG = "info" }
 ready_http = "http://127.0.0.1:8765/healthz"
@@ -266,6 +274,13 @@ description = "Generate MCP servers and hooks for every AI client (rulesync)"
 # rewrites those files whole and drops the generated keys.
 dir = "{{ env.HOME }}/.config/rulesync"
 run = "rulesync generate"
+
+[tasks."fw:am-tui"]
+description = "Open Agent Mail's TUI in the running server (detach: Ctrl-\\)"
+# Attaches to the agent-mail daemon's tmux server; TMUX= allows it from inside
+# another tmux session. Quitting the TUI stops the server for every agent.
+raw = true
+run = "TMUX= exec tmux -L agent-mail attach -t am"
 
 [tasks."fw:doctor"]
 description = "Smoke-check the flywheel agent stack (read-only)"
