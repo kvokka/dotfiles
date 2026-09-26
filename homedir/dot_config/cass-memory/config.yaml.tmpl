@@ -4,14 +4,6 @@
 # this file, so the config stays a dotfile and the store holds only memory.
 # A config.json in the store would take precedence over this file.
 
-# Rules live at two levels: this store for everything, and a repository's
-# committed .cass/playbook.yaml for rules that hold only there. Reflect writes a
-# project rule into the .cass/ of the session's repository (its main checkout)
-# when that directory exists (`mise run fw:init` creates it), otherwise it keeps
-# the rule here, scoped to the repository's path. `cm context --workspace`
-# merges both.
-projectRuleRouting: repo
-
 # LLM for reflection: pi through `cm-llm` (~/.config/fw/bin); model and
 # reasoning effort live in its profile (~/.config/fw/pi/cm).
 provider: cli

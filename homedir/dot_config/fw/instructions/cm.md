@@ -1,6 +1,6 @@
 ## Memory: cass-memory (`cm`)
 
-Rules learned from earlier agent sessions on this machine, served by the MCP server `cass-memory`: global ones, and the repository's own in `.cass/playbook.yaml`. They are hints: the current code, AGENTS.md and the user win when they disagree. `.cass/playbook.yaml` is written by cass-memory: never edit it, commit its changes as they are.
+Rules learned from earlier agent sessions on this machine, served by the MCP server `cass-memory`. They are hints: the current code, AGENTS.md and the user win when they disagree.
 
 - Before non-trivial work, read the `# Context for:` block from cass-memory if the session has one; otherwise call `cm_context(task="<one line>", workspace="<absolute repository root>")`, or run `cm context "<task>" --json` in the repository.
 - When you act on a rule, name its id in your reply: "Following b-xxxx: ...". Only ids written in the conversation are graded.

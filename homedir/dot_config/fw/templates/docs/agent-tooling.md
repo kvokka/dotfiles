@@ -41,10 +41,6 @@ repository expects.
 4. `.pre-commit-config.yaml` + `scripts/hooks/agent-mail-guard`: the global
    git hook runs `prek`, which runs the reservation guard, `ubs`, `gitleaks`
    and formatters on every commit.
-5. `cm init --repo` creates `.cass/` (its `.gitignore` from the template):
-   cass-memory's rules for this repository, next to the global ones. Commit
-   `.cass/`; cass-memory's reflection adds rules to `.cass/playbook.yaml` in
-   the main checkout, and they are committed like any other change.
 
 The Agent Mail and cass-memory MCP servers need no per-repository step: they
 are registered at user scope for every agent client. Both run as pitchfork
