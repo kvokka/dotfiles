@@ -5,9 +5,9 @@ explicit instructions always take precedence over this file. Read
 `README.md` and `docs/agent-tooling.md` before changing anything.
 
 The agent tools of this machine (cross-session memory, session search,
-Agent Mail coordination, the Beads tracker, the bug scanner) bring their
-own instructions into the session when they are installed; follow them.
-This file only holds what belongs to the repository.
+Agent Mail coordination) bring their own instructions into the session
+when they are installed; follow them. This file holds what belongs to the
+repository, the Beads tracker included.
 
 ## Project commands
 
@@ -29,18 +29,46 @@ reporting the observed result.
   in the current session, including files you created yourself.
 - Never run `git reset --hard`, `git checkout -- .`, `git clean -fd`,
   `rm -rf`, force pushes or history rewrites unless the user gives the
-  exact command and states the consequences are intended. Guard hooks may
-  block these and other known-dangerous commands before they run; a
-  blocked command needs another approach, not a workaround.
+  exact command and states the consequences are intended. The repository's
+  guard hooks (dcg, from `.rulesync/`) block these and other known-dangerous
+  commands before they run; a blocked command needs another approach or
+  the user, not a workaround.
 - Prefer inspection first: `git status`, `git diff`, `git stash list`.
 - Do not bulk-edit code with ad-hoc scripts or giant `sed` runs; make
   small, reviewable changes and read the diff.
 
+## Work tracking: Beads (`br`) and triage (`bv`)
+
+`.beads/` is the single source of truth for task status, priority and
+dependencies, committed with the code. `br` never runs git.
+
+```bash
+br ready --brief --json                 # unblocked work, pick the highest priority
+br show <id> --json                     # details and dependencies
+br update <id> --status in_progress     # claim before editing
+br create "Title" --type task --priority 2 --description "..."
+br dep add <child> <parent>             # child is blocked by parent
+br close <id> --reason "What changed"   # after checks pass
+br sync --flush-only                    # export before every commit
+```
+
+Priorities: 0 critical to 4 backlog. Types: task, bug, feature, epic.
+Follow-up work becomes a new bead, not a markdown TODO. Commit messages
+carry the bead id (`fix(auth): ... (br-123)`), and `.beads/` is committed
+with the change.
+
+Triage with `bv --robot-triage` (full picture), `bv --robot-next` (single
+pick plus its claim command) or `bv --robot-plan` (parallel tracks); only
+`--robot-*` flags, bare `bv` opens a blocking TUI. Run
+`br sync --flush-only` first if the picture looks stale.
+
 ## Before every commit
 
 Run the project checks on what you changed and fix real findings at the
-root cause. The pre-commit hooks (`.pre-commit-config.yaml`) run on every
-commit; do not bypass them with `--no-verify`.
+root cause. The pre-commit hooks (`.pre-commit-config.yaml`: the Agent Mail
+reservation guard, the `ubs` bug scanner, `gitleaks`, formatters) run on
+every commit; fix what they report and do not bypass them with
+`--no-verify`.
 
 ## Landing the plane (ending a session)
 
