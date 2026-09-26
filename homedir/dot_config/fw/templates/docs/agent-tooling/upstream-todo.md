@@ -52,8 +52,10 @@ Pin: 1.35.1. Setup notes: [ntm.md](ntm.md). No upstream issue exists yet for any
 - **`--with-agent-name` needs `--assign`.** It prefixes only `--init-prompt`, which spawn sends only in the assignment phase (`internal/cli/spawn.go:3771`, `:3950`).
 - **`ntm web` without login only on loopback.** Auth mode `local` refuses any other bind address (`internal/serve/server.go:1137`), and in `api_key` mode the dashboard page and its websocket sit behind the same auth middleware, which a browser cannot satisfy. Hence the socat daemon `ntm-web-publish`.
   - When ntm accepts a trusted forwarder or a browser login: drop `ntm-web-publish` and bind `ntm web` to 0.0.0.0:7337.
-- **`ntm web` Beads and Mail need `project_dir`,** settable only through `PATCH /api/v1/config` and kept in memory (`internal/serve/server.go:2940`).
-  - When a flag or a project picker exists: set it in the `ntm-web` daemon, or drop the `curl` from [ntm.md](ntm.md).
+- **`ntm web` project pages need `project_dir`,** settable only through `PATCH /api/v1/config` and kept in memory (`internal/serve/server.go:2940`). The tmux hooks and `~/.config/fw/bin/ntm-web-project` set it to the focused session's repository.
+  - When a flag or a project picker exists: set a default in the `ntm-web` daemon; with a picker, drop the script and the hooks.
+- **`ntm web` Sessions and Agents pages are empty.** Fixed upstream after 1.35.1.
+  - Check: `/api/v1/sessions` lists live tmux sessions.
 - **A closed bead keeps its pane fenced.** `ntm assign` skips a pane whose assignment record is still active (`internal/cli/assign_placeability.go:147`), and only `--clear` or the completion detector of `ntm assign --watch` (`internal/cli/assign.go:6476`) ends the record; closing the bead in `br` does not. The worker prompt of the scout pipeline ends with `ntm assign <session> --clear <bead>`.
   - Check: whether `ntm assign` releases a pane whose bead is closed.
   - When fixed: drop the clear from `~/.config/ntm/pipelines/prompts/work.md` and step 4 in [ntm.md](ntm.md#scout--worker).
