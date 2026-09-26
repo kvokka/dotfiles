@@ -10,8 +10,9 @@
     "codexcli": ["mcp", "hooks"],
     "antigravity-cli": ["mcp", "hooks"],
     // No hooks: rulesync's OpenCode plugin runs a hook command with no stdin
-    // and ignores its result, so dcg would fail open. OpenCode keeps dcg's own
-    // plugin (~/.config/opencode/plugins/dcg-guard.js).
+    // and ignores its result, so a guard would fail open. OpenCode gets the
+    // instruction blocks from `instructions` and the cm context from its own
+    // plugin (~/.config/opencode/plugins/cass-memory.js).
     "opencode": ["mcp"],
   },
 }

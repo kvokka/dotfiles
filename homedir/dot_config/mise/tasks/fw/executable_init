@@ -5,8 +5,9 @@
 #USAGE arg "[path]" help="Repository path; defaults to the current directory"
 #
 # Adds only what is missing: git repository, files from ~/.config/fw/templates,
-# .beads/. Existing files are never modified; merge them by hand when the task
-# prints "keep:". Nothing is committed and no global config is touched.
+# the repository hooks of the agents (dcg), .beads/. Existing files are never
+# modified; merge them by hand when the task prints "keep:". Nothing is
+# committed and no global config is touched.
 
 set -euo pipefail
 
@@ -62,14 +63,31 @@ while IFS= read -r -d '' src; do
   added+=("$rel")
 done < <(find "$templates" -type f -print0 | sort -z)
 
-# 3. Beads workspace.
+# 3. Repository hooks (dcg) from .rulesync/. rulesync replaces the whole hook
+#    list of each file it writes, so it runs only while none of them exists.
+hook_files=(.claude/settings.json .codex/hooks.json .agents/hooks.json)
+present=()
+for f in "${hook_files[@]}"; do
+  [[ -e "$f" ]] && present+=("$f")
+done
+if (( ${#present[@]} )); then
+  printf 'keep: %s (rulesync generate replaces their hook lists with .rulesync/hooks.jsonc; merge by hand)\n' "${present[*]}"
+else
+  rulesync generate --silent
+  for f in "${hook_files[@]}"; do
+    printf 'add:  %s\n' "$f"
+  done
+  added+=("${hook_files[@]}")
+fi
+
+# 4. Beads workspace.
 if [[ -d .beads ]]; then
   printf 'keep: .beads/\n'
 else
   br init
 fi
 
-# 4. Pre-commit guard: nothing to install, the global git hook runs prek with
+# 5. Pre-commit guard: nothing to install, the global git hook runs prek with
 #    the repository's .pre-commit-config.yaml. Verify that this is still true.
 hooks_path="$(git config --get core.hooksPath || true)"
 if [[ -z "$hooks_path" ]]; then
@@ -78,7 +96,7 @@ if [[ -z "$hooks_path" ]]; then
   exit 1
 fi
 
-# 5. Report.
+# 6. Report.
 printf '\nfw:init done in %s\n' "$target"
 if (( ${#added[@]} )); then
   printf 'Review and commit the added files:\n'
@@ -87,4 +105,5 @@ fi
 printf 'Next steps:\n'
 printf '  1. Fill in "Project commands" in AGENTS.md.\n'
 printf '  2. Make sure the Agent Mail service is running (pitchfork status agent-mail), then: ntm spawn %q --cc=2 --cod=1\n' "$name"
-printf 'The MCP servers (mcp-agent-mail, cass-memory) and the agent instructions of the tools are global (mise run ai:sync); nothing to register here.\n'
+printf 'The MCP servers (mcp-agent-mail, cass-memory) and the instructions of cm, cass and Agent Mail are global (mise run ai:sync); nothing to register here.\n'
+printf 'Codex runs the repository hooks only in a trusted project, after they are approved once in Codex.\n'

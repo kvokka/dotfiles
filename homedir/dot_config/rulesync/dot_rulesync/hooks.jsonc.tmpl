@@ -4,24 +4,26 @@
 {
   "version": 1,
   "hooks": {
-    // Shell tool: `Bash` in Claude Code and Codex, `run_command` in agy.
     // trauma_guard.py is cass-memory's own guard (`cm guard --install`, copied
     // by fw:bootstrap): it blocks the patterns the owner registered after real
-    // damage (`cm trauma add`). Only `Bash`: it answers nothing to agy's input,
-    // and agy takes a silent PreToolUse hook as a deny.
+    // damage (`cm trauma add`). Only `Bash`: it answers nothing to agy's input
+    // (`run_command`), and agy takes a silent PreToolUse hook as a deny. dcg is
+    // no user-scope hook: it guards only the repositories fw:init prepared,
+    // through their own hooks, so a chat session runs what the user asks for.
     "preToolUse": [
-      { "matcher": "Bash|run_command", "command": "{{ .chezmoi.homeDir }}/.local/share/mise/shims/dcg", "timeout": 10 },
       { "matcher": "Bash", "command": "{{ .chezmoi.homeDir }}/.claude/hooks/trauma_guard.py", "timeout": 10 },
     ],
-    // Instruction blocks of the local tools, then Agent Mail state. SessionStart
-    // also fires after compaction, so the blocks come back. Claude Code and
-    // Codex show the model plain stdout only from SessionStart and
-    // UserPromptSubmit, and from PostToolUse only a JSON `additionalContext`;
-    // am-hook prints the one each event needs. agy has neither SessionStart
-    // nor UserPromptSubmit.
+    // Instruction blocks of the tools every session uses, then Agent Mail
+    // state. Beads is a repository's own (its AGENTS.md from fw:init), and ubs
+    // runs in the repository's pre-commit hook, so neither has a block here.
+    // SessionStart also fires after compaction, so the blocks come back.
+    // Claude Code and Codex show the model plain stdout only from SessionStart
+    // and UserPromptSubmit, and from PostToolUse only a JSON
+    // `additionalContext`; am-hook prints the one each event needs. agy has
+    // neither SessionStart nor UserPromptSubmit.
     {{- $i := printf "%s/.config/fw/instructions" .chezmoi.homeDir }}
     "sessionStart": [
-      { "command": "cat {{ $i }}/cm.md {{ $i }}/cass.md {{ $i }}/agent-mail.md {{ $i }}/beads.md {{ $i }}/ubs.md", "timeout": 10 },
+      { "command": "cat {{ $i }}/cm.md {{ $i }}/cass.md {{ $i }}/agent-mail.md", "timeout": 10 },
       { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-hook session", "timeout": 10 },
     ],
     // cass-memory rules for the task, once, on the first prompt of a session.

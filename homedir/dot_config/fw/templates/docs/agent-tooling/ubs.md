@@ -6,7 +6,7 @@ How the Ultimate Bug Scanner works on this machine and which parts of its behavi
 
 - **Pin:** `ubs` 5.4.9 in `~/.config/mise/config.fw.toml`.
 - **Language modules:** the first run downloads them from the release tag into `~/.local/share/ubs/modules`. In a fresh container, the first scan takes a few minutes.
-- **Gate:** the `ubs` hook of the repository's `.pre-commit-config.yaml` runs `env UBS_ALLOW_NO_SCAN=1 UBS_SKIP_RUST_BUILD=1 ubs --ci` on the staged files. Agents run `ubs <changed files>` themselves before committing (instruction block `~/.config/fw/instructions/ubs.md`).
+- **Gate:** the `ubs` hook of the repository's `.pre-commit-config.yaml` runs `env UBS_ALLOW_NO_SCAN=1 UBS_SKIP_RUST_BUILD=1 ubs --ci` on the staged files. It is the only gate: agents get no ubs instructions and fix what the hook reports; `ubs <files>` reproduces a finding.
 - **Exit codes:**
   - 0: clean.
   - 1: at least one critical finding. Warnings do not fail the run without `--fail-on-warning`.

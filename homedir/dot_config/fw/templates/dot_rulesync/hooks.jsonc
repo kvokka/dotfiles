@@ -1,0 +1,12 @@
+// Source of the repository hooks; `rulesync generate` writes them into each
+// client's project files (see rulesync.jsonc).
+{
+  "version": 1,
+  "hooks": {
+    // dcg (Destructive Command Guard) checks every shell command before it
+    // runs: `Bash` in Claude Code and Codex, `run_command` in agy.
+    "preToolUse": [
+      { "matcher": "Bash|run_command", "command": "dcg", "timeout": 10 },
+    ],
+  },
+}

@@ -1,0 +1,3 @@
+# dcg guards only the repositories fw:init prepares, through their own
+# .opencode/plugins/dcg-guard.js, not every OpenCode session.
+.config/opencode/plugins/dcg-guard.js
