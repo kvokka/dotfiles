@@ -2,24 +2,27 @@
 #MISE description="Daily cass job: full index + semantic backfill (run by the cass-nightly daemon)"
 #
 # Runs upstream's nightly job (`cass schedule run --job nightly`, what its
-# systemd timer would call) and fails when any step did not succeed.
-# `cass schedule run` itself reports ok for a skipped step: a busy index lock
-# skips the whole day, and an unusable semantic model is reported as a skipped
-# backfill with exit 20. Only a failed run shows up in `pitchfork status`.
+# systemd timer would call) and fails when any step did not succeed. The steps
+# in its JSON decide, not its exit code: a busy index lock (the 5-minute
+# cass-index starts at the same minute) is a step with exit 7 in a run that
+# exits non-zero, and is retried; an unusable semantic model is a skipped
+# backfill step with exit 20. Only a failed run shows up in `pitchfork status`.
 
-set -euo pipefail
+set -uo pipefail
 
 for attempt in 1 2 3 4 5 6 7 8 9 10; do
   # --force: skip the load gate, so the job cannot silently skip a busy day.
   out="$(cass schedule run --job nightly --force --json)"
-  jq -c '{ok, steps: [.steps[] | {name, exit_code, skipped_reason, duration_ms}]}' <<<"$out"
-  # exit 7: another index run (the 5-minute cass-index) holds the lock.
+  if ! jq -c '{ok, steps: [.steps[] | {name, exit_code, skipped_reason, duration_ms}]}' <<<"$out"; then
+    printf 'cass schedule run printed no JSON:\n%s\n' "$out" >&2
+    exit 1
+  fi
   if jq -e 'any(.steps[]; .exit_code == 7)' <<<"$out" >/dev/null; then
     printf 'index lock busy (attempt %s), retrying in 60s\n' "$attempt" >&2
     sleep 60
     continue
   fi
-  if ! jq -e 'all(.steps[]; (.exit_code // 0) == 0)' <<<"$out" >/dev/null; then
+  if ! jq -e '.ok and all(.steps[]; (.exit_code // 0) == 0)' <<<"$out" >/dev/null; then
     jq -r '.steps[] | select((.exit_code // 0) != 0) | "FAILED \(.name): exit \(.exit_code) \(.skipped_reason // "") \(.stderr_tail // "")"' <<<"$out" >&2
     exit 1
   fi

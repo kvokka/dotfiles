@@ -29,8 +29,7 @@ BV_NO_UPDATE_CHECK = "1"
 # not the default English one: on Russian paraphrase queries over our own
 # sessions it put the right session in the top 5 for 11 of 16 queries, against
 # 4 of 16. It is also the only way cass finds Russian text: its lexical index
-# keeps only ASCII and CJK words (up to at least 0.9.0). cass 0.9.0 embeds with
-# it on ARM64 (upstream #467).
+# keeps only ASCII and CJK words.
 CASS_SEMANTIC_EMBEDDER = "multilingual-minilm"
 # Agent Mail archive location. Both the service and `am guard check` (the
 # pre-commit guard) resolve it from the environment, so it has to be exported
@@ -70,19 +69,13 @@ STORAGE_ROOT = "{{ env.HOME }}/proj/share/agent-mail/git_mailbox_repo"
 # server to the compose network.
 # "npm:mcp-proxy" = "latest"
 
-# cm (cass-memory) is built from a source tarball: upstream publishes no
-# linux-arm64 binary. Pinned to a main commit, not v0.2.14: main fixes reflect
-# ingesting cm's own LLM calls (#76), silent cass timeouts on a large archive
-# (#78), zero reflection counters (#72), ignored config.yaml (#75), the guard's
-# hard-coded store (#82), `audit --trauma` blind to executed commands (#83), and
-# the random reflect batch and empty-session diary calls (#85). Back to a tag
-# once 0.2.15 is released. The `http:` backend, because `github:` insists on a
-# release for its SLSA check. Still open upstream: project-scoped learning (#81)
-# and re-reflecting a session that grew (#85).
+# cm (cass-memory) is built from the source tarball of a main commit: upstream
+# publishes no linux-arm64 binary. The `http:` backend, because `github:`
+# insists on a release for its SLSA check.
 # A failed postinstall leaves the directory registered as installed; repair with
 # `mise install --force "http:cass-memory"`.
 [tools."http:cass-memory"]
-version = "3e4c814534d19fc0cfed9f3fee4f872b11b567b2"
+version = "7423ed5be958d11459171657167dd999ad8e9fdb"
 depends = ["bun"]
 strip_components = 1
 bin_path = "bin"
@@ -144,7 +137,7 @@ auto = ["start"]
 # same incremental pass (seconds, ~2 GB RSS while it runs). Not `index --watch`:
 # it holds those ~2 GB for good. On a fresh VM the first run builds the whole
 # index. A changed schedule needs `mise daemons restart cass-index`.
-# --semantic embeds the new sessions too (~6 s a pass on 0.9.0): without it the
+# --semantic embeds the new sessions too (~6 s a pass): without it the
 # nightly vectors no longer match the database after the first new session,
 # and cass turns semantic search off until the next night.
 [daemons.cass-index]
@@ -166,9 +159,10 @@ cron = { schedule = "0 5 10 * * *", retrigger = "finish" }
 # Daily at 12:00: cass-memory's own reflection, the cron job its README
 # suggests. cm picks the oldest unprocessed sessions of the lookback window
 # (config.yaml) and learns rules through pi (`cm-llm`, key from fnox); 50 a day
-# instead of the default 5 drains the backlog. A session still running at noon
-# is reflected as it stands and never again (upstream #85, open). From $HOME:
-# only the global store is used, never a repository's .cass/.
+# instead of the default 5 drains the backlog. A session that grew after its
+# reflection is reflected again for the new part. Project rules go to the
+# repository's .cass/ (config.yaml). cm saves the batch only at its end, so
+# stopping a run loses all of it.
 [daemons.cm-reflect]
 run = "exec fnox exec -- cm reflect --max-sessions 50 --json"
 dir = "~"
