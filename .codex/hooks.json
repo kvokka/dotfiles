@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dcg",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
