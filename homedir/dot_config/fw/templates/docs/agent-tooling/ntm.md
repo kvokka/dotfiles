@@ -22,6 +22,25 @@ How ntm (Named Tmux Manager) runs an agent swarm on this machine and which parts
   The status bar names the current tier; nothing else forces one. The F12 popup is 95% of the client, so the sidebar needs about 253 client columns: open the dashboard in its own tmux window, full screen, with a smaller font. The Cost panel works without extra tools (an estimate; `NTM_DASH_BUDGET_DAILY_USD` adds a budget).
 - **Web:** the pitchfork daemons `ntm-web` (`ntm web` on 127.0.0.1:7338) and `ntm-web-publish` (socat on 7337) serve the web dashboard at <http://localhost:7337> from the macOS host, with no login. Navigation: Sessions, Agents, Beads, Mail, Memory; unlinked pages: `/accounts`, `/analytics`, `/pipelines`, `/safety`, `/scanner`. Beads and Mail show one project, which is set through the API (below).
 
+## Scout → worker
+
+A Codex scout on gpt-6-luna (high effort) explores a bead and writes a brief; a coding pane then starts on the brief instead of exploring on its own. The recipe `scout` and the operator rules are in `~/.config/ntm/recipes.toml`, the pipeline in `~/.config/ntm/pipelines/scout-work.yaml`, its prompts beside it in `prompts/explore.md` and `prompts/work.md`.
+
+- **Spawn:** the coding session as usual (`agents`), then, in the repository, the scout session: `scouts`, which runs `ntm spawn <repo> --label scout -r scout --no-recovery`. It is the tmux session `<repo>--scout`, with the same project directory and Agent Mail project.
+- **A bead:** `scout <bead> [claude|codex]` in the repository runs `ntm pipeline run ~/.config/ntm/pipelines/scout-work.yaml --session <repo>--scout --var bead=<bead> --var agent=<type>`:
+  1. `explore`: the scout reads the bead, its dependencies, AGENTS.md and the code, and writes `.ntm/briefs/<bead>.md` (Goal, Already done, Plan, Files as `path:start-end` with excerpts, Constraints, Open questions). It edits nothing else.
+  2. `record`: the brief becomes a comment on the bead.
+  3. `handoff`: `ntm assign <repo> --beads=<bead> --auto` claims the bead and sends an idle pane of the coding session `work.md` followed by the brief. The worker reserves its files in Agent Mail: ntm's own reservation takes paths from the bead title only and refuses the dispatch when there are none (`--reserve-files=false`).
+  4. The worker closes the bead and runs `ntm assign <repo> --clear <bead>`: ntm keeps a pane fenced by its assignment after the bead closes, and only a clear or the completion detector of `ntm assign --watch` frees it.
+- **Rules:** never `ntm add` to the scout session, since an added pane starts on ntm's Codex default model; spawn another labelled session with the recipe instead. Never run `ntm coordinator run` or `ntm assign` on it: they hand beads to the scouts as coding work. `--no-recovery` keeps ntm's first prompt, which asks a new pane to continue the repository's in-progress beads, away from the scout.
+- **Limits:**
+  - The scout is done when ntm's idle heuristic says so. A scout that stops early (a question, a stall) ends `explore`, and `record` fails for the missing brief; one still busy after 30 minutes fails the run. Either way no pane gets the bead.
+  - One bead at a time per scout pane: a second run waits up to 2 minutes for the pane's lock, then fails without sending anything. Run beads one after another, or spawn more scout sessions (`--label scout2`) and pass `--session <repo>--scout2` to `ntm pipeline run`; `scout` targets `<repo>--scout` only.
+  - `handoff` succeeds even when no pane of the coding session is free (all busy or still fenced): nothing is assigned, the bead stays open with the brief as its comment, and `ntm assign <repo> --beads=<bead> --auto --reserve-files=false --template=custom --template-file=.ntm/briefs/<bead>.prompt` hands it over later. `ntm assign --watch` on the coding session would free fenced panes, but it also hands every ready bead to idle panes, unscouted.
+  - The brief's size (about 150 lines, excerpts of at most 10) is a request in the prompt, not a limit; the whole brief is pasted into the worker's pane.
+  - Both panes keep their conversation from bead to bead: the scout's context grows and older beads can leak into a brief, and the worker gets the brief on top of its previous work. `ntm respawn <repo>--scout` gives the scout a fresh context.
+  - Model and effort are fixed per pane at spawn: the scout pane is titled `cod_N_gpt-6-luna@high`, and a respawn reads them back from the title. The worker runs whatever its coding pane runs.
+
 ## Quirks
 
 - **The web dashboard works without login only through the forwarder.** ntm serves in auth mode `local` only on a loopback address; any other address needs an API key, and then the dashboard page and its websocket answer 401 in a browser. So ntm binds 127.0.0.1:7338, socat listens on 7337 on every interface, and the compose file publishes 7337: whoever reaches it can type into the agents' panes. The dashboard calls the API at `http://localhost:7337`, and ntm accepts only localhost origins, so open it as `localhost`, not through the OrbStack domain.

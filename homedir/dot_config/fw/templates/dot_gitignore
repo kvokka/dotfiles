@@ -15,3 +15,7 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+
+# ntm runtime state, logs and scout briefs (.ntm/briefs/). `.ntm/*` rather than
+# `.ntm/`, so a repository can still commit its ntm config: `!.ntm/config.toml`.
+.ntm/*

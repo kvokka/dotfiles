@@ -1,0 +1,24 @@
+# Scout panes: Codex pinned to gpt-6-luna at high effort, whatever
+# ~/.codex/config.toml and ntm's codex default (gpt-6-astra, xhigh) say.
+# `ntm spawn` titles the pane cod_N_gpt-6-luna@high, and a respawn reads the
+# model and effort back from that title.
+# Spawn scouts in their own labelled session, `ntm spawn <repo> --label scout
+# -r scout --no-recovery`: ntm assign, spawn --assign, the coordinator and the
+# controller only look at the session they are given, so the coding session
+# never hands a bead to a scout. Without --no-recovery ntm's first prompt asks
+# the scout to continue the repository's in-progress beads. Two rules for the
+# scout session:
+# - Never `ntm add` to it: an added pane starts on ntm's codex default model.
+#   Spawn another labelled session with this recipe instead.
+# - Never run `ntm coordinator run` or `ntm assign` on it: they hand beads to
+#   the scouts as coding work.
+# The pipeline that drives them: ~/.config/ntm/pipelines/scout-work.yaml.
+[[recipes]]
+name = "scout"
+description = "One Codex scout on gpt-6-luna (high): explores beads, writes briefs"
+
+[[recipes.agents]]
+type = "cod"
+count = 1
+model = "gpt-6-luna"
+reasoning_effort = "high"
