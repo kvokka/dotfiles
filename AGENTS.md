@@ -6,7 +6,8 @@
 - `.chezmoiroot` sets the chezmoi source root to `homedir`; edit managed source files there, not rendered files under `$HOME`.
 - There are no repo package manifests or task-runner files discovered (`package.json`, `pyproject.toml`, `go.mod`, `Makefile`, `justfile`, `Taskfile`). Do not invent npm/pytest/go test commands.
 - Some high-value tracked paths can be absent from this sparse checkout; verify missing tracked files with `git show HEAD:<path>` before concluding they do not exist.
-- `origin` is `kvokka/dotfiles`; `kvokka-agent` pushes feature branches there as a collaborator and opens pull requests against `master`. A ruleset refuses deleting or rewriting `master`.
+- `origin` is `kvokka/dotfiles`; `kvokka-agent` pushes feature branches there as a collaborator and opens pull requests against `master`. A ruleset refuses deleting or rewriting `master`, and dcg refuses a force push.
+- The repository's own agent hooks (dcg) are the `fw:init` template's, at the repository root outside the chezmoi source root: `rulesync.jsonc` and `.rulesync/hooks.jsonc`, generated with `rulesync generate` into `.claude/settings.json`, `.codex/hooks.json` and `.agents/hooks.json`; `.opencode/plugins/dcg-guard.js` and `opencode.json` for OpenCode. Change the source and regenerate, never the generated files; keep them in step with `homedir/dot_config/fw/templates/`.
 
 ## Setup And CI
 

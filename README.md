@@ -58,8 +58,9 @@ export SUDO_PASSWORD="your_password_here"
 the install command above against it. Host and container share one checkout:
 edit it on either side, run `chezmoi apply` on the side that should pick the
 change up. Both sides push to the upstream repository: the container as the
-`kvokka-agent` collaborator, whose rewrite or deletion of `master` the
-repository ruleset refuses.
+`kvokka-agent` collaborator, whose force pushes the repository's dcg hooks
+refuse and whose rewrite or deletion of `master` the repository ruleset
+refuses.
 
 `chezmoi apply` reflects the branch checked out in `~/.dotfiles` on both sides:
 keep `master` checked out there and put feature branches in `git worktree`s.
