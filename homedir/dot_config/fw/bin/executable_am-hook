@@ -15,19 +15,31 @@
 #
 # The agent is AGENT_NAME, else AGENT_MAIL_AGENT (the names am itself reads),
 # else the Agent Mail identity of the current tmux pane: ntm registers every
-# pane it spawns and sets no variable. Without an agent, outside a git
-# repository, or when Agent Mail does not know the project or the agent, the
-# hook prints nothing. A hook must never break a session, so it always exits 0.
+# pane it spawns and sets no variable. Both clients fire tool hooks inside a
+# subagent too, with `agent_id` in the input and the parent's environment; there
+# the agent is the subagent's own identity from am-subagent (name and project
+# from its state), or none, so the parent's reminders never land in a subagent.
+# Without an agent, outside a git repository, or when Agent Mail does not know
+# the project or the agent, the hook prints nothing. A hook must never break a
+# session, so it always exits 0.
 
 set -uo pipefail
 
 input="$(cat)"
-cwd="$(jq -r '.cwd // empty' <<<"$input" 2>/dev/null)"
-project="$(git -C "${cwd:-$PWD}" rev-parse --show-toplevel 2>/dev/null)" || exit 0
-
-agent="${AGENT_NAME:-${AGENT_MAIL_AGENT:-}}"
-if [[ -z "$agent" && -n "${TMUX_PANE:-}" ]]; then
-  agent="$(am agents resolve-pane --project "$project" --json 2>/dev/null | jq -r '.agent_name // empty')"
+subagent="$(jq -r '.agent_id // empty' <<<"$input" 2>/dev/null)"
+if [[ -n "$subagent" ]]; then
+  state="$HOME/.cache/fw/am-subagents/$subagent"
+  [[ "$subagent" =~ ^[A-Za-z0-9_-]+$ && -s "$state" ]] || exit 0
+  agent="$(jq -r '.name // empty' "$state" 2>/dev/null)"
+  project="$(jq -r '.project // empty' "$state" 2>/dev/null)"
+  [[ -n "$project" ]] || exit 0
+else
+  cwd="$(jq -r '.cwd // empty' <<<"$input" 2>/dev/null)"
+  project="$(git -C "${cwd:-$PWD}" rev-parse --show-toplevel 2>/dev/null)" || exit 0
+  agent="${AGENT_NAME:-${AGENT_MAIL_AGENT:-}}"
+  if [[ -z "$agent" && -n "${TMUX_PANE:-}" ]]; then
+    agent="$(am agents resolve-pane --project "$project" --json 2>/dev/null | jq -r '.agent_name // empty')"
+  fi
 fi
 [[ -n "$agent" ]] || exit 0
 

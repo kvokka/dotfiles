@@ -4,11 +4,15 @@
 #
 # `am guard check` reads the reservations from the Agent Mail archive
 # (STORAGE_ROOT, exported by the fw mise config) and skips the committer's own.
-# The committer is AGENT_NAME, else AGENT_MAIL_AGENT, else the Agent Mail
-# identity of the current tmux pane (ntm registers every pane it spawns). am
-# refuses to check without a name, so anyone else commits as human:<user>: a
-# person in a plain shell, or an agent outside ntm that did not set AGENT_NAME
-# (its own exclusive reservations then block it too).
+# The committer is AGENT_NAME, else AGENT_MAIL_AGENT, else the identity
+# am-subagent gave a Codex subagent (its shell carries its thread id as
+# CODEX_THREAD_ID, the key of that identity), else the Agent Mail identity of
+# the current tmux pane (ntm registers every pane it spawns). A Claude Code
+# subagent has no such variable and commits with the AGENT_NAME its start
+# context names; without it, it commits as its parent, and its own exclusive
+# reservations block it. am refuses to check without a name, so anyone else
+# commits as human:<user>: a person in a plain shell, or an agent outside ntm
+# that did not set AGENT_NAME (its own exclusive reservations then block it too).
 #
 # Environment:
 #   AGENT_NAME             the committer's Agent Mail name
@@ -19,6 +23,10 @@ set -euo pipefail
 repo="$(git rev-parse --show-toplevel)"
 
 export AGENT_NAME="${AGENT_NAME:-${AGENT_MAIL_AGENT:-}}"
+subagent_state="$HOME/.cache/fw/am-subagents/${CODEX_THREAD_ID:-}"
+if [[ -z "$AGENT_NAME" && "${CODEX_THREAD_ID:-}" =~ ^[A-Za-z0-9_-]+$ && -s "$subagent_state" ]]; then
+  AGENT_NAME="$(jq -r '.name // empty' "$subagent_state" 2>/dev/null)" || AGENT_NAME=''
+fi
 if [[ -z "$AGENT_NAME" ]] &&
   ! { [[ -n "${TMUX_PANE:-}" ]] && am agents resolve-pane --project "$repo" >/dev/null 2>&1; }; then
   AGENT_NAME="human:$(id -un)"
