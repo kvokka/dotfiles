@@ -136,8 +136,7 @@ auto = ["start"]
 # in a browser. So ntm listens on 127.0.0.1:7338, and ntm-web-publish forwards
 # the published port 7337 to it: the dashboard keeps its default API address
 # (http://localhost:7337) and passes ntm's localhost origin check. Whoever
-# reaches 7337 drives the agents' panes, so the compose file publishes it on
-# the host's loopback only (the compose network shares this home anyway).
+# reaches 7337 drives the agents' panes, with no login.
 # From $HOME: ntm registers its working directory as an Agent Mail project.
 [daemons.ntm-web]
 run = "exec ntm web --port 7338"

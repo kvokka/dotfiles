@@ -108,7 +108,9 @@ check "ntm deps" ntm deps
 check "ntm config valid" ntm config validate
 check "pitchfork: ntm-web running" bash -c "pitchfork status ntm-web | grep -q running"
 check "pitchfork: ntm-web-publish running" bash -c "pitchfork status ntm-web-publish | grep -q running"
-check "ntm web /health through the published port 7337" curl -fsS http://127.0.0.1:7337/health
+# The container's own address, not loopback: the published port reaches socat there.
+check "ntm web /health through the published port 7337" bash -c \
+  'curl -fsS "http://$(hostname -I | cut -d " " -f1):7337/health"'
 
 if (( failed )); then
   printf '\nSome checks failed. Services: pitchfork start agent-mail cm sbh ntm-web ntm-web-publish; services setup: mise run fw:bootstrap\n' >&2
