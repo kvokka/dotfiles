@@ -47,9 +47,9 @@ State as of 2026-09-26. The pin is cass 0.9.0, set in `~/.config/mise/config.fw.
 
 ## Gotchas
 
-- **Keep the `fw:cass-nightly` wrapper.** `cass schedule run` reports `ok: true` in two failure cases, and the wrapper turns them into failures:
-  - a day skipped because the index lock was busy (exit 7);
-  - a failed semantic backfill (exit 20).
+- **Keep the `fw:cass-nightly` wrapper.** It decides from the steps in the JSON, not from the exit code of `cass schedule run`:
+  - A busy index lock is a step with exit 7, and the whole run exits 9. The 5-minute `cass-index` starts at the same minute as the nightly, so the wrapper retries every 60 s.
+  - A failed semantic backfill is a skipped step with exit 20, which `cass schedule run` reports as `ok: true`.
 - **pitchfork cron:**
   - Schedules have 6 fields with seconds first, in local time.
   - A daemon's schedule is armed only after its first start.
