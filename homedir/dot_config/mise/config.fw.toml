@@ -130,6 +130,29 @@ run = "exec sbh daemon"
 retry = true
 auto = ["start"]
 
+# ntm's web dashboard and REST API for the host browser: http://localhost:7337.
+# ntm serves without login only on loopback (auth mode `local`); on any other
+# address it demands an API key, and then even the dashboard page answers 401
+# in a browser. So ntm listens on 127.0.0.1:7338, and ntm-web-publish forwards
+# the published port 7337 to it: the dashboard keeps its default API address
+# (http://localhost:7337) and passes ntm's localhost origin check. Whoever
+# reaches 7337 drives the agents' panes, so the compose file publishes it on
+# the host's loopback only (the compose network shares this home anyway).
+# From $HOME: ntm registers its working directory as an Agent Mail project.
+[daemons.ntm-web]
+run = "exec ntm web --port 7338"
+dir = "~"
+ready_http = "http://127.0.0.1:7338/health"
+health_http = { url = "http://127.0.0.1:7338/health", interval = "30s", timeout = "5s", retries = 3 }
+retry = true
+auto = ["start"]
+
+[daemons.ntm-web-publish]
+run = "exec socat TCP-LISTEN:7337,fork,reuseaddr TCP:127.0.0.1:7338"
+ready_port = 7337
+retry = true
+auto = ["start"]
+
 # cass reads the agents' session files only when `cass index` runs; left alone
 # it catches up only after a search finds the index 30 min stale, and answers
 # that search from the old index. Upstream keeps it fresh with systemd timers
@@ -172,7 +195,7 @@ description = "One-time setup of the flywheel services (idempotent)"
 # Daemons are not started here: services auto-start with the first activated
 # shell, cron daemons run on their schedules, and `mise daemons start` needs a
 # project config in cwd. Manual start of the services after that first shell:
-# `pitchfork start agent-mail cm sbh`.
+# `pitchfork start agent-mail cm sbh ntm-web ntm-web-publish`.
 # The default data dirs of cass and cass-memory become links into ~/proj/share
 # (see [env]); a default dir holding anything but empty directories stops the
 # bootstrap, its content is the owner's to move. The cass-memory config is the

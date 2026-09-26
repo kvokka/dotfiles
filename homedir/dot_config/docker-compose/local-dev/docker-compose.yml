@@ -49,6 +49,7 @@ services:
       - "5173:5173"
       - "4096:4096"
       - "8765:8765" # fw agent-mail
+      - "127.0.0.1:7337:7337" # fw ntm web; it drives the agents, so host loopback only
       - "2222:22" # compatibility with ssh-agent forwarding
     # # Use this block for mitmproxy, #mitmproxy
     # environment:
