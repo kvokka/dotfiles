@@ -1,0 +1,14 @@
+// Repository hooks of the coding agents. `rulesync generate` writes
+// .rulesync/hooks.jsonc into .claude/settings.json, .codex/hooks.json and
+// .agents/hooks.json (agy); commit the source and the generated files together.
+// rulesync replaces the whole hook list of each file, so every repository hook
+// of these clients is listed in .rulesync/hooks.jsonc. OpenCode has no entry:
+// its guard is the plugin in .opencode/plugins/.
+{
+  "$schema": "https://github.com/dyoshikawa/rulesync/releases/latest/download/config-schema.json",
+  "targets": {
+    "claudecode": ["hooks"],
+    "codexcli": ["hooks"],
+    "antigravity-cli": ["hooks"],
+  },
+}

@@ -14,9 +14,9 @@ repository expects.
 | `br` | Beads (Rust): local dependency-aware issue tracker in `.beads/` (SQLite + committed `issues.jsonl`) | Single source of truth for what to do next; travels with the code | `br ready --brief --json`, `br update <id> --status in_progress`, `br close <id>`, `br sync --flush-only` |
 | `bv` | Beads viewer: graph-aware triage (PageRank, critical path, parallel tracks) | Deterministic answer to "what unlocks the most work" | Only `bv --robot-triage`, `bv --robot-next`, `bv --robot-plan`; bare `bv` is a blocking TUI |
 | `am` / `mcp-agent-mail` | MCP Agent Mail: HTTP MCP server (`http://127.0.0.1:8765/mcp/`) with agent identities, threaded messages and advisory file reservations | Coordination bus between agents; prevents two agents editing the same files | MCP tools `ensure_project`, `register_agent`, `file_reservation_paths`, `send_message`, `fetch_inbox`; the pre-commit guard enforces reservations |
-| `dcg` | Destructive Command Guard: hook that blocks `rm -rf`, `git reset --hard`, `git clean -fd` and similar before they run | Safety net for autonomous agents; registered in every agent's hook config | Transparent; a blocked command is reported back to the agent |
-| `cc-safety-net` | OpenCode plugin with the same role as `dcg`; blocks `git push -f` / `--force` | Same safety net inside OpenCode | Transparent |
-| `ubs` | Ultimate Bug Scanner: multi-language pattern scanner tuned for generated code | Quality gate before every commit (pre-commit hook, findings fail the commit) | `ubs <changed files>` (exit 0 = clean) |
+| `dcg` | Destructive Command Guard: hook that blocks `rm -rf`, `git reset --hard`, `git clean -fd` and similar before they run | Safety net for autonomous agents in this repository; a repository hook of each agent (`.rulesync/`, `.opencode/plugins/dcg-guard.js`), not a machine-wide one, so a chat session outside such a repository runs what the user asks for | Transparent; a blocked command is reported back to the agent |
+| `cc-safety-net` | OpenCode plugin with the same role as `dcg`; blocks `git push -f` / `--force` | Same safety net inside OpenCode; loaded by this repository's `opencode.json` | Transparent |
+| `ubs` | Ultimate Bug Scanner: multi-language pattern scanner tuned for generated code | Quality gate before every commit (pre-commit hook, findings fail the commit) | Runs in the pre-commit hook; agents fix its findings, `ubs <files>` reproduces them (exit 0 = clean) |
 | `toon` | Token-Optimized Notation encoder | Compact `--format toon` output of `ubs`, `bv`, `br` for agents | Optional output format, e.g. `bv --robot-triage --format toon` |
 | `typos` | Source-code spell checker | Cheap hygiene check on prose and identifiers | `typos` on changed files |
 | `cass` | Coding Agent Session Search: indexes past agent sessions of all CLIs (re-indexed every 5 minutes, fully once a day) | Reuse solved problems instead of re-solving them | `cass search "<query>" --robot --limit 5`; never bare `cass`; setup status and pending upstream fixes: `docs/update_notes/cass.md` |
@@ -41,6 +41,13 @@ repository expects.
 4. `.pre-commit-config.yaml` + `scripts/hooks/agent-mail-guard`: the global
    git hook runs `prek`, which runs the reservation guard, `ubs`, `gitleaks`
    and formatters on every commit.
+5. The `dcg` guard: `rulesync.jsonc` and `.rulesync/hooks.jsonc`, from which
+   `rulesync generate` writes `.claude/settings.json`, `.codex/hooks.json` and
+   `.agents/hooks.json` (agy); `.opencode/plugins/dcg-guard.js` and
+   `opencode.json` (`cc-safety-net`) for OpenCode. Commit them all. rulesync
+   replaces the whole hook list of each file it writes, so the task generates
+   only while none of them exists; add further hooks to `.rulesync/hooks.jsonc`.
+   Codex runs them only in a trusted project, after they are approved once.
 
 The Agent Mail and cass-memory MCP servers need no per-repository step: they
 are registered at user scope for every agent client. Both run as pitchfork
@@ -48,11 +55,13 @@ daemons (`pitchfork status agent-mail cm`); start them before launching agents.
 
 ## Instructions for agents
 
-The instructions for these tools are not in `AGENTS.md`: they belong to the
-machine, not to the repository. Each client gets them at session start from
-`~/.config/fw/instructions/` (Claude Code and Codex through a SessionStart
-hook, again after compaction; OpenCode through `instructions`). The first
-prompt of a session also gets the cass-memory rules relevant to it.
+The instructions for cass-memory, cass and Agent Mail are not in
+`AGENTS.md`: every session uses them, in this repository or not. Each client
+gets them at session start from `~/.config/fw/instructions/` (Claude Code and
+Codex through a SessionStart hook, again after compaction; OpenCode through
+`instructions`). The first prompt of a session also gets the cass-memory
+rules relevant to it. Beads belongs to this repository, so its instructions
+are in `AGENTS.md`; `ubs` needs none, the pre-commit hook runs it.
 
 ## Daily loop
 
@@ -61,8 +70,8 @@ prompt of a session also gets the cass-memory rules relevant to it.
 3. Agent: `bv --robot-next` or `br ready --brief --json`, claim with `br update <id> --status in_progress`.
 4. Agent: `file_reservation_paths(...)` with the bead id as `reason`, announce in thread `<bead id>`.
 5. Agent: implement in a narrow slice; run project checks.
-6. Agent: `ubs <changed files>`, `br close <id> --reason ...`, `br sync --flush-only`.
-7. Agent: commit with the bead id in the message; the guard verifies reservations.
+6. Agent: `br close <id> --reason ...`, `br sync --flush-only`.
+7. Agent: commit with the bead id in the message; the pre-commit hook verifies reservations and runs `ubs`.
 8. Agent: `git pull --rebase && git push`; release reservations; completion message.
 9. Operator every 10-15 minutes: `bv --robot-next`, Agent Mail inbox, `ntm activity <project> --watch`.
 10. End of session: remaining work filed as beads, nothing left unpushed, durable lessons listed under `Lessons for memory:` in the final reply.
