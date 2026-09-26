@@ -68,3 +68,9 @@ Pin: `mcp_agent_mail_rust` 0.3.36. Setup notes: [agent-mail.md](agent-mail.md). 
   - When fixed: drop the fallback and the mapping from the guard script.
 - **`am agents resolve-pane` is documented as read-only with exit 2 on a miss,** but it upgrades a plain-name identity file and exits 1. Harmless for the hooks.
   - Check: the help text against the behaviour.
+- **`last_active_ts` is set only at registration, and `retire_agent` has no CLI command.** `touch_agent` has no caller outside tests (`crates/mcp-agent-mail-db/src/queries.rs:6622`), so `am agents reap` (`crates/mcp-agent-mail-cli/src/lib.rs:39293-39420`) selects agents by registration time and would retire busy ntm pane agents. `am-subagent reap` therefore retires its own identities through a JSON-RPC `retire_agent` call with curl.
+  - Check: send a message as an agent, then `am agents show --project <repo> <name> --json | jq .last_active_ts`; `am agents --help` for a retire command.
+  - When activity counts: consider `am agents reap` for the subagent identities. When a retire command exists: use it in `am-subagent reap` instead of curl.
+- **Only `ensure_project` writes `project.json`, and `am guard check` needs it.** `create_agent_identity`, `register_agent` and reservations create a project without it (writer: `crates/mcp-agent-mail-tools/src/identity.rs:2219`), and the guard resolves the archive only through it (`crates/mcp-agent-mail-cli/src/lib.rs:11107-11140`), so it passes every commit in such a project.
+  - Check: `am agents create --project <new repo> ...` through the server, then look for `projects/<slug>/project.json` under `STORAGE_ROOT`.
+  - When fixed: drop the quirk from [agent-mail.md](agent-mail.md).

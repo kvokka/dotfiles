@@ -9,4 +9,6 @@ The MCP server `mcp-agent-mail` coordinates agents working in the same repositor
 3. Talk in the task's thread: `send_message(..., thread_id="br-123", subject="[br-123] Start: ...")`, `fetch_inbox(project_key, agent_name)`, `acknowledge_message(project_key, agent_name, message_id)`.
 4. Finish: `release_file_reservations(project_key, agent_name)` and a final `[br-123] Completed: ...` message.
 
+Subagents: a subagent that may edit files gets its own Agent Mail name at its start (`Agent Mail: you are <name>`, never its parent's, even in an ntm pane). It reserves, releases and commits (`AGENT_NAME=<name> git commit ...`) under that name; its reservations are released when it stops. A parent never reserves files on behalf of its subagents: to hand them files, release its own reservations on them first. Read-only subagents (Explore, Plan, explorer) need nothing.
+
 `macro_start_session`, `macro_prepare_thread`, `macro_file_reservation_cycle` and `macro_contact_handshake` bundle these steps. `from_agent not registered` means the name is not registered for this `project_key`; `FILE_RESERVATION_CONFLICT` means another agent holds the path: narrow the pattern, wait for expiry, or reserve non-exclusively. Reservations are advisory, but the repository's pre-commit guard blocks commits touching files someone else reserved.
