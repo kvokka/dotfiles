@@ -4,6 +4,14 @@
 # this file, so the config stays a dotfile and the store holds only memory.
 # A config.json in the store would take precedence over this file.
 
+# Rules live at two levels: this store for everything, and a repository's
+# committed .cass/playbook.yaml for rules that hold only there. Reflect writes a
+# project rule into the .cass/ of the session's repository (its main checkout)
+# when that directory exists (`mise run fw:init` creates it), otherwise it keeps
+# the rule here, scoped to the repository's path. `cm context --workspace`
+# merges both.
+projectRuleRouting: repo
+
 # LLM for reflection: pi through `cm-llm` (~/.config/fw/bin); model and
 # reasoning effort live in its profile (~/.config/fw/pi/cm).
 provider: cli
@@ -12,8 +20,8 @@ cliCommand: {{ .chezmoi.homeDir }}/.config/fw/bin/cm-llm
 # high-effort call on a long session can take minutes.
 llmTimeoutMs: 600000
 llmTotalTimeoutMs: 1800000
-# On the first reflect cm writes the budget into a config file that lacks it
-# (#68), which would replace the link with a copy. These are cm's defaults;
+# On the first reflect cm writes the budget into a config file that lacks it,
+# which would replace the link with a copy. These are cm's defaults;
 # budget caps do not apply to the cli provider anyway.
 budget:
   dailyLimit: 1.0
@@ -21,8 +29,7 @@ budget:
 
 # One reflector pass per session (default 3): each further pass re-reads the
 # same diary and adds paraphrases of the rules it already proposed, which the
-# 0.85 similarity dedup misses. The first run with 3 passes learned 430 rules
-# from 50 sessions, most of them in two or three wordings.
+# 0.85 similarity dedup misses.
 maxReflectorIterations: 1
 
 # Days of history for reflect and `cm context` (default 7: `cm context` then

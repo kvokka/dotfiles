@@ -1,0 +1,10 @@
+# cass-memory project store: playbook.yaml, blocked.log and traumas.jsonl are
+# committed; what cm writes per machine or per session stays local.
+config.yaml
+context-log.jsonl
+outcomes.jsonl
+privacy-audit.jsonl
+diary/
+*.tmp
+*.lock.d/
+*.backup.*
