@@ -5,7 +5,7 @@
 #USAGE arg "[path]" help="Repository path; defaults to the current directory"
 #
 # Adds only what is missing: git repository, files from ~/.config/fw/templates,
-# .beads/, the cass-memory project store .cass/. Existing files are never modified; merge them by hand when the task
+# .beads/. Existing files are never modified; merge them by hand when the task
 # prints "keep:". Nothing is committed and no global config is touched.
 
 set -euo pipefail
@@ -69,15 +69,7 @@ else
   br init
 fi
 
-# 4. cass-memory project store: reflect writes this repository's rules into
-#    .cass/playbook.yaml, committed with the code (its .gitignore is a template).
-if [[ -f .cass/playbook.yaml ]]; then
-  printf 'keep: .cass/playbook.yaml\n'
-else
-  cm init --repo
-fi
-
-# 5. Pre-commit guard: nothing to install, the global git hook runs prek with
+# 4. Pre-commit guard: nothing to install, the global git hook runs prek with
 #    the repository's .pre-commit-config.yaml. Verify that this is still true.
 hooks_path="$(git config --get core.hooksPath || true)"
 if [[ -z "$hooks_path" ]]; then
@@ -86,7 +78,7 @@ if [[ -z "$hooks_path" ]]; then
   exit 1
 fi
 
-# 6. Report.
+# 5. Report.
 printf '\nfw:init done in %s\n' "$target"
 if (( ${#added[@]} )); then
   printf 'Review and commit the added files:\n'

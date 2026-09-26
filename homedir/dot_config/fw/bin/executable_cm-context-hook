@@ -3,10 +3,8 @@
 # finds for the prompt (rules, pitfalls, related sessions), printed once per
 # session. A UserPromptSubmit hook in Claude Code and Codex (~/.config/rulesync),
 # whose plain stdout reaches the model; OpenCode's cass-memory plugin passes
-# the same input. A slash command is not a prompt. The workspace is the
-# repository's main checkout: cm merges its .cass/playbook.yaml into the global
-# rules and filters history by it, so a worktree sees its repository's rules and
-# sessions.
+# the same input. A slash command is not a prompt. History is filtered by the
+# repository's main checkout, so a worktree sees its repository's sessions.
 
 set -uo pipefail
 

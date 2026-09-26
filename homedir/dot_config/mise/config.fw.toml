@@ -160,9 +160,8 @@ cron = { schedule = "0 5 10 * * *", retrigger = "finish" }
 # suggests. cm picks the oldest unprocessed sessions of the lookback window
 # (config.yaml) and learns rules through pi (`cm-llm`, key from fnox); 50 a day
 # instead of the default 5 drains the backlog. A session that grew after its
-# reflection is reflected again for the new part. Project rules go to the
-# repository's .cass/ (config.yaml). cm saves the batch only at its end, so
-# stopping a run loses all of it.
+# reflection is reflected again for the new part. cm saves the batch only at its
+# end, so stopping a run loses all of it. From $HOME: all rules are global.
 [daemons.cm-reflect]
 run = "exec fnox exec -- cm reflect --max-sessions 50 --json"
 dir = "~"
