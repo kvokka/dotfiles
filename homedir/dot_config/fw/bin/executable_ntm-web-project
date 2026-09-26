@@ -1,0 +1,15 @@
+#!/bin/sh
+# ntm-web-project <tmux session>: points the project pages of `ntm web` (Beads,
+# Mail, Memory, Pipelines, Scanner) at the session's repository,
+# ~/proj/active/<repo> for the ntm sessions <repo> and <repo>--<label>. tmux
+# runs it when a client attaches or switches sessions (~/.config/tmux/tmux.conf),
+# so the web UI follows the focused session; it refetches on window focus.
+# ntm keeps the setting in memory only, and a session without a repository
+# leaves it alone. It prints nothing and never fails: the ntm-web daemon may be
+# down. Port 7338 is the daemon itself, not the published forwarder.
+
+dir="$HOME/proj/active/${1%%--*}"
+[ -n "$1" ] && [ -d "$dir" ] || exit 0
+curl -sf -m 2 -o /dev/null -X PATCH -H 'Content-Type: application/json' \
+  -d "{\"project_dir\":\"$dir\"}" http://127.0.0.1:7338/api/v1/config
+exit 0

@@ -33,5 +33,15 @@
     "postToolUse": [
       { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-hook inbox", "timeout": 10 },
     ],
+    // A subagent that may edit files gets an Agent Mail identity of its own at
+    // its start (its name comes back as `additionalContext`), and its file
+    // reservations are released when it stops; am-subagent skips read-only
+    // agent types and prints nothing on stop.
+    "subagentStart": [
+      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-subagent start", "timeout": 15 },
+    ],
+    "subagentStop": [
+      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-subagent stop", "timeout": 10 },
+    ],
   },
 }

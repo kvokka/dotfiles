@@ -104,9 +104,17 @@ rm -rf node_modules
 # `mise daemons restart <name>` from such a directory: it re-registers the
 # daemon, while `pitchfork restart` reuses the command it already knows.
 [daemons.agent-mail]
-# --host 0.0.0.0: reachable from the host through the published compose port
+# am renders its interactive TUI only inside the serving process, so the server
+# runs in the session `am` of a private foreground tmux server (socket
+# `agent-mail`), and `mise run fw:am-tui` attaches to it. The tmux config
+# (~/.config/mcp-agent-mail/tui.tmux.conf) holds the am command line: --host
+# 0.0.0.0 makes it reachable from the host through the published compose port
 # (localhost:8765) and the OrbStack domain; see ~/.config/mcp-agent-mail/config.env.
-run = "exec am serve-http --no-tui --host 0.0.0.0 --port 8765 --path /mcp/"
+# `tmux -D` reads that config, which starts am, only when the first client
+# connects: the loop is that client. tmux exits 0 once am quits, and pitchfork
+# retries only a failed exit, hence `exit 1`. Stopping the daemon kills the
+# process group, and tmux takes am down with it.
+run = "tmux -L agent-mail -f ~/.config/mcp-agent-mail/tui.tmux.conf -D & while ! tmux -L agent-mail has-session -t am 2>/dev/null; do kill -0 $! || exit 1; sleep 0.2; done; wait $!; exit 1"
 dir = "~/proj/share/agent-mail"
 env = { RUST_LOG = "info" }
 ready_http = "http://127.0.0.1:8765/healthz"
@@ -127,6 +135,28 @@ auto = ["start"]
 
 [daemons.sbh]
 run = "exec sbh daemon"
+retry = true
+auto = ["start"]
+
+# ntm's web dashboard and REST API for the host browser: http://localhost:7337.
+# ntm serves without login only on loopback (auth mode `local`); on any other
+# address it demands an API key, and then even the dashboard page answers 401
+# in a browser. So ntm listens on 127.0.0.1:7338, and ntm-web-publish forwards
+# the published port 7337 to it: the dashboard keeps its default API address
+# (http://localhost:7337) and passes ntm's localhost origin check. Whoever
+# reaches 7337 drives the agents' panes, with no login.
+# From $HOME: ntm registers its working directory as an Agent Mail project.
+[daemons.ntm-web]
+run = "exec ntm web --port 7338"
+dir = "~"
+ready_http = "http://127.0.0.1:7338/health"
+health_http = { url = "http://127.0.0.1:7338/health", interval = "30s", timeout = "5s", retries = 3 }
+retry = true
+auto = ["start"]
+
+[daemons.ntm-web-publish]
+run = "exec socat TCP-LISTEN:7337,fork,reuseaddr TCP:127.0.0.1:7338"
+ready_port = 7337
 retry = true
 auto = ["start"]
 
@@ -167,12 +197,20 @@ run = "exec fnox exec -- cm reflect --max-sessions 50 --json"
 dir = "~"
 cron = { schedule = "0 0 12 * * *", retrigger = "finish" }
 
+# Daily at 11:30: retire the Agent Mail identities of harness subagents that no
+# subagent used for a day (am-subagent, wired as SubagentStart/SubagentStop
+# hooks by rulesync), through the agent-mail daemon's MCP endpoint. Not
+# `am agents reap`: it would retire busy ntm pane agents too (see am-subagent).
+[daemons.am-subagent-reap]
+run = "exec ~/.config/fw/bin/am-subagent reap http://127.0.0.1:8765/mcp/"
+cron = { schedule = "0 30 11 * * *", retrigger = "finish" }
+
 [tasks."fw:bootstrap"]
 description = "One-time setup of the flywheel services (idempotent)"
 # Daemons are not started here: services auto-start with the first activated
 # shell, cron daemons run on their schedules, and `mise daemons start` needs a
 # project config in cwd. Manual start of the services after that first shell:
-# `pitchfork start agent-mail cm sbh`.
+# `pitchfork start agent-mail cm sbh ntm-web ntm-web-publish`.
 # The default data dirs of cass and cass-memory become links into ~/proj/share
 # (see [env]); a default dir holding anything but empty directories stops the
 # bootstrap, its content is the owner's to move. The cass-memory config is the
@@ -236,6 +274,13 @@ description = "Generate MCP servers and hooks for every AI client (rulesync)"
 # rewrites those files whole and drops the generated keys.
 dir = "{{ env.HOME }}/.config/rulesync"
 run = "rulesync generate"
+
+[tasks."fw:am-tui"]
+description = "Open Agent Mail's TUI in the running server (detach: Ctrl-\\)"
+# Attaches to the agent-mail daemon's tmux server; TMUX= allows it from inside
+# another tmux session. Quitting the TUI stops the server for every agent.
+raw = true
+run = "TMUX= exec tmux -L agent-mail attach -t am"
 
 [tasks."fw:doctor"]
 description = "Smoke-check the flywheel agent stack (read-only)"
