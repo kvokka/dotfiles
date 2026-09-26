@@ -24,6 +24,14 @@ budget:
 # 0.85 similarity dedup misses.
 maxReflectorIterations: 1
 
+# Rank rules for `cm context` (the MCP cm_context and the first-prompt hook
+# too) and `cm similar` by embedding similarity next to keyword overlap.
+# Unset, cm uses embeddings only once the model is already cached, and only an
+# explicit true downloads it. The embedder is local: Xenova all-MiniLM-L6-v2,
+# fetched once into ~/.cache/cass-memory/transformers. Reflection's dedup
+# stays lexical.
+semanticSearchEnabled: true
+
 # Days of history for reflect and `cm context` (default 7: `cm context` then
 # finds nothing for a repository idle for a week).
 sessionLookbackDays: 30
