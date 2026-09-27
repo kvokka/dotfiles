@@ -1,0 +1,8 @@
+{{- /* In a container whose chezmoi source is a bind mount of the host's, less rewrites
+       delta's vscode:// file links from the container home to the host home. */ -}}
+{{- $rel := trimPrefix .chezmoi.homeDir .chezmoi.workingTree -}}
+{{- $mount := include "/proc/self/mountinfo" | regexFind (printf `\S+ %s ` .chezmoi.workingTree) -}}
+{{- with $mount | splitList " " | first | trimSuffix $rel -}}
+#env
+LESSOPEN = |-sed "s|vscode://file{{ $.chezmoi.homeDir }}/|vscode://file{{ . }}/|g" %s
+{{ end -}}

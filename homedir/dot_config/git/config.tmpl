@@ -56,8 +56,26 @@
 [delta]
 	navigate = true # n / N jump between diff sections
 	line-numbers = true
+	pager = less --tabs=2 -RFX
+	dark = true
+	tabs = 2
+	whitespace-error-style = 22 reverse
+	features = two-columns decorations links
+
+[delta "links"]
 	hyperlinks = true
-	pager = less --tabs=4 -RFX
+	hyperlinks-file-link-format = "vscode://file{path}:{line}" # rewritten to the host path in a container, see ~/.config/lesskey
+
+[delta "two-columns"]
+	side-by-side = true
+	line-numbers-left-format = ""
+	line-numbers-right-format = "│ "
+
+[delta "decorations"]
+	commit-decoration-style = bold yellow box ul
+	file-style = bold yellow ul
+	file-decoration-style = none
+	hunk-header-decoration-style = yellow box
 
 # URL shorthands
 [url "git@github.com:"]

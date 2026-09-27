@@ -24,6 +24,7 @@ Library/**
 
 {{ if ne .chezmoi.os "linux" }}
 .chezmoiscripts/linux/**
+.config/lesskey
 # flywheel agent stack: Linux devcontainer only (mise config.fw.toml)
 .config/mise/config.fw.toml
 .config/mise/tasks/fw/**
