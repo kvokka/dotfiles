@@ -76,6 +76,9 @@ check "agent-mail /health ready" curl -fsS http://127.0.0.1:8765/health
 check "am doctor check" am doctor check --json
 check "cm serve answers tools/list" bash -c \
   "curl -fsS -X POST http://127.0.0.1:8766 -H 'content-type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}' | jq -e '.result.tools | length > 0'"
+# ntm's own cm port, held for cm serve by the forwarder (config.fw.toml).
+check "pitchfork: ntm-cm-port forwards 8200 to cm serve" bash -c \
+  "pitchfork status ntm-cm-port | grep -q running && curl -fsS -X POST http://127.0.0.1:8200 -H 'content-type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}' | jq -e '.result.tools | length > 0'"
 check "cm doctor" cm doctor --json
 # Data dirs are links into ~/proj/share, the cm config a link to the dotfile
 # (mise run fw:bootstrap).
@@ -119,7 +122,7 @@ check "ntm web /health through the published port 7337" bash -c \
   'curl -fsS "http://$(hostname -I | cut -d " " -f1):7337/health"'
 
 if (( failed )); then
-  printf '\nSome checks failed. Services: pitchfork start agent-mail cm sbh ntm-web ntm-web-publish; services setup: mise run fw:bootstrap\n' >&2
+  printf '\nSome checks failed. Services: pitchfork start agent-mail cm ntm-cm-port sbh ntm-web ntm-web-publish; services setup: mise run fw:bootstrap\n' >&2
   exit 1
 fi
 printf '\nflywheel stack looks healthy\n'

@@ -133,6 +133,19 @@ ready_port = 8766
 retry = true
 auto = ["start"]
 
+# The session monitor that every `ntm spawn` starts runs a `cm serve` of its
+# own on 127.0.0.1:8200, a port ntm fixes with no setting to change or turn it
+# off, on our store and with the environment of the spawning shell, which may
+# hold the LLM key. It skips that cm while the port is taken, so this forwarder
+# holds the port for the cm daemon above. `ntm memory context|outcome` find
+# ntm's cm only through the pid file of its own copy and stay unavailable;
+# `cm context` and the cm MCP server give the agents the same.
+[daemons.ntm-cm-port]
+run = "exec socat TCP-LISTEN:8200,bind=127.0.0.1,fork,reuseaddr TCP:127.0.0.1:8766"
+ready_port = 8200
+retry = true
+auto = ["start"]
+
 [daemons.sbh]
 run = "exec sbh daemon"
 retry = true
@@ -210,7 +223,7 @@ description = "One-time setup of the flywheel services (idempotent)"
 # Daemons are not started here: services auto-start with the first activated
 # shell, cron daemons run on their schedules, and `mise daemons start` needs a
 # project config in cwd. Manual start of the services after that first shell:
-# `pitchfork start agent-mail cm sbh ntm-web ntm-web-publish`.
+# `pitchfork start agent-mail cm ntm-cm-port sbh ntm-web ntm-web-publish`.
 # The default data dirs of cass and cass-memory become links into ~/proj/share
 # (see [env]); a default dir holding anything but empty directories stops the
 # bootstrap, its content is the owner's to move. The cass-memory config is the

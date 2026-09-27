@@ -43,12 +43,18 @@ projects_base = "~/proj/active"
 
 [agents]
 # Commands used to launch each agent type
-# (dotfiles) These defaults pass a model and a reasoning effort on the command
-# line: Codex panes run gpt-6-astra at xhigh and Claude panes at effort xhigh,
-# whatever ~/.codex/config.toml and ~/.claude/settings.json say. Choose per
-# spawn with `--cod=N:model:effort` / `--cc=N:model:effort`.
+# (dotfiles) The built-in claude and codex commands always pass a reasoning
+# effort (xhigh), and codex also a model (gpt-6-astra), overriding
+# ~/.claude/settings.json and ~/.codex/config.toml. Ours are the same commands
+# with the model and effort flags inside `{{if}}`, and [models] leaves
+# default_claude and default_codex empty: a pane runs the tool's own config
+# unless `--cc=N:model:effort`, `--cod=N:model:effort` or a recipe names them.
 # claude = "{{memLimitPrefix}} claude --dangerously-skip-permissions{{if .Model}} --model {{shellQuote .Model}}{{end}} --effort {{shellQuote (.ReasoningEffort | default \"xhigh\")}}{{if .SystemPromptFile}} --system-prompt-file {{shellQuote .SystemPromptFile}}{{end}}"
+# The built-in, with --effort only when the spawn names one: Claude Code keeps its own.
+claude = "{{memLimitPrefix}} claude --dangerously-skip-permissions{{if .Model}} --model {{shellQuote .Model}}{{end}}{{if .ReasoningEffort}} --effort {{shellQuote .ReasoningEffort}}{{end}}{{if .SystemPromptFile}} --system-prompt-file {{shellQuote .SystemPromptFile}}{{end}}"
 # codex = "{{if .SystemPromptFile}}CODEX_SYSTEM_PROMPT=\"$(cat {{shellQuote .SystemPromptFile}})\" {{end}}codex --dangerously-bypass-approvals-and-sandbox -m {{shellQuote (.Model | default \"gpt-6-astra\")}} -c model_reasoning_effort={{shellQuote (.ReasoningEffort | default \"xhigh\")}} -c model_reasoning_summary_format=experimental --search"
+# The built-in, with -m and the effort only when the spawn names them: Codex keeps its own.
+codex = "{{if .SystemPromptFile}}CODEX_SYSTEM_PROMPT=\"$(cat {{shellQuote .SystemPromptFile}})\" {{end}}codex --dangerously-bypass-approvals-and-sandbox{{if .Model}} -m {{shellQuote .Model}}{{end}}{{if .ReasoningEffort}} -c model_reasoning_effort={{shellQuote .ReasoningEffort}}{{end}} -c model_reasoning_summary_format=experimental --search"
 # gemini = "{{if .SystemPromptFile}}GEMINI_SYSTEM_MD={{shellQuote .SystemPromptFile}} {{end}}gemini{{if .Model}} --model {{shellQuote .Model}}{{end}} --yolo"
 # grok = "grok --always-approve{{if .Model}} --model {{shellQuote .Model}}{{end}}{{if .ReasoningEffort}} --effort {{shellQuote .ReasoningEffort}}{{end}}"
 # antigravity = "{{agyBinary}} --model {{shellQuote .Model}} --dangerously-skip-permissions{{if .SystemPromptFile}} --prompt-interactive \"$(cat {{shellQuote .SystemPromptFile}})\"{{end}}"
@@ -199,7 +205,11 @@ pane_badges = true
 [models]
 # Default models when no specifier given
 # default_claude = "claude-opus-4-8"
+# Empty: no --model, Claude Code's own model (see [agents]).
+default_claude = ""
 # default_codex = "gpt-6-astra"
+# Empty: no -m, Codex's own model (see [agents]).
+default_codex = ""
 # default_gemini = "gemini-3-pro-preview"
 # default_grok = ""  # Empty delegates model selection to Grok Build
 # default_opencode = ""  # Empty delegates model selection to OpenCode's own config
