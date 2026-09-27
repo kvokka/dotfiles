@@ -34,10 +34,10 @@ How MCP Agent Mail runs on this machine and which parts of its setup look odd bu
 | `create_agent_identity` | operator | Always a new agent (`name_hint` must be free); ntm and `am-subagent` (as `am agents create`) create identities with it. Never to rejoin a session. |
 | `whois` | ad hoc | One agent's profile and recent archive commits. |
 | `list_agents` | ad hoc | The project's roster, at most 250. |
-| `resolve_pane_identity` | avoid | Looks `pane_id` up on the daemon's own tmux server (quirk below); run `am agents resolve-pane` in the pane instead. |
+| `resolve_pane_identity` | ad hoc | The agent bound to `pane_id` of the default tmux server (quirk below); in the pane itself, `am agents resolve-pane` does the same. |
 | `retire_agent`, `unretire_agent` | operator | Over HTTP only with the agent's `registration_token`. A retired agent neither sends nor receives. `am-subagent-reap` retires with the saved token. |
 | `deregister_agent` | avoid | Permanent; token as for `retire_agent`. |
-| `cleanup_pane_identities` | avoid | Counts as live only the panes of the daemon's own tmux server, so it deletes the identity file of every live ntm pane. |
+| `cleanup_pane_identities` | operator | Deletes the identity files of dead panes, all projects without `project_key`; a plain-name file counts as live only for a pane of the default tmux server. |
 
 **messaging**
 
@@ -89,7 +89,7 @@ How MCP Agent Mail runs on this machine and which parts of its setup look odd bu
 
 | Tool | Mark | Here |
 | --- | --- | --- |
-| `macro_start_session` | daily | Outside ntm: `ensure_project`, registration, reservations and the inbox in one call. Pass `agent_name` once you have one: without it the macro looks `pane_id` up on the daemon's tmux server and otherwise mints a new agent. |
+| `macro_start_session` | daily | Outside ntm: `ensure_project`, registration, reservations and the inbox in one call. Pass `agent_name` once you have one: without it the macro takes the agent bound to `pane_id` (ntm's pane agent keeps its name) and otherwise mints a new agent. |
 | `macro_prepare_thread` | ad hoc | Joins an existing thread: registration, its summary and the inbox; pass `agent_name` for the same reason. |
 | `macro_file_reservation_cycle` | ad hoc | Reserve, and optionally release, in one call. |
 | `macro_contact_handshake` | unused | See contact. |
@@ -130,7 +130,7 @@ The same data from a shell. `--project` defaults to `AGENT_MAIL_PROJECT`, then t
 - **The server logs to the TUI.** Its event console holds the log, and `pitchfork logs agent-mail` stays nearly empty; read the state with `am tui-dump` and `am robot ...`.
 - **No second `am` server and no takeover.** The TUI renders only inside the serving process, and one server owns the storage root. `am` in a terminal next to the daemon offers a read-only attach or a takeover; a takeover kills the daemon's server, and am starts only a systemd or launchd service again afterwards. Use `mise run fw:am-tui`.
 - **`/web-dashboard` answers 501:** the browser mirror of the TUI is deferred upstream.
-- **MCP calls carry no tmux pane.** Over HTTP the server learns the caller's pane only from an explicit `pane_id` (`macro_start_session`, `resolve_pane_identity`, `create_agent_identity`), so an agent in an ntm pane uses the name the hook printed; a bare `register_agent` mints a second identity. A `pane_id` does not help either: the server looks it up on its own tmux server, the private `agent-mail` socket, because it takes the caller's socket only from an `X-Tmux-Socket` header, which the `am` CLI sends and the MCP clients do not, and drops a `tmux_socket_path` in the arguments. There `%N` names no pane or am's own, so the lookup finds no identity; for the same reason `cleanup_pane_identities` deletes the identity files of all live ntm panes.
+- **MCP calls carry no tmux pane.** Over HTTP the server learns the caller's pane only from an explicit `pane_id` (`macro_start_session`, `resolve_pane_identity`, `create_agent_identity`), so an agent in an ntm pane uses the name the hook printed; a bare `register_agent` mints a second identity. The server takes the caller's tmux socket only from an `X-Tmux-Socket` header, which the `am` CLI sends and the MCP clients do not, and drops a `tmux_socket_path` in the arguments; it looks a `pane_id` up on the tmux server of its own environment. The daemon runs am without the `TMUX` and `TMUX_PANE` of its private tmux server, so pane lookups and `cleanup_pane_identities` use the default server, where ntm's panes live; a pane on another tmux socket is not found.
 - **No messages across repositories.** Each repository is its own project, and `send_message` resolves recipients only in the sender's project: the name of an agent in another repository silently becomes a placeholder there. A contact handshake across projects succeeds and changes nothing. An agent that must reach another repository registers there under its own name and sends with that `project_key`; the product bus above only reads across projects.
 - **`am guard check` needs a name even when nothing is reserved** (`missing AGENT_NAME env var`, exit 1), and ignores `AGENT_MAIL_GUARD_MODE`; the wrapper supplies the `human:<user>` fallback and turns `warn` into `--advisory`. An agent outside ntm without `AGENT_NAME` commits as that human, so its own exclusive reservations block it.
 - **`am agents resolve-pane` writes.** Although documented as read-only, it upgrades a plain-name identity file to a structured record. It exits 1 when no identity matches.
