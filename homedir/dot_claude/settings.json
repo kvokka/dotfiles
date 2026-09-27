@@ -1,37 +1,38 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "//": [
-    "TODO: move siam-orchestration@siam to the project level"
-  ],
-  "skipDangerousModePermissionPrompt": true,
+  "cleanupPeriodDays": 99999,
+  "env": {
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "5"
+  },
   "permissions": {
-    "defaultMode": "auto",
     "deny": [
       "EndConversation",
       "NotebookEdit",
       "DesignSync",
       "Agent(statusline-setup)"
-    ]
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "claude-fable-5-1",
+  "skillOverrides": {
+    "run": "off",
+    "init": "off"
+  },
+  "worktree": {
+    "baseRef": "fresh"
   },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh",
     "refreshInterval": 60
   },
-  "env": {
-    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "5"
-  },
-  "model": "opus[1m]",
-  "cleanupPeriodDays": 99999,
-  "worktree": {
-    "baseRef": "fresh"
-  },
   "enabledPlugins": {
-    "org@siam-platform": true,
-    "engineering@siam-platform": true,
+    "org@siam-platform": false,
+    "engineering@siam-platform": false,
     "frontend-design@claude-plugins-official": false,
-    "claude-codex-bridge@claude-codex-bridge": true,
-    "pohuy@pohuy": false
+    "claude-codex-bridge@claude-codex-bridge": false,
+    "pohuy@pohuy": false,
+    "telemetry@builtin": false
   },
   "extraKnownMarketplaces": {
     "siam-platform": {
@@ -55,6 +56,9 @@
       "autoUpdate": true
     }
   },
+  "language": "Русский",
+  "feedbackDrafts": "off",
+  "effortLevel": "high",
   "modelSettings": {
     "claude-opus-5-5": {
       "effortLevel": "high"
@@ -63,19 +67,16 @@
       "effortLevel": "high"
     }
   },
-  "language": "Русский",
-  "effortLevel": "high",
   "askUserQuestionTimeout": "never",
   "channelsEnabled": true,
   "autoMemoryEnabled": false,
+  "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "dark-ansi",
   "remoteControlAtStartup": false,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
-  "feedbackDrafts": "off",
-  "skillOverrides": {
-    "run": "off",
-    "init": "off"
-  }
+  "//": [
+    "TODO: move siam-orchestration@siam to the project level"
+  ]
 }
