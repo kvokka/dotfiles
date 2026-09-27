@@ -36,8 +36,17 @@ Pin: a `main` commit, built from the source tarball.
 
 ## ntm
 
-Pin: 1.35.1. Setup notes: [ntm.md](ntm.md). No upstream issue exists yet for any item here; file references are to the `v1.35.1` tag.
+Pin: 1.35.1. Setup notes: [ntm.md](ntm.md). An item without a link has no upstream issue yet; file references are to the `v1.35.1` tag.
 
+- **Built-in `default_claude` pins a model.** [#334](https://github.com/Dicklesworthstone/ntm/issues/334): every Claude pane gets `--model claude-opus-4-8` unless `default_claude = ""`; deleting the key falls back to the built-in.
+  - Check: whether the built-in `default_claude` is empty.
+  - When fixed: drop `default_claude = ""` from `~/.config/ntm/config.toml`.
+- **Built-in agent commands always pass an effort, and Codex a model.** The claude template defaults `--effort` to `xhigh`, the codex template `-m` to `gpt-6-astra` and `model_reasoning_effort` to `xhigh`, inside the template (`internal/config/templates.go:419-420`), so no `[models]` value leaves them to the clients' own config; an empty `default_codex` changes nothing. Hence our own `[agents] claude` and `codex` commands with the flags inside `{{if}}`.
+  - Check: the two templates in the new release; until fixed, carry any change of theirs into our copies.
+  - When fixed: drop `[agents] claude|codex` and `default_codex = ""`, and the quirk in [ntm.md](ntm.md#quirks).
+- **cm hard-wired on port 8200.** The session monitor of every spawn starts the supervisor's cm spec (`internal/cli/monitor.go:113-122`, `internal/supervisor/supervisor.go:832-852`) with the fixed `DefaultPort: 8200`: no config key, environment variable or flag moves it, `[memory] enabled` does not stop it, and no setting points ntm at an external cm. `ntm memory context|outcome` find cm only through the pid file of ntm's own copy (`internal/cm/client.go:44`), while `ntm doctor` and `ntm serve` probe the ACFS port 8766 (`internal/cli/doctor.go:609`, `internal/serve/server.go:3025`). The help of `ntm memory serve` says spawn does not start the daemon (`internal/cli/memory.go:49`); the monitor that spawn launches does. Hence the forwarder daemon `ntm-cm-port`.
+  - Check: whether the cm spec reads a port, an external cm URL or `[memory] enabled`.
+  - When fixed: point ntm at our cm on 8766 or turn its own off, drop `ntm-cm-port` with its `fw:doctor` check, and the cm quirk in [ntm.md](ntm.md#quirks).
 - **Dashboard Metrics panel is a stub.** `fetchMetricsCmd` returns an empty `panels.MetricsData{}` (`internal/tui/dashboard/commands.go:522-531`), and the panel hides itself while empty (`internal/tui/dashboard/dashboard.go:1265`); no tool can fill it.
   - Check: the same two places in the new release.
 - **Quota panel (`$`) always reads "unavailable".** It reads the caut usage cache, which nothing writes any more (`internal/integrations/caut/poller.go:7-12`). The caut adapter also calls `caut status --json` and `caut usage --all --json` (`internal/tools/caut.go:300`, `:373`), which caut lacks.
