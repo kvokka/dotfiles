@@ -205,6 +205,15 @@ cron = { schedule = "0 0 12 * * *", retrigger = "finish" }
 run = "exec ~/.config/fw/bin/am-subagent reap http://127.0.0.1:8765/mcp/"
 cron = { schedule = "0 30 11 * * *", retrigger = "finish" }
 
+# Daily at 13:00: upload the whole usage history to tokscale.ai. Not `tokscale
+# autosubmit enable`: its scheduler is a systemd user timer or a crontab, both
+# absent in the container. `submit` takes TOKSCALE_API_TOKEN (fnox) before
+# ~/.config/tokscale/credentials.json, so no `tokscale login` is needed.
+[daemons.tokscale-submit]
+run = "exec fnox exec -- tokscale submit"
+dir = "~"
+cron = { schedule = "0 0 13 * * *", retrigger = "finish" }
+
 [tasks."fw:bootstrap"]
 description = "One-time setup of the flywheel services (idempotent)"
 # Daemons are not started here: services auto-start with the first activated
