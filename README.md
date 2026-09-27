@@ -78,7 +78,8 @@ mise run fw:doctor          # smoke-check tools, hooks and daemons
 mise run fw:init [path]     # bootstrap a repository for agents (AGENTS.md, MCP, hooks, br init)
 mise run fw:cass-index      # first full cass index (slow)
 mise run fw:cass-nightly    # daily cass job by hand: full index + semantic backfill
-pitchfork status agent-mail cm sbh cass-index cass-nightly
+mise run fw:am-tui          # Agent Mail TUI of the running server (detach: Ctrl-\)
+pitchfork list              # every daemon and its state; `pitchfork status <name>` for one
 ```
 
 cass is kept fresh by two pitchfork cron jobs instead of the systemd timers of

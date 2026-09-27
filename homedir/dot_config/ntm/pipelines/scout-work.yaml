@@ -1,0 +1,43 @@
+schema_version: "2.0"
+name: scout-work
+description: >-
+  A scout explores a bead and writes .ntm/briefs/<bead>.md; the brief becomes a
+  bead comment and the first prompt of an idle pane in the coding session.
+  Run it on the scout session:
+  ntm pipeline run ~/.config/ntm/pipelines/scout-work.yaml --session <repo>--scout --var bead=<id> [--var agent=claude|codex]
+vars:
+  bead:
+    description: Bead ID
+    required: true
+    type: string
+  agent:
+    description: Worker type for ntm assign --agent (any, claude, codex)
+    default: any
+    type: string
+settings:
+  # Template dispatch logs would land in <project>/session-logs/.
+  log_dispatch: false
+steps:
+  - id: explore
+    # The scout session holds only scout panes, so the type is enough.
+    agent: codex
+    # Resolved beside this file, so the prompt stays global.
+    template: prompts/explore.md
+    wait: completion
+    timeout: 30m
+  - id: record
+    after: explore
+    command: br comments add ${vars.bead} --file .ntm/briefs/${vars.bead}.md
+  - id: handoff
+    after: record
+    # The coding session is the scout session without its label.
+    # ntm assign claims the bead and picks an idle pane there. Its own file
+    # reservation takes paths from the bead title only and refuses the
+    # dispatch when there are none; the worker reserves through Agent Mail.
+    # The prompt is work.md, a blank line and the brief.
+    command: >-
+      { cat "$HOME/.config/ntm/pipelines/prompts/work.md"; echo;
+      cat .ntm/briefs/${vars.bead}.md; } > .ntm/briefs/${vars.bead}.prompt &&
+      ntm assign "$(echo ${session} | sed 's/--.*//')"
+      --beads=${vars.bead} --auto --agent=${vars.agent} --reserve-files=false
+      --template=custom --template-file=.ntm/briefs/${vars.bead}.prompt

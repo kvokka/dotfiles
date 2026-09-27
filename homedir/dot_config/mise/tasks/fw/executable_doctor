@@ -60,12 +60,16 @@ for client in "$HOME/.claude/settings.json" "$HOME/.codex/hooks.json"; do
   check "hooks in $client: trauma_guard.py, instruction blocks, cm-context-hook" jq -e \
     --arg g "$guard" --arg p "$fwbin/cm-context-hook" \
     '[.hooks[][]?.hooks[]?.command] | (index($g) != null) and (index($p) != null) and any(contains("fw/instructions/"))' "$client"
+  check "hooks in $client: am-subagent start and stop" jq -e \
+    --arg s "$fwbin/am-subagent start" --arg t "$fwbin/am-subagent stop" \
+    '(.hooks.SubagentStart | tostring | contains($s)) and (.hooks.SubagentStop | tostring | contains($t))' "$client"
 done
 check "opencode cass-memory plugin" test -f "$HOME/.config/opencode/plugins/cass-memory.js"
 check "opencode instructions include the blocks" grep -q 'fw/instructions' "$HOME/.config/opencode/opencode.json"
 check "trauma guard denies an active trauma" trauma_probe
 
 check "pitchfork: agent-mail running" bash -c "pitchfork status agent-mail | grep -q running"
+check "agent-mail tmux session for the TUI (mise run fw:am-tui)" tmux -L agent-mail has-session -t am
 check "pitchfork: cm running" bash -c "pitchfork status cm | grep -q running"
 check "pitchfork: sbh running" bash -c "pitchfork status sbh | grep -q running"
 check "agent-mail /health ready" curl -fsS http://127.0.0.1:8765/health
@@ -87,6 +91,8 @@ check "cm-llm answers through pi and the proxy" bash -c \
   "echo 'Reply with the single word: pong' | fnox exec -- '$fwbin/cm-llm' | grep -qi pong"
 check "pitchfork: cm-reflect scheduled, last run ok (pitchfork logs cm-reflect)" bash -c \
   "pitchfork status cm-reflect | grep -q -E 'Status: (running|stopped)'"
+check "pitchfork: am-subagent-reap scheduled, last run ok (pitchfork logs am-subagent-reap)" bash -c \
+  "pitchfork status am-subagent-reap | grep -q -E 'Status: (running|stopped)'"
 check "cass health (run 'mise run fw:cass-index' once if FAIL)" cass health --json
 check "cass index fresh (cass-index daemon: mise daemons restart cass-index)" bash -c \
   "cass status --json | jq -e '.index.stale == false'"
@@ -105,9 +111,15 @@ check "cass semantic search ready (mise run fw:cass-nightly)" bash -c \
 check "sbh status" sbh status --json
 check "sbh ballast pool in ~/.ballast" test -d "$HOME/.ballast"
 check "ntm deps" ntm deps
+check "ntm config valid" ntm config validate
+check "pitchfork: ntm-web running" bash -c "pitchfork status ntm-web | grep -q running"
+check "pitchfork: ntm-web-publish running" bash -c "pitchfork status ntm-web-publish | grep -q running"
+# The container's own address, not loopback: the published port reaches socat there.
+check "ntm web /health through the published port 7337" bash -c \
+  'curl -fsS "http://$(hostname -I | cut -d " " -f1):7337/health"'
 
 if (( failed )); then
-  printf '\nSome checks failed. Services: pitchfork start agent-mail cm sbh; services setup: mise run fw:bootstrap\n' >&2
+  printf '\nSome checks failed. Services: pitchfork start agent-mail cm sbh ntm-web ntm-web-publish; services setup: mise run fw:bootstrap\n' >&2
   exit 1
 fi
 printf '\nflywheel stack looks healthy\n'

@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# Agent Mail identity of a harness subagent, wired by ~/.config/rulesync.
+#
+#   am-subagent start   SubagentStart: gives the subagent its own Agent Mail
+#                       name and tells it, as the JSON `additionalContext`
+#                       both clients accept there
+#   am-subagent stop    SubagentStop: releases the subagent's file reservations
+#   am-subagent reap    daily cron (pitchfork daemon am-subagent-reap): retires
+#                       the identities no subagent used for a day
+#
+# Claude Code and Codex pass `agent_id` and `agent_type` on stdin (Codex also
+# `model` and `turn_id`; the agent_id is the thread id, CODEX_THREAD_ID in the
+# subagent's shell). Both fire SubagentStart again for the same agent (Claude
+# Code on resume and for every message of a teammate) and SubagentStop after
+# every turn, so the name is kept in a state file under the agent_id and reused
+# until the reap. A new identity has no pane id and leaves the parent's pane
+# binding alone. The project is the git toplevel of `cwd`, as in am-hook.
+#
+# Read-only agent types get no identity: they never reserve or commit. Known
+# read-only types are skipped rather than editing types allowed, because custom
+# and plugin agents that edit have open-ended names; a read-only type missing
+# here only costs an unused identity until the reap.
+#
+# A hook must never break a session: start and stop always exit 0 and print
+# nothing but the context.
+
+set -uo pipefail
+
+state_dir="$HOME/.cache/fw/am-subagents"
+
+case "${1:-}" in
+start | stop)
+  input="$(cat)"
+  id="$(jq -r '.agent_id // empty' <<<"$input" 2>/dev/null)"
+  [[ "$id" =~ ^[A-Za-z0-9_-]+$ ]] || exit 0
+  state="$state_dir/$id"
+  ;;
+esac
+
+case "${1:-}" in
+start)
+  type="$(jq -r '.agent_type // empty' <<<"$input" 2>/dev/null)"
+  case "$type" in
+  '' | Explore | Plan | claude-code-guide | explorer) exit 0 ;;
+  esac
+  if [[ -s "$state" ]]; then
+    name="$(jq -r '.name // empty' "$state" 2>/dev/null)"
+    project="$(jq -r '.project // empty' "$state" 2>/dev/null)"
+    [[ -n "$name" && -n "$project" ]] || exit 0
+    touch "$state"
+  else
+    cwd="$(jq -r '.cwd // empty' <<<"$input" 2>/dev/null)"
+    project="$(git -C "${cwd:-$PWD}" rev-parse --show-toplevel 2>/dev/null)" || exit 0
+    # `turn_id` is Codex's own extension of the hook input.
+    program=claude-code
+    [[ -n "$(jq -r '.turn_id // empty' <<<"$input" 2>/dev/null)" ]] && program=codex
+    model="$(jq -r '.model // .agent_type' <<<"$input" 2>/dev/null)"
+    # Through the running server the answer carries the registration token,
+    # which the reap needs to retire the identity.
+    created="$(am agents create --project "$project" --program "$program" \
+      --model "$model" --task "$type subagent" --json 2>/dev/null)" || exit 0
+    name="$(jq -r '.name // empty' <<<"$created" 2>/dev/null)"
+    [[ -n "$name" ]] || exit 0
+    mkdir -p "$state_dir" || exit 0
+    (umask 077 && jq -n --arg name "$name" --arg project "$project" \
+      --arg token "$(jq -r '.registration_token // empty' <<<"$created")" \
+      '{name: $name, project: $project, registration_token: $token}' >"$state") || exit 0
+  fi
+  ctx="Agent Mail: you are $name in $project, an identity of your own, not your parent's. Reserve files with file_reservation_paths(project_key=\"$project\", agent_name=\"$name\", ...) before editing them and release them with release_file_reservations when done. Commit with \`AGENT_NAME=$name git commit ...\` so the pre-commit guard counts those reservations as yours."
+  jq -n --arg ctx "$ctx" \
+    '{hookSpecificOutput: {hookEventName: "SubagentStart", additionalContext: $ctx}}'
+  ;;
+stop)
+  [[ -s "$state" ]] || exit 0
+  name="$(jq -r '.name // empty' "$state" 2>/dev/null)"
+  project="$(jq -r '.project // empty' "$state" 2>/dev/null)"
+  [[ -n "$name" && -n "$project" ]] || exit 0
+  am file_reservations release "$project" "$name" >/dev/null 2>&1
+  touch "$state"
+  ;;
+reap)
+  # $2: the Agent Mail MCP endpoint. retire_agent has no CLI command, and over
+  # HTTP it takes the registration token. `am agents reap` does not fit: it
+  # selects by last_active_ts, which only registration sets, so it would
+  # retire every ntm pane agent a day after its spawn, however busy.
+  url="${2:?usage: am-subagent reap <mcp url>}"
+  [[ -d "$state_dir" ]] || exit 0
+  find "$state_dir" -type f -mtime +0 -print0 |
+    while IFS= read -r -d '' state; do
+      name="$(jq -r '.name // empty' "$state")"
+      project="$(jq -r '.project // empty' "$state")"
+      token="$(jq -r '.registration_token // empty' "$state")"
+      if [[ -n "$name" && -n "$token" ]]; then
+        # A server that is down keeps the state for the next run; an answer,
+        # retired or refused, ends it.
+        jq -n --arg p "$project" --arg a "$name" --arg t "$token" \
+          '{jsonrpc: "2.0", id: 1, method: "tools/call",
+            params: {name: "retire_agent",
+                     arguments: {project_key: $p, agent_name: $a, registration_token: $t}}}' |
+          curl -fsS --max-time 30 -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' --data-binary @- "$url" |
+          jq -r '.result.content[0].text // .error.message' || continue
+      fi
+      rm -f "$state"
+    done
+  ;;
+esac
+exit 0
