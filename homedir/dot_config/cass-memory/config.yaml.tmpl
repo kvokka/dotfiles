@@ -1,6 +1,6 @@
 # cass-memory (cm) global config: only what differs from cm's defaults.
-# cm reads its config only from its store (~/.cass-memory, a link to
-# ~/proj/share/cass-memory); fw:bootstrap links ~/.cass-memory/config.yaml to
+# cm reads its config from its store (~/.cass-memory, a link to
+# ~/proj/share/cass-memory) and a repository `.cass/`, which we do not use; fw:bootstrap links ~/.cass-memory/config.yaml to
 # this file, so the config stays a dotfile and the store holds only memory.
 # A config.json in the store would take precedence over this file.
 
@@ -21,7 +21,7 @@ budget:
 
 # One reflector pass per session (default 3): each further pass re-reads the
 # same diary and adds paraphrases of the rules it already proposed, which the
-# 0.85 similarity dedup misses.
+# reflector's exact-hash dedup and the 0.85 Jaccard dedup at curation miss.
 maxReflectorIterations: 1
 
 # Rank rules for `cm context` (the MCP cm_context and the first-prompt hook
@@ -32,8 +32,8 @@ maxReflectorIterations: 1
 # stays lexical.
 semanticSearchEnabled: true
 
-# Days of history for reflect and `cm context` (default 7: `cm context` then
-# finds nothing for a repository idle for a week).
+# Days of history for reflect and the history snippets of `cm context`
+# (default 7: none for a repository idle for a week).
 sessionLookbackDays: 30
 # cm's default list minus "/subagents/agent-a" and "/subagents/workflows/":
 # Claude Code subagent sessions are reflected too, because subagents do most of

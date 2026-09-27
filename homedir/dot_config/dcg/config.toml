@@ -1,6 +1,7 @@
 #:schema https://raw.githubusercontent.com/Dicklesworthstone/destructive_command_guard/main/config.schema.json
-# Destructive Command Guard. core.git, core.filesystem and system.disk are always
-# on; everything else is opt-in. Verify ids with `dcg packs`.
+# Destructive Command Guard. core.git and core.filesystem are always on and
+# system.disk is on by default; everything else is opt-in. Verify ids with
+# `dcg packs`.
 
 [packs]
 enabled = [
@@ -16,7 +17,6 @@ enabled = [
   "infrastructure.ansible",
   "infrastructure.pulumi",
   "infrastructure.terraform",
-  "system.disk",
   "system.permissions",
   "system.services",
   "cicd.github_actions",

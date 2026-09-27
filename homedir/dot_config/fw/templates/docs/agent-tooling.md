@@ -2,7 +2,7 @@
 
 This project is set up for multiple coding agents (Claude Code, Codex,
 OpenCode, Antigravity) working in the same worktree. The tools below come
-from the "agentic coding flywheel" stack (Dicklesworthstone/acfs) and are
+from the "agentic coding flywheel" stack (Dicklesworthstone/agentic_coding_flywheel_setup, `acfs`) and are
 installed per machine with `mise`; this document only explains what the
 repository expects.
 
@@ -11,12 +11,12 @@ repository expects.
 | Tool | What it is | Why it is here | How agents use it |
 |---|---|---|---|
 | `ntm` | Named Tmux Manager: one tmux session per repository under `~/proj/active` with a pane per agent, broadcast prompts, dashboard (F12), prompt palette (F6), web dashboard (<http://localhost:7337>) | The operator's cockpit for running several agents at once; registers every pane in Agent Mail | Agents do not call it; the operator runs `ntm spawn <repo> --cc=2 --cod=1`, `ntm send`, `ntm dashboard`; setup notes: `docs/agent-tooling/ntm.md` |
-| `br` | Beads (Rust): local dependency-aware issue tracker in `.beads/` (SQLite + committed `issues.jsonl`) | Single source of truth for what to do next; travels with the code | `br ready --brief --json`, `br update <id> --status in_progress`, `br close <id>`, `br sync --flush-only` |
+| `br` | Beads (Rust): local dependency-aware issue tracker in `.beads/` (SQLite + committed `issues.jsonl`) | Single source of truth for what to do next; travels with the code | `br ready --json`, `br update <id> --claim`, `br close <id>`, `br sync --flush-only` |
 | `bv` | Beads viewer: graph-aware triage (PageRank, critical path, parallel tracks) | Deterministic answer to "what unlocks the most work" | Only `bv --robot-triage`, `bv --robot-next`, `bv --robot-plan`; bare `bv` is a blocking TUI |
 | `am` / `mcp-agent-mail` | MCP Agent Mail: HTTP MCP server (`http://127.0.0.1:8765/mcp/`, web UI at `/mail`) with agent identities, threaded messages and advisory file reservations | Coordination bus between agents; prevents two agents editing the same files | In an ntm pane the agent is already registered (`am agents resolve-pane --project <repo>`), elsewhere it registers once; MCP tools `file_reservation_paths`, `send_message`, `fetch_inbox`; the pre-commit guard enforces reservations; setup notes: `docs/agent-tooling/agent-mail.md` |
 | `dcg` | Destructive Command Guard: hook that blocks `rm -rf`, `git reset --hard`, `git clean -fd` and similar before they run | Safety net for autonomous agents in this repository; a repository hook of each agent (`.rulesync/`, `.opencode/plugins/dcg-guard.js`), not a machine-wide one, so a chat session outside such a repository runs what the user asks for | Transparent; a blocked command is reported back to the agent |
-| `cc-safety-net` | OpenCode plugin with the same role as `dcg`; blocks `git push -f` / `--force` | Same safety net inside OpenCode; loaded by this repository's `opencode.json` | Transparent |
-| `ubs` | Ultimate Bug Scanner: multi-language pattern scanner tuned for generated code | Quality gate before every commit (pre-commit hook, findings fail the commit) | Runs in the pre-commit hook; agents fix its findings, `ubs <files>` reproduces them (exit 0 = clean); setup notes: `docs/agent-tooling/ubs.md` |
+| `cc-safety-net` | Third-party OpenCode plugin (kenryu42) with the same role as `dcg`: blocks destructive git commands (`reset --hard`, `checkout --`, `clean -f`, `push --force`, `branch -D`, `stash clear`) and `rm -rf` outside the working directory | Same safety net inside OpenCode; loaded by this repository's `opencode.json` | Transparent |
+| `ubs` | Ultimate Bug Scanner: multi-language pattern scanner tuned for generated code | Quality gate before every commit (pre-commit hook, critical findings fail the commit) | Runs in the pre-commit hook; agents fix its findings, `ubs <files>` reproduces them (exit 0 = clean); setup notes: `docs/agent-tooling/ubs.md` |
 | `toon` | Token-Optimized Notation encoder | Compact `--format toon` output of `ubs`, `bv`, `br` for agents | Optional output format, e.g. `bv --robot-triage --format toon` |
 | `typos` | Source-code spell checker | Cheap hygiene check on prose and identifiers | `typos` on changed files |
 | `cass` | Coding Agent Session Search: indexes past agent sessions of all CLIs (re-indexed every 5 minutes, fully once a day) | Reuse solved problems instead of re-solving them | `cass search "<query>" --robot --limit 5`; never bare `cass`; setup notes: `docs/agent-tooling/cass.md` |
@@ -24,12 +24,12 @@ repository expects.
 | trauma guard | cass-memory traumas: command patterns the owner registered after real damage (`cm trauma add`), blocked for Claude Code and Codex by cass-memory's own guard hook | Stops a repeat of a known incident that generic guards do not know | Transparent; only the owner adds or heals a trauma |
 | `pi` | Minimal agent harness for one-shot LLM calls (no tools, no session), one profile per job | Cheap text generation for tooling, e.g. cass-memory's reflection | Operator and tooling only |
 | `ru` | Repo updater: sync many repositories, detect conflicts | Operator hygiene across projects | Operator only (`ru sync`, `ru status --fetch`) |
-| `jfp` | JeffreysPrompts CLI: curated prompt library | Prompt source for the operator's palette | Operator only |
-| `brenner` | Brenner Bot: multi-agent research sessions with cited sources | Research and hypothesis work, not coding | On request only |
+| `jfp` | JeffreysPrompts CLI: curated prompt library | Curated prompts to browse, render or export as skills | Operator only |
+| `brenner` | Brenner Bot: research sessions with hypothesis and evidence tracking | Research and hypothesis work, not coding | On request only |
 | `sbh` | Storage Ballast Helper: predictive disk-space protection and build-artifact cleanup | Keeps the machine alive under many parallel builds | Operator only (`sbh status`) |
 | `fmd` | Franken Markdown: deterministic Markdown to HTML/PDF renderer | Rendering docs like this one | `fmd README.md --out README.html` |
 | `aadc` | ASCII Art Diagram Corrector | Fixes ASCII diagrams in generated docs | `aadc <file>` when a diagram is misaligned |
-| `agy` | Antigravity CLI (Google's agentic IDE runtime) | One more agent type in the swarm | Started by the operator via `ntm spawn ... --agy=1` |
+| `agy` | Google's Antigravity CLI, the successor of the Gemini CLI | One more agent type in the swarm | Started by the operator via `ntm spawn ... --agy=1` |
 
 ## Per-repository bootstrap
 
@@ -76,7 +76,7 @@ is fixed.
 
 1. Operator: `bv --robot-triage`, then `ntm spawn <repo> --cc=2 --cod=1` (the repository is `~/proj/active/<repo>`) and `ntm attach <repo>`.
 2. Agent: read `AGENTS.md` and the tool instructions of the session; the Agent Mail name comes with the session (ntm registered the pane), and the cass-memory rules for the task are already in the first prompt.
-3. Agent: `bv --robot-next` or `br ready --brief --json`, claim with `br update <id> --status in_progress`.
+3. Agent: `bv --robot-next` or `br ready --json`, claim with `br update <id> --claim`.
 4. Agent: `file_reservation_paths(...)` with the bead id as `reason`, announce in thread `<bead id>`.
 5. Agent: implement in a narrow slice; run project checks.
 6. Agent: `br close <id> --reason ...`, `br sync --flush-only`.

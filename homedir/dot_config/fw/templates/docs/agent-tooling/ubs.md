@@ -32,4 +32,4 @@ What holds in 5.4.9:
 
   `critical` is not an ast-grep level: the rule fails to parse, and the run exits 2.
 - The Python module loads only the top-level files of the rules directory, so keep the directory flat.
-- cass-memory rules are not a source for ubs rules. cm cuts the middle out of each session (it keeps about the first and last 25 000 characters) and keeps only a prose summary, so the code of a bug never reaches its rules.
+- cass-memory rules are not a source for ubs rules. cm cuts the middle out of each session (it keeps about the first 30 000 and last 20 000 characters) and keeps only a prose summary, so the code of a bug never reaches its rules.

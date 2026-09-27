@@ -30,8 +30,9 @@ reporting the observed result.
 - Never run `git reset --hard`, `git checkout -- .`, `git clean -fd`,
   `rm -rf`, force pushes or history rewrites unless the user gives the
   exact command and states the consequences are intended. The repository's
-  guard hooks (dcg, from `.rulesync/`) block these and other known-dangerous
-  commands before they run; a blocked command needs another approach or
+  guard hooks (dcg, from `.rulesync/`) block most of these and other
+  known-dangerous commands before they run (not `--amend`, rebases or
+  `--force-with-lease`); a blocked command needs another approach or
   the user, not a workaround.
 - Prefer inspection first: `git status`, `git diff`, `git stash list`.
 - Do not bulk-edit code with ad-hoc scripts or giant `sed` runs; make
@@ -40,22 +41,22 @@ reporting the observed result.
 ## Work tracking: Beads (`br`) and triage (`bv`)
 
 `.beads/` is the single source of truth for task status, priority and
-dependencies, committed with the code. `br` never runs git.
+dependencies, committed with the code. `br` runs no git command on its own.
 
 ```bash
-br ready --brief --json                 # unblocked work, pick the highest priority
+br ready --json                         # unblocked work, pick the highest priority
 br show <id> --json                     # details and dependencies
-br update <id> --status in_progress     # claim before editing
+br update <id> --claim                  # claim before editing (assignee + in_progress)
 br create "Title" --type task --priority 2 --description "..."
-br dep add <child> <parent>             # child is blocked by parent
+br dep add <blocked> <blocker>          # blocked depends on blocker
 br close <id> --reason "What changed"   # after checks pass
 br sync --flush-only                    # export before every commit
 ```
 
-Priorities: 0 critical to 4 backlog. Types: task, bug, feature, epic.
+Priorities: 0 critical to 4 backlog. Types: task, bug, feature, epic, chore, docs, question.
 Follow-up work becomes a new bead, not a markdown TODO. Commit messages
-carry the bead id (`fix(auth): ... (br-123)`), and `.beads/` is committed
-with the change.
+carry the bead id (`fix(auth): ... (<prefix>-4kg)`, the prefix is the one
+`br init` chose), and `.beads/` is committed with the change.
 
 Triage with `bv --robot-triage` (full picture), `bv --robot-next` (single
 pick plus its claim command) or `bv --robot-plan` (parallel tracks); only

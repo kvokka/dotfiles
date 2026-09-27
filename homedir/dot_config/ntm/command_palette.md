@@ -2,8 +2,9 @@
 #
 # Format (ntm LoadPaletteFromMarkdown): `## Category`, then `### key | Label`
 # and the prompt text up to the next heading. A line starting with `#` is a
-# comment only before the first command; after that it is prompt text, so
-# keep every comment in this header. This file replaces ntm's built-in
+# comment only outside a command block (this header, or between a
+# `## Category` and its first `###`); inside one it is prompt text, so keep
+# every comment in this header. This file replaces ntm's built-in
 # entries; a repository adds its own through `[palette] file` in
 # `.ntm/config.toml`.
 #
@@ -11,11 +12,12 @@
 # before sending, F1 for help. Targets: 1 all, 2 Claude (cc), 3 Codex (cod),
 # 5 Antigravity (agy), 6 pick panes.
 #
-# The prompts are the swarm prompts of the Agent Flywheel author
-# (agent-swarm-workflow skill, THE_FLYWHEEL_APPROACH §24), adapted to
-# br/bv, Agent Mail and the AGENTS.md of `fw:init`. "ultrathink" is the
+# The prompts are the Agent Flywheel author's: his ntm palette (acfs,
+# `onboard/docs/ntm/command_palette.md`) and THE_FLYWHEEL_APPROACH §24,
+# adapted to br/bv, Agent Mail and the AGENTS.md of `fw:init`. His palette
+# ends a prompt with "Use /effort max.", ours with "Use ultrathink", the
 # keyword Claude Code turns into deeper reasoning for that turn; Codex and
-# Antigravity read it as plain text.
+# Antigravity read either as plain text.
 
 ## Swarm Loop
 

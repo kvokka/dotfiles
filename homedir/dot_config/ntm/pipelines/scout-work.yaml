@@ -15,10 +15,16 @@ vars:
     default: any
     type: string
 settings:
+  # The whole run; the default 30m is the explore step's own timeout.
+  timeout: 40m
   # Template dispatch logs would land in <project>/session-logs/.
   log_dispatch: false
 steps:
+  - id: prepare
+    # .ntm/ is ignored by the template's .gitignore; nothing else creates it.
+    command: mkdir -p .ntm/briefs
   - id: explore
+    after: prepare
     # The scout session holds only scout panes, so the type is enough.
     agent: codex
     # Resolved beside this file, so the prompt stays global.
