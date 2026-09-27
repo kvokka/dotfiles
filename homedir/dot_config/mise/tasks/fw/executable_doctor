@@ -93,8 +93,6 @@ check "pitchfork: cm-reflect scheduled, last run ok (pitchfork logs cm-reflect)"
   "pitchfork status cm-reflect | grep -q -E 'Status: (running|stopped)'"
 check "pitchfork: am-subagent-reap scheduled, last run ok (pitchfork logs am-subagent-reap)" bash -c \
   "pitchfork status am-subagent-reap | grep -q -E 'Status: (running|stopped)'"
-check "pitchfork: tokscale-submit scheduled, last run ok (pitchfork logs tokscale-submit)" bash -c \
-  "pitchfork status tokscale-submit | grep -q -E 'Status: (running|stopped)'"
 check "cass health (run 'mise run fw:cass-index' once if FAIL)" cass health --json
 check "cass index fresh (cass-index daemon: mise daemons restart cass-index)" bash -c \
   "cass status --json | jq -e '.index.stale == false'"
