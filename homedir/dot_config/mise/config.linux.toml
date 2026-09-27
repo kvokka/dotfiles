@@ -7,7 +7,9 @@ codex = "0"
 claude = "2.1"
 just = "1.58"
 ast-grep = "0.45"
-agy = "1.2.7" # aqua:google-antigravity/antigravity-cli
+agy = "1.2.7"                  # aqua:google-antigravity/antigravity-cli
+
+"npm:tokscale" = "latest"
 
 [env]
 # agy updates its own binary in place on start, inside mise's install dir, so
