@@ -157,8 +157,9 @@ auto = ["start"]
 # the published port 7337 to it: the dashboard keeps its default API address
 # (http://localhost:7337) and passes ntm's localhost origin check. Whoever
 # reaches 7337 drives the agents' panes, with no login.
-# From $HOME: without a project_dir (ntm-web-project) the Beads page runs br
-# in the daemon's directory.
+# From $HOME: without a project_dir (ntm-web-project) ntm web polls Agent Mail
+# for its working directory (ensure_project included) and runs br there; $HOME
+# is a project already, so no stray one appears.
 [daemons.ntm-web]
 run = "exec ntm web --port 7338"
 dir = "~"
