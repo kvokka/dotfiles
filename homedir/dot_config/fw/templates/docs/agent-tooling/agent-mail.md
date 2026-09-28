@@ -6,7 +6,7 @@ How MCP Agent Mail runs on this machine and which parts of its setup look odd bu
 
 - **Pin:** `am` 0.3.36 (`mcp_agent_mail_rust`, which also ships `mcp-agent-mail`) in `~/.config/mise/config.fw.toml`.
 - **Service:** the pitchfork daemon `agent-mail`, `am serve-http` with its TUI on 0.0.0.0:8765, MCP at `/mcp/`, registered for every client by `mise run ai:sync`. am runs in the session `am` of a private tmux server (socket `agent-mail`) that the daemon holds in the foreground. Data: the SQLite database and the git archive (`STORAGE_ROOT`) under `~/proj/share/agent-mail`.
-- **TUI:** `mise run fw:am-tui` attaches to the running server's TUI from any terminal or tmux pane. Detach with Ctrl-\ (or the default prefix, C-b d); the server keeps running, at about 3% of a core while nobody is attached. The window takes the size of the last attached terminal. The TUI saves its preferences and dismissed hints under `~/proj/share/agent-mail/tui/` (`CONSOLE_PERSIST_PATH`), not in the managed `config.env`.
+- **TUI:** `mise run fw:am-tui` attaches to the running server's TUI from any terminal or tmux pane. Detach with Ctrl-\ (or the default prefix, C-b d); the server keeps running. The window takes the size of the last attached terminal. The TUI saves its preferences and dismissed hints under `~/proj/share/agent-mail/tui/` (`CONSOLE_PERSIST_PATH`), not in the managed `config.env`.
 - **Web UI:** <http://localhost:8765/mail> from the macOS host: projects, agents, threads, reservations, and the HumanOverseer compose page. `ntm mail send <repo> ...` is the same overseer from the shell.
 - **Terminal views:** the `am` commands [below](#am-cli).
 - **Identity:**
@@ -46,7 +46,7 @@ How MCP Agent Mail runs on this machine and which parts of its setup look odd bu
 | `send_message` | daily | Recipients resolve only in `project_key`. An unknown name, a typo or an agent of another repository, becomes a placeholder agent in this project and the send succeeds, so nobody reads it; for another repository see [Across repositories](#across-repositories). Use `thread_id` (the bead id) and `ack_required` for what needs an answer. |
 | `reply_message` | daily | Keeps the thread. Needs the `project_key` of the original: message ids are global, but another project's key gets `NOT_FOUND`. |
 | `fetch_inbox` | daily | Marks what it returns read unless `mark_read=false`. |
-| `acknowledge_message` | daily | Also marks read; same `project_key` rule as `reply_message`. |
+| `acknowledge_message` | daily | Also marks read; takes the `project_key` the agent is registered in. |
 | `mark_message_read`, `mark_all_read` | ad hoc | Clearing an inbox without reading it through `fetch_inbox`. |
 | `get_message_delivery_receipt` | ad hoc | Whether each recipient got, read or acknowledged a message. |
 | `fetch_topic` | unused | Every message of a project with a topic tag, whoever the recipient; the instructions use threads, not topics. |
@@ -74,7 +74,7 @@ How MCP Agent Mail runs on this machine and which parts of its setup look odd bu
 
 | Tool | Mark | Here |
 | --- | --- | --- |
-| `ensure_project` | daily | First call in a repository: only it writes the archive's `project.json`, which the guard needs (quirk below). |
+| `ensure_project` | daily | First call in a repository: only it writes the archive's `project.json`, which the guard needs (quirk below); `am doctor fix` recreates a missing one. |
 | `health_check` | operator | Server readiness. |
 | `install_precommit_guard`, `uninstall_precommit_guard` | avoid | The guard comes from `fw:init` (`scripts/hooks/agent-mail-guard`); am's own hook install clashes with the global `core.hooksPath`. |
 
@@ -108,7 +108,7 @@ Apart from its product records the product bus only reads. It sends nothing acro
 
 ## Across repositories
 
-Each repository is its own project, and `send_message` delivers only inside the project it is called with: the recipient name is looked up there, an unknown one becomes a placeholder, and the approved links of a cross-project contact handshake are never read for delivery (its welcome message is dropped; the target only gets a "Contact approved" notice). Upstream: [issue #335](https://github.com/Dicklesworthstone/mcp_agent_mail_rust/issues/335); the author's decision is to refuse such sends rather than route them, see [upstream-todo.md](upstream-todo.md#agent-mail). An agent of one repository asks another repository like this:
+Each repository is its own project, and `send_message` delivers only inside the project it is called with: the recipient name is looked up there, an unknown one becomes a placeholder, and the approved links of a cross-project contact handshake are never read for delivery (its welcome message is dropped; the target only gets a "Contact approved" notice). Upstream: [issue #335](https://github.com/Dicklesworthstone/mcp_agent_mail_rust/issues/335); unreleased `main` refuses such sends rather than routing them, see [upstream-todo.md](upstream-todo.md#agent-mail). An agent of one repository asks another repository like this:
 
 1. **Find the addressee** in the other repository: `list_agents(project_key=<other repo>)` for the roster and `am file_reservations active <other repo>` for who holds the files in question; otherwise its coordinator.
 2. **Join that project under your own name:** `register_agent(project_key=<other repo>, program, model, name=<your name>, task_description="<repo> agent, asking about <bead>")`. Look at the roster first: `register_agent` with a name that exists there updates that agent's profile instead of refusing. When the name is taken, `create_agent_identity(project_key=<other repo>, ...)` mints a fresh one, and your inbox there carries that name. Reserve nothing there. The pane identity, the hooks and the commits of your own repository stay as they are.
@@ -120,7 +120,7 @@ Nothing is relayed and nothing piles up: a message belongs to one recipient in o
 
 ## `am` CLI
 
-The same data from a shell. `--project` defaults to `AGENT_MAIL_PROJECT`, then the working directory, and `--agent` to `AGENT_MAIL_AGENT`, then `AGENT_NAME`.
+The same data from a shell. For `am robot` and `am tui-dump`, `--project` defaults to `AGENT_MAIL_PROJECT`, then the working directory, and `--agent` to `AGENT_MAIL_AGENT`, then `AGENT_NAME`; the other commands take the project and the agent as arguments.
 
 - `am robot status`: health, inbox counts, reservations and top threads of a project.
 - `am robot inbox [--all|--urgent|--ack-overdue]`: an agent's unread messages; never marks them read.
@@ -142,7 +142,7 @@ The same data from a shell. `--project` defaults to `AGENT_MAIL_PROJECT`, then t
 ## Quirks
 
 - **Quitting the TUI stops the server for every agent.** `q`, Esc Esc and Ctrl-C Ctrl-C end `am serve-http` itself; pitchfork starts it again within about 10 s. Detach instead. am's own Ctrl-D ("detach headless") would drop the TUI until the next restart, so the tmux config turns it off.
-- **The server logs to the TUI.** Its event console holds the log, and `pitchfork logs agent-mail` stays nearly empty; read the state with `am tui-dump` and `am robot ...`.
+- **With the TUI on, the server writes no log.** am turns its tracing output off and shows tool-call and request cards in the TUI console, so `pitchfork logs agent-mail` stays nearly empty; read the state with `am tui-dump` and `am robot ...`.
 - **No second `am` server and no takeover.** The TUI renders only inside the serving process, and one server owns the storage root. `am` in a terminal next to the daemon offers a read-only attach or a takeover; a takeover kills the daemon's server, and am starts only a systemd or launchd service again afterwards. Use `mise run fw:am-tui`.
 - **`/web-dashboard` answers 501:** the browser mirror of the TUI is deferred upstream.
 - **MCP calls carry no tmux pane.** Over HTTP the server learns the caller's pane only from an explicit `pane_id` (`macro_start_session`, `resolve_pane_identity`, `create_agent_identity`), so an agent in an ntm pane uses the name the hook printed; a bare `register_agent` mints a second identity. The server takes the caller's tmux socket only from an `X-Tmux-Socket` header, which the `am` CLI sends and the MCP clients do not, and drops a `tmux_socket_path` in the arguments; it looks a `pane_id` up on the tmux server of its own environment. The daemon runs am without the `TMUX` and `TMUX_PANE` of its private tmux server, so pane lookups and `cleanup_pane_identities` use the default server, where ntm's panes live; a pane on another tmux socket is not found.
@@ -150,8 +150,8 @@ The same data from a shell. `--project` defaults to `AGENT_MAIL_PROJECT`, then t
 - **`am guard check` needs a name even when nothing is reserved** (`missing AGENT_NAME env var`, exit 1), and ignores `AGENT_MAIL_GUARD_MODE`; the wrapper supplies the `human:<user>` fallback and turns `warn` into `--advisory`. An agent outside ntm without `AGENT_NAME` commits as that human, so its own exclusive reservations block it.
 - **`am agents resolve-pane` writes.** Although documented as read-only, it upgrades a plain-name identity file to a structured record. It exits 1 when no identity matches.
 - **Hooks and guard follow the git toplevel.** An agent working in another worktree or a nested repository is a different project to Agent Mail, and the hooks stay silent there.
-- **`ntm web` and other ntm commands register their working directory as a project**, which is why stray projects such as `/` can appear in the web UI. am has no command that removes one project, only `am clear-and-reset-everything`, which wipes them all; run ntm from a repository or `$HOME`.
-- **`last_active_ts` is set only at registration.** Messages, reservations and inbox reads leave it alone, so `am agents reap --stale-days N` would retire every agent registered more than N days ago, ntm pane agents at work included, and a retired agent can neither send nor receive. The subagent reap retires only the identities am-subagent created.
+- **`ntm mail`, `ntm init`, `ntm setup` and ntm's hooks register the working directory as a project when no session names one**, which is why stray projects such as `/` can appear in the web UI (`ntm web` registers nothing). am has no command that removes one project, only `am clear-and-reset-everything`, which wipes them all; run those from a repository.
+- **`last_active_ts` is set only at registration and by `set_contact_policy`.** Messages, reservations and inbox reads leave it alone, so `am agents reap --stale-days N` would retire every agent registered more than N days ago, ntm pane agents at work included, and a retired agent can neither send nor receive. The subagent reap retires only the identities am-subagent created.
 - **Only `ensure_project` writes the archive's `project.json`,** and `am guard check` finds a project's reservations only through it. A project that first appeared through `register_agent`, `create_agent_identity` or a reservation has none, and the guard lets every commit there pass. ntm and the instructions call `ensure_project`; a subagent whose parent never registered creates its project without it.
 - **A subagent's `SubagentStart` context is its only source of its name.** A Claude Code subagent that forgets the `AGENT_NAME=` prefix commits as its parent (or as `human:<user>`), and its own exclusive reservations then block it with its name as holder. In ntm the subagent inherits `$TMUX_PANE`, so `am agents resolve-pane` in its shell names the parent, never the subagent.
 - **Subagent hooks fire more than once.** Claude Code runs `SubagentStart` again on resume and for every message of an agent-team teammate, and both clients run `SubagentStop` after every turn of a subagent, so a teammate or a Codex subagent that gets another turn has to reserve its files again.

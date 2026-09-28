@@ -81,7 +81,8 @@ stop)
 reap)
   # $2: the Agent Mail MCP endpoint. retire_agent has no CLI command, and over
   # HTTP it takes the registration token. `am agents reap` does not fit: it
-  # selects by last_active_ts, which only registration sets, so it would
+  # selects by last_active_ts, which only registration and set_contact_policy
+  # set, so it would
   # retire every ntm pane agent a day after its spawn, however busy.
   url="${2:?usage: am-subagent reap <mcp url>}"
   [[ -d "$state_dir" ]] || exit 0

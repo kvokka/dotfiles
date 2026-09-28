@@ -13,7 +13,6 @@ fi
 # agents [session] [ntm spawn flags]; the session defaults to the cwd name.
 agents() {
   local s="${1:-${PWD:t}}"; (( $# )) && shift
-  (( $+commands[ntm] )) || { print -u2 "ntm is not installed"; return 127; }
   command ntm spawn "$s" --cc="${NTM_CLAUDE_COUNT:-2}" --cod="${NTM_CODEX_COUNT:-1}" "$@"
 }
 

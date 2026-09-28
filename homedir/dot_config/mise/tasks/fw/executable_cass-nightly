@@ -6,7 +6,7 @@
 # in its JSON decide, not its exit code: a busy index lock (the 5-minute
 # cass-index starts at the same minute) is a step with exit 7 in a run that
 # exits non-zero, and is retried; an unusable semantic model is a skipped
-# backfill step with exit 20. Only a failed run shows up in `pitchfork status`.
+# backfill step with exit 15 or 20-24, which fails the run too. Only a failed run shows up in `pitchfork status`.
 
 set -uo pipefail
 

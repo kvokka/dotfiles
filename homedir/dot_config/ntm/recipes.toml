@@ -1,7 +1,7 @@
 # Scout panes: Codex pinned to gpt-6-luna at high effort, whatever
 # ~/.codex/config.toml says (other ntm Codex panes follow that config).
-# `ntm spawn` titles the pane cod_N_gpt-6-luna@high, and a respawn reads the
-# model and effort back from that title.
+# `ntm spawn` titles the pane <repo>--scout__cod_1_gpt-6-luna@high, and a
+# respawn reads the model and effort back from the title.
 # Spawn scouts in their own labelled session, `ntm spawn <repo> --label scout
 # -r scout --no-recovery`: ntm assign, spawn --assign, the coordinator and the
 # controller only look at the session they are given, so the coding session

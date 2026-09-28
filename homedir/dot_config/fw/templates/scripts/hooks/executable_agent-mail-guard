@@ -3,7 +3,8 @@
 # exclusively in MCP Agent Mail. prek passes the staged file names as arguments.
 #
 # `am guard check` reads the reservations from the Agent Mail archive
-# (STORAGE_ROOT, exported by the fw mise config) and skips the committer's own.
+# (STORAGE_ROOT in ~/.config/mcp-agent-mail/config.env) and skips the
+# committer's own.
 # The committer is AGENT_NAME, else AGENT_MAIL_AGENT, else the identity
 # am-subagent gave a Codex subagent (its shell carries its thread id as
 # CODEX_THREAD_ID, the key of that identity), else the Agent Mail identity of
