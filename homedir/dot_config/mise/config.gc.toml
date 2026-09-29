@@ -32,7 +32,7 @@ DO_NOT_TRACK = "1"
 # gc starts and stops the herdr server of each city itself.
 herdr = "0.9.2"
 # bd's server mode and gc's bd provider need the dolt CLI (gc: 2.1.0 or newer).
-# Never 2.2.1 to 2.3.1: some fresh databases answer every
+# Never 2.2.4 to 2.3.1: some fresh databases answer every
 # CALL DOLT_RESET('--hard') with "context canceled", which beads' own 2.2.0 pin
 # avoids.
 "aqua:dolthub/dolt" = "2.3.5"
