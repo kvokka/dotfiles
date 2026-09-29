@@ -70,18 +70,17 @@ keep `master` checked out there and put feature branches in `git worktree`s.
 [Gas City](https://github.com/gastownhall/gascity) (`gc`) with
 [Beads](https://github.com/gastownhall/beads) (`bd`) is declared in
 `homedir/dot_config/mise/config.gc.toml` and enabled only inside the
-devcontainer (`miserc.toml`, env `gc`). Every bd repository and gc city is a
-database of one Dolt server (`beads-dolt` daemon, data in `~/proj/share/beads`),
-next to the gc supervisor (`gc-supervisor`, dashboard on
-<http://127.0.0.1:8372/>).
+devcontainer (`miserc.toml`, env `gc`). All projects are rigs of one city, and
+the gc supervisor runs as the pitchfork daemon `gc-supervisor` (dashboard on
+<http://127.0.0.1:8372/>). The setup notes are in the comments of
+`config.gc.toml`.
 
 ```bash
-pitchfork list              # beads-dolt, gc-supervisor
-bd init --server --external --server-port 3308 --prefix <unique> --skip-hooks --skip-agents
-gc init --beads-target external --beads-transport direct \
-  --dolt-host 127.0.0.1 --dolt-port 3308 --dolt-database <unique> <city>
-bd sql "select id, title from <database>.issues"                    # another project
-gc doctor                   # in a city
+gc init <city>                          # a git repository on persistent storage
+gc rig add <repo> --prefix <unique>     # every project
+bd list                                 # a rig's own issues, inside the rig
+gc bd show <id>                         # any rig's issue
+gc doctor                               # in the city
 ```
 
 ### Flywheel stack (off)

@@ -19,9 +19,6 @@ gc_commit = "084b3e7cc9127337b90275a289bd0b19f2ca3fa1"
 # Usage metrics of gc and bd are on by default; both honour DO_NOT_TRACK.
 DO_NOT_TRACK = "1"
 
-[dotfiles]
-"~/proj/share/beads/.keep" = { content = "" }
-
 [tools]
 # Static build like the upstream release: with cgo on, go-icu-regex needs
 # libicu-dev. main.commit is the supervisor's build id for binary-drift checks;
@@ -40,44 +37,31 @@ herdr = "0.9.2"
 # repository); ~/.config/dcg holds its config. Never run `dcg install`.
 "github:Dicklesworthstone/destructive_command_guard" = "0.14.4"
 
-# The one Dolt server of every bd repository and gc city: gc's own topology,
-# one server with a database per scope, each named after its prefix (a city's
-# after --dolt-database). There is no merged view: a project reads another with
-# `bd sql "select id, title from <database>.issues"`, or inside a city with
-# `gc bd --rig <rig>` and `gc beads show <id>`. bd's shared-server mode
-# (BEADS_DOLT_SHARED_SERVER, --shared-server) is bd-standalone only: gc pins it
-# off in its scopes, since it could merge two cities' `hq` databases, and an
-# external city initialised under it gets a `.beads/` without metadata.
-# Not `bd dolt start`: it daemonizes, and `bd dolt stop` would then kill this
-# daemon. root without a password, loopback only.
+# Beads live in one gc city, with gc's default (proxied) store: no Dolt
+# daemon here. bd starts a detached proxy and `dolt sql-server` per scope on
+# first use, for the city (`<city>/.beads/dolt/hq`) and for each rig
+# (`<rig>/.beads/dolt/<prefix>`, gitignored in the rig repository); they never
+# exit on their own, and `gc stop` ends them. So the city and every rig
+# repository sit on persistent storage (~/proj). Never set bd's shared-server
+# mode (BEADS_DOLT_SHARED_SERVER, --shared-server): gc pins it off in its
+# scopes, since it could merge two cities' `hq` databases.
 #
-# Setting up a project on it:
-# - Every prefix and city database name is unique on the server; `hq` is the
-#   database gc gives a city by default, so never leave it to the default.
-# - Plain repository:
-#     bd init --server --external --server-port 3308 --prefix <unique> \
-#       --skip-hooks --skip-agents
-#   Without --server-port bd starts a Dolt of its own. Without the --skip flags
-#   bd sets a local core.hooksPath (.beads/hooks, shadowing the managed global
-#   hooks and gitleaks), writes agent files, and commits all of it with
-#   --no-verify.
-# - City: in a git repository (gc's bd context check wants one):
-#     gc init --beads-target external --beads-transport direct \
-#       --dolt-host 127.0.0.1 --dolt-port 3308 --dolt-database <unique> <city>
-#   Without the external flags gc runs a managed Dolt of its own for the city.
-#   Then in city.toml: `[session] provider = "herdr"` and
-#   `[daemon] auto_restart_on_drift = false` (see gc-supervisor).
-#   `gc doctor` warns "BdStore fallback … project_id could not be confirmed"
-#   on external scopes: gc forks bd per operation there, slower but correct.
-# - Rig: `gc rig add <path> --prefix <unique>`; it inherits the city endpoint.
-#   bd's own cross-prefix routing (`bd show <other-id>`) misses gc's rigs: gc
-#   writes routes.jsonl prefixes without the dash bd matches on.
-[daemons.beads-dolt]
-run = "mkdir -p dolt && cd dolt && exec dolt sql-server -H 127.0.0.1 -P 3308 --loglevel=warning"
-dir = "~/proj/share/beads"
-ready_port = 3308
-retry = true
-auto = ["start"]
+# Setting up:
+# - City: a git repository; `gc init <city>`, then in city.toml
+#   `[session] provider = "herdr"` and `[daemon] auto_restart_on_drift = false`
+#   (see gc-supervisor).
+# - Rig: `gc rig add <repo> --prefix <unique>`. bd init commits `.beads/` into
+#   the repository as `bd init: initialize beads issue tracking`; gc leaves a
+#   `.gitignore` block, `dolt.shared-server: false` in `.beads/config.yaml` and
+#   `.claude/skills/` (links into ~/.gc) uncommitted.
+# - Own issues: plain `bd` inside the rig, with gc running or not.
+# - Another rig's issues: only through gc, which needs the city registered
+#   (from a rig: `--city <city>` or GC_CITY otherwise):
+#   `gc bd show <id>` (scope from the id's prefix), `gc bd --rig <rig> list`,
+#   `gc beads show <id>`, `gc ready` for all scopes. Plain `bd show <id>` of
+#   another rig and cross-database `bd sql` find nothing: every scope is its
+#   own Dolt server, and bd's proxied mode does no route lookup. gc's agents
+#   get this from its gc-rigs and gc-work skills.
 
 # The machine-wide supervisor of all cities registered in ~/.gc/cities.toml,
 # API on 127.0.0.1:8372. pitchfork captures its output, so no tee into
