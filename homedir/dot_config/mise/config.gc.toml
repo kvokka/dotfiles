@@ -19,6 +19,13 @@ gc_commit = "084b3e7cc9127337b90275a289bd0b19f2ca3fa1"
 # Usage metrics of gc and bd are on by default; both honour DO_NOT_TRACK.
 DO_NOT_TRACK = "1"
 
+# gc's home (city registry, supervisor state, pack cache) outlives the
+# container: ~/.gc is a chezmoi symlink (symlink_dot_gc.tmpl) into
+# ~/proj/share/gc. Not GC_HOME: a daemon or shell started without mise's
+# environment would still use ~/.gc.
+[dotfiles]
+"~/proj/share/gc/.keep" = { content = "" }
+
 [tools]
 # Static build like the upstream release: with cgo on, go-icu-regex needs
 # libicu-dev. main.commit is the supervisor's build id for binary-drift checks;
@@ -47,7 +54,10 @@ herdr = "0.9.2"
 # scopes, since it could merge two cities' `hq` databases.
 #
 # Setting up:
-# - City: a git repository; `gc init <city>`, then in city.toml
+# - City: the repository gc-city (no remote yet), cloned to
+#   ~/proj/active/gc-city; `gc start` there registers it with the supervisor.
+#   It was made with `gc init --template gascity --providers claude,codex
+#   --default-provider claude`, and its city.toml sets
 #   `[session] provider = "herdr"` and `[daemon] auto_restart_on_drift = false`
 #   (see gc-supervisor).
 # - Rig: `gc rig add <repo> --prefix <unique>`. bd init commits `.beads/` into

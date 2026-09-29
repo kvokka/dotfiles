@@ -70,13 +70,15 @@ keep `master` checked out there and put feature branches in `git worktree`s.
 [Gas City](https://github.com/gastownhall/gascity) (`gc`) with
 [Beads](https://github.com/gastownhall/beads) (`bd`) is declared in
 `homedir/dot_config/mise/config.gc.toml` and enabled only inside the
-devcontainer (`miserc.toml`, env `gc`). All projects are rigs of one city, and
-the gc supervisor runs as the pitchfork daemon `gc-supervisor` (dashboard on
-<http://127.0.0.1:8372/>). The setup notes are in the comments of
+devcontainer (`miserc.toml`, env `gc`). All projects are rigs of one city, the
+repository gc-city (no remote yet), and the gc supervisor runs as the pitchfork
+daemon `gc-supervisor` (dashboard on <http://127.0.0.1:8372/>). gc's home
+`~/.gc` links into `~/proj/share/gc`. The setup notes are in the comments of
 `config.gc.toml`.
 
 ```bash
-gc init <city>                          # a git repository on persistent storage
+git clone <gc-city> ~/proj/active/gc-city
+cd ~/proj/active/gc-city && gc start    # registers the city
 gc rig add <repo> --prefix <unique>     # every project
 bd list                                 # a rig's own issues, inside the rig
 gc bd show <id>                         # any rig's issue

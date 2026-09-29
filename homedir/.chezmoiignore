@@ -44,6 +44,7 @@ Library/**
 # Gas City and Beads: Linux devcontainer only (mise config.gc.toml)
 .config/mise/config.gc.toml
 .config/zshrc.d/260-gc.zsh
+.gc
 .gemini/**
 .claude/**
 {{ end }}
