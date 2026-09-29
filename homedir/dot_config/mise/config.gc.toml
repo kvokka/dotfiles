@@ -31,28 +31,47 @@ DO_NOT_TRACK = "1"
 # Session provider of the cities (`[session] provider = "herdr"` in city.toml);
 # gc starts and stops the herdr server of each city itself.
 herdr = "0.9.2"
-# bd's server mode and gc's bd provider need the dolt CLI. 2.2.0 is beads' own
-# pin: 2.3.x breaks CALL DOLT_RESET('--hard') in some fresh databases.
-"aqua:dolthub/dolt" = "2.2.0"
+# bd's server mode and gc's bd provider need the dolt CLI (gc: 2.1.0 or newer).
+# Never 2.2.1 to 2.3.1: some fresh databases answer every
+# CALL DOLT_RESET('--hard') with "context canceled", which beads' own 2.2.0 pin
+# avoids.
+"aqua:dolthub/dolt" = "2.3.5"
 # dcg guards the repositories that carry its hook (fw:init and this dotfiles
 # repository); ~/.config/dcg holds its config. Never run `dcg install`.
 "github:Dicklesworthstone/destructive_command_guard" = "0.14.4"
 
-# The one Dolt server of every bd repository and gc city, each a database of
-# its own, so a project reads another's issues with
-# `bd sql "select id, title from <database>.issues"`. It is joined per
-# repository, with the port spelled out (without it bd starts a server of its
-# own), in bd's server mode, not its shared-server mode:
-#   bd init --server --external --server-port 3308 --prefix <unique>
-#   gc init --beads-target external --beads-transport direct \
-#     --dolt-host 127.0.0.1 --dolt-port 3308 --dolt-database <unique> <city>
-# bd's shared-server mode (BEADS_DOLT_SHARED_SERVER) breaks gc: a city or rig
-# init under it creates the database but leaves `.beads/` without metadata,
-# and a gc-managed city spawns a second Dolt into the shared directory.
-# Rig databases are named after the rig prefix, like those of plain bd
-# repositories: pass `gc rig add --prefix` a prefix no repository uses.
+# The one Dolt server of every bd repository and gc city: gc's own topology,
+# one server with a database per scope, each named after its prefix (a city's
+# after --dolt-database). There is no merged view: a project reads another with
+# `bd sql "select id, title from <database>.issues"`, or inside a city with
+# `gc bd --rig <rig>` and `gc beads show <id>`. bd's shared-server mode
+# (BEADS_DOLT_SHARED_SERVER, --shared-server) is bd-standalone only: gc pins it
+# off in its scopes, since it could merge two cities' `hq` databases, and an
+# external city initialised under it gets a `.beads/` without metadata.
 # Not `bd dolt start`: it daemonizes, and `bd dolt stop` would then kill this
 # daemon. root without a password, loopback only.
+#
+# Setting up a project on it:
+# - Every prefix and city database name is unique on the server; `hq` is the
+#   database gc gives a city by default, so never leave it to the default.
+# - Plain repository:
+#     bd init --server --external --server-port 3308 --prefix <unique> \
+#       --skip-hooks --skip-agents
+#   Without --server-port bd starts a Dolt of its own. Without the --skip flags
+#   bd sets a local core.hooksPath (.beads/hooks, shadowing the managed global
+#   hooks and gitleaks), writes agent files, and commits all of it with
+#   --no-verify.
+# - City: in a git repository (gc's bd context check wants one):
+#     gc init --beads-target external --beads-transport direct \
+#       --dolt-host 127.0.0.1 --dolt-port 3308 --dolt-database <unique> <city>
+#   Without the external flags gc runs a managed Dolt of its own for the city.
+#   Then in city.toml: `[session] provider = "herdr"` and
+#   `[daemon] auto_restart_on_drift = false` (see gc-supervisor).
+#   `gc doctor` warns "BdStore fallback … project_id could not be confirmed"
+#   on external scopes: gc forks bd per operation there, slower but correct.
+# - Rig: `gc rig add <path> --prefix <unique>`; it inherits the city endpoint.
+#   bd's own cross-prefix routing (`bd show <other-id>`) misses gc's rigs: gc
+#   writes routes.jsonl prefixes without the dash bd matches on.
 [daemons.beads-dolt]
 run = "mkdir -p dolt && cd dolt && exec dolt sql-server -H 127.0.0.1 -P 3308 --loglevel=warning"
 dir = "~/proj/share/beads"

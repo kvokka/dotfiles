@@ -77,7 +77,7 @@ next to the gc supervisor (`gc-supervisor`, dashboard on
 
 ```bash
 pitchfork list              # beads-dolt, gc-supervisor
-bd init --server --external --server-port 3308 --prefix <unique>   # a repository
+bd init --server --external --server-port 3308 --prefix <unique> --skip-hooks --skip-agents
 gc init --beads-target external --beads-transport direct \
   --dolt-host 127.0.0.1 --dolt-port 3308 --dolt-database <unique> <city>
 bd sql "select id, title from <database>.issues"                    # another project
