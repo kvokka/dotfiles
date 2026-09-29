@@ -1,5 +1,6 @@
 auto_env = true
 
 {% if get_env(name="RUNNER_VERSION", default="__UNSET__") == "__UNSET__" and os() == "linux" %}
-env = ["devcontainer", "fw"]
+# `fw` (config.fw.toml) is off: its br shares `.beads/` with gc's bd.
+env = ["devcontainer", "gc"]
 {% endif %}
