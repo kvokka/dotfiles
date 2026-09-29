@@ -20,3 +20,5 @@ tmp/
 .fallow/
 **/.claude/settings.local.json
 **/fnox.local.toml
+.claude/worktrees/
+.worktrees/
