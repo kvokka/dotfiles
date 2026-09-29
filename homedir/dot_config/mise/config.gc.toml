@@ -85,3 +85,15 @@ env = { GC_SUPERVISOR_LOG_TEE = "0" }
 ready_http = "http://127.0.0.1:8372/health"
 retry = true
 auto = ["start"]
+
+# gc's dashboard and API for the host browser: http://localhost:8372. The
+# supervisor stays on 127.0.0.1:8372: bound to any other address it refuses
+# writes without a write-auth key, and by default it accepts only loopback
+# Host headers, which the host's `localhost:8372` is. So this forwarder listens on 8373, the port compose
+# publishes as the host's 8372. Whoever reaches it drives the city, with no
+# login.
+[daemons.gc-supervisor-publish]
+run = "exec socat TCP-LISTEN:8373,fork,reuseaddr TCP:127.0.0.1:8372"
+ready_port = 8373
+retry = true
+auto = ["start"]

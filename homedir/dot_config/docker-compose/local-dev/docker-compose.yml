@@ -50,6 +50,7 @@ services:
       - "4096:4096"
       - "8765:8765" # fw agent-mail
       - "7337:7337" # fw ntm web
+      - "8372:8373" # gc supervisor dashboard (gc-supervisor-publish)
       - "2222:22" # compatibility with ssh-agent forwarding
     # # Use this block for mitmproxy, #mitmproxy
     # environment:
