@@ -41,6 +41,9 @@ Library/**
 .config/rulesync/**
 .config/cass-memory/**
 .config/zshrc.d/250-fw.zsh
+# Gas City and Beads: Linux devcontainer only (mise config.gc.toml)
+.config/mise/config.gc.toml
+.config/zshrc.d/260-gc.zsh
 .gemini/**
 .claude/**
 {{ end }}

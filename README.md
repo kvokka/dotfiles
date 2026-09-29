@@ -67,9 +67,29 @@ keep `master` checked out there and put feature branches in `git worktree`s.
 
 ## Agent stack (Linux devcontainer)
 
+[Gas City](https://github.com/gastownhall/gascity) (`gc`) with
+[Beads](https://github.com/gastownhall/beads) (`bd`) is declared in
+`homedir/dot_config/mise/config.gc.toml` and enabled only inside the
+devcontainer (`miserc.toml`, env `gc`). Every bd repository and gc city is a
+database of one Dolt server (`beads-dolt` daemon, data in `~/proj/share/beads`),
+next to the gc supervisor (`gc-supervisor`, dashboard on
+<http://127.0.0.1:8372/>).
+
+```bash
+pitchfork list              # beads-dolt, gc-supervisor
+bd init --server --external --server-port 3308 --prefix <unique>   # a repository
+gc init --beads-target external --beads-transport direct \
+  --dolt-host 127.0.0.1 --dolt-port 3308 --dolt-database <unique> <city>
+bd sql "select id, title from <database>.issues"                    # another project
+gc doctor                   # in a city
+```
+
+### Flywheel stack (off)
+
 The agent-management stack ported from [acfs](https://github.com/Dicklesworthstone/agentic_coding_flywheel_setup)
-is declared in `homedir/dot_config/mise/config.fw.toml` and enabled only inside
-the devcontainer (`miserc.toml`, env `fw`). Background services run as pitchfork
+is declared in `homedir/dot_config/mise/config.fw.toml` and is off: its `br`
+shares `.beads/` with `bd`. Adding `fw` to the env list in `miserc.toml` turns
+it on again. Background services run as pitchfork
 daemons (`mise daemons`): services start with the first activated shell, cron
 jobs run on their schedules.
 
