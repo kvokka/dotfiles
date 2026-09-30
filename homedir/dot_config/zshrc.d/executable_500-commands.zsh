@@ -19,3 +19,7 @@ extract() {
         echo "'$1' is not a valid file"
     fi
 }
+
+# Unattended launchers (acfs "vibe mode"); plain `claude`/`codex` keep their defaults.
+mise_active claude && alias cc='NODE_OPTIONS="--max-old-space-size=${CLAUDE_HEAP_MB:-16384}" command claude --dangerously-skip-permissions'
+mise_active codex && alias cod='command codex --dangerously-bypass-approvals-and-sandbox --search'

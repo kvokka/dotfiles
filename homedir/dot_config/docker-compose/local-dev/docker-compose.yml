@@ -44,6 +44,8 @@ services:
       context: $HOME/.config/docker-compose/local-dev/
       dockerfile: Dockerfile
     command: tail -f /dev/null
+    environment:
+      DOTFILES_BOOTSTRAP_CONTAINER: "true" # mise bootstrap on a new container (entrypoint.sh)
     ports:
       - "8000:8000"
       - "5173:5173"

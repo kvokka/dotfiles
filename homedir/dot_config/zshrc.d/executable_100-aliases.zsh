@@ -34,5 +34,6 @@ alias dcl='dc logs -f --tail=100'
 alias dcps='dc ps --format "table {{.Name}}\t{{.State}}\t{{.Ports}}"'
 
 # Interactive shell aliases (both variants are useful)
-alias dcr='dc run --rm -it console zsh'
+# dcr's throwaway container skips the console's bootstrap (entrypoint.sh)
+alias dcr='dc run --rm -it -e DOTFILES_BOOTSTRAP_CONTAINER=false console zsh'
 alias dce='dc exec -it console zsh'
