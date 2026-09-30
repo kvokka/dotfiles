@@ -28,7 +28,5 @@ RUN apt update \
 USER ubuntu
 WORKDIR /home/ubuntu/proj/active
 
-# The entrypoint runs from the chezmoi source that compose bind-mounts, not
-# from a copy baked into the image: a change to it needs no rebuild and no
-# `chezmoi apply` on the host.
-ENTRYPOINT ["/usr/bin/tini", "--", "sh", "/home/ubuntu/.dotfiles/homedir/dot_config/docker-compose/local-dev/executable_entrypoint.sh"]
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/usr/bin/tini", "--", "/entrypoint.sh"]
