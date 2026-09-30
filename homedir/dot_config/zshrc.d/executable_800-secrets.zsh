@@ -1,1 +1,1 @@
-command -v fnox >/dev/null 2>&1 && eval "$(fnox activate zsh)"
+mise_active fnox && eval "$(fnox activate zsh)"
