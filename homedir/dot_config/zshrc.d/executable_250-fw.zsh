@@ -1,10 +1,14 @@
 # Flywheel agent stack helpers: only while mise's `fw` env is on (miserc.toml);
-# ntm stands for the env.
-mise_active ntm || return
+# every tool is optional.
 
 # ntm shell integration: `ntm bind` palette key, session helpers
-eval "$(ntm shell zsh)"
-eval "$(cass completions zsh)"
+if mise_active ntm; then
+  eval "$(ntm shell zsh)"
+fi
+
+if mise_active cass; then
+  eval "$(cass completions zsh)"
+fi
 
 # agents [session] [ntm spawn flags]; the session defaults to the cwd name.
 agents() {
