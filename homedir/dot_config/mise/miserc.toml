@@ -1,6 +1,13 @@
 auto_env = true
 
+# The chezmoi source of these files, in the checkout and in any worktree:
+# inside it mise would load them as a project config ahead of the rendered
+# ones, and the shell hook would register a second copy of every daemon.
+ignored_config_paths = ["/**/homedir/dot_config/mise/**"]
+
 {% if get_env(name="RUNNER_VERSION", default="__UNSET__") == "__UNSET__" and os() == "linux" %}
 # `fw` (config.fw.toml) is off: its br shares `.beads/` with gc's bd.
+# The daemons of $HOME belong to one env list: mise registers another one only
+# after the running daemons of the old one are stopped (`pitchfork stop`).
 env = ["devcontainer", "gc"]
 {% endif %}
