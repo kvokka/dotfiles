@@ -92,4 +92,5 @@
 - `homedir/dot_config/docker-compose/local-dev/README.md` describes local compose as the devcontainer replacement.
 - The zsh aliases wrap `docker-compose -f "$HOME/.config/docker-compose/local-dev/docker-compose.yml"` through `dc`.
 - Compose entrypoint applies dotfiles in the container and creates the OpenCode worktree symlink, so compose operations are not inspection-only.
+- The entrypoint applies the dotfiles to a fresh `home` volume (its `run_once` script bootstraps), and the `console` service (`DOTFILES_BOOTSTRAP_CONTAINER`) runs `mise bootstrap` once per new container on an existing volume, marked by `/var/lib/dotfiles-bootstrapped` outside the volume.
 - The host `~/.dotfiles` is mounted at `/home/ubuntu/.dotfiles` and passed as `--source` to the entrypoint's chezmoi one-liner. Keep it outside `~/.local`: docker creates the parent directories of a nested bind mount inside the `home` volume as root, which breaks mise writing to `~/.local`.

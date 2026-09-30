@@ -1,14 +1,10 @@
-# Flywheel agent stack helpers (Linux devcontainer only; every block is guarded,
-# so this file is harmless where the tools are absent).
+# Flywheel agent stack helpers: only while mise's `fw` env is on (miserc.toml);
+# ntm stands for the env.
+mise_active ntm || return
 
 # ntm shell integration: `ntm bind` palette key, session helpers
-if (( $+commands[ntm] )); then
-  eval "$(ntm shell zsh)"
-fi
-
-if (( $+commands[cass] )); then
-  eval "$(cass completions zsh)"
-fi
+eval "$(ntm shell zsh)"
+eval "$(cass completions zsh)"
 
 # agents [session] [ntm spawn flags]; the session defaults to the cwd name.
 agents() {
@@ -25,7 +21,3 @@ scout() {
   command ntm pipeline run ~/.config/ntm/pipelines/scout-work.yaml \
     --session "${PWD:t}--scout" --var bead="$1" --var agent="${2:-any}"
 }
-
-# Unattended launchers (acfs "vibe mode"); plain `claude`/`codex` keep their defaults.
-(( $+commands[claude] )) && alias cc='NODE_OPTIONS="--max-old-space-size=${CLAUDE_HEAP_MB:-16384}" command claude --dangerously-skip-permissions'
-(( $+commands[codex] )) && alias cod='command codex --dangerously-bypass-approvals-and-sandbox --search'

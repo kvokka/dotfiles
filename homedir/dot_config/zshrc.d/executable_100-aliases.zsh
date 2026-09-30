@@ -34,5 +34,10 @@ alias dcl='dc logs -f --tail=100'
 alias dcps='dc ps --format "table {{.Name}}\t{{.State}}\t{{.Ports}}"'
 
 # Interactive shell aliases (both variants are useful)
-alias dcr='dc run --rm -it console zsh'
+# dcr's throwaway container skips the console's bootstrap (entrypoint.sh)
+alias dcr='dc run --rm -it -e DOTFILES_BOOTSTRAP_CONTAINER=false console zsh'
 alias dce='dc exec -it console zsh'
+
+# Unattended launchers (acfs "vibe mode"); plain `claude`/`codex` keep their defaults.
+(( $+commands[claude] )) && alias cc='NODE_OPTIONS="--max-old-space-size=${CLAUDE_HEAP_MB:-16384}" command claude --dangerously-skip-permissions'
+(( $+commands[codex] )) && alias cod='command codex --dangerously-bypass-approvals-and-sandbox --search'
