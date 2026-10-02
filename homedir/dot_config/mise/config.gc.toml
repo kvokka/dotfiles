@@ -22,7 +22,8 @@ DO_NOT_TRACK = "1"
 # gc's home (city registry, supervisor state, pack cache) outlives the
 # container: ~/.gc is a chezmoi symlink (symlink_dot_gc.tmpl) into
 # ~/proj/share/gc. Not GC_HOME: a daemon or shell started without mise's
-# environment would still use ~/.gc.
+# environment would still use ~/.gc. The city is checked out in the same
+# directory; its .gitignore keeps gc's home files out of the city repository.
 [dotfiles]
 "~/proj/share/gc/.keep" = { content = "" }
 
@@ -54,8 +55,9 @@ herdr = "0.9.2"
 # scopes, since it could merge two cities' `hq` databases.
 #
 # Setting up:
-# - City: the repository gc-city (no remote yet), cloned to
-#   ~/proj/active/gc-city; `gc start` there registers it with the supervisor.
+# - City: the repository gc-city (no remote yet), checked out in gc's home
+#   ~/proj/share/gc (`git init` + `git pull`: mise creates the directory
+#   first); `gc start` there registers it with the supervisor.
 #   It was made with `gc init --template gascity --providers claude,codex
 #   --default-provider claude`, and its city.toml sets
 #   `[session] provider = "herdr"` and `[daemon] auto_restart_on_drift = false`

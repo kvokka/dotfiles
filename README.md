@@ -74,12 +74,13 @@ devcontainer (`miserc.toml`, env `gc`). All projects are rigs of one city, the
 repository gc-city (no remote yet), and the gc supervisor runs as the pitchfork
 daemon `gc-supervisor` (dashboard on <http://localhost:8372/>, from the host
 too, through `gc-supervisor-publish`). gc's home
-`~/.gc` links into `~/proj/share/gc`. The setup notes are in the comments of
-`config.gc.toml`.
+`~/.gc` links into `~/proj/share/gc`, which is also the city's checkout. The
+setup notes are in the comments of `config.gc.toml`.
 
 ```bash
-git clone <gc-city> ~/proj/active/gc-city
-cd ~/proj/active/gc-city && gc start    # registers the city
+cd ~/proj/share/gc                      # gc's home; mise creates it
+git init -b master && git remote add origin <gc-city> && git pull origin master
+gc start                                # registers the city
 gc rig add <repo> --prefix <unique>     # every project
 bd list                                 # a rig's own issues, inside the rig
 gc bd show <id>                         # any rig's issue
