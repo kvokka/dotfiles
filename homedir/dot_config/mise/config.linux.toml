@@ -2,11 +2,11 @@
 
 "npm:agent-browser" = "latest"
 btop = '1.4'                   # upstream releases linux binaries only, macOS pours the bottle
-opencode = "2"
+opencode = "2.0.29"
 codex = "0"
 claude = "2.1"
 just = "1.58"
-ast-grep = "0.51"
+ast-grep = "0.51.0"
 agy = "1.3"                    # aqua:google-antigravity/antigravity-cli
 
 "npm:tokscale" = "latest"
