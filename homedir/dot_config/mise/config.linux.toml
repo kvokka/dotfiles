@@ -1,6 +1,7 @@
 [tools]
 
 "npm:agent-browser" = "latest"
+"npm:rulesync" = "36"
 btop = '1.4'                   # upstream releases linux binaries only, macOS pours the bottle
 # opencode = "2" # not using for now + mise fail to install v2 for now. let it soak
 codex = "0"
@@ -51,3 +52,12 @@ cron = { schedule = "0 0 13 * * *", retrigger = "finish" }
 [settings]
 
 yes = true
+
+[tasks."ai:sync"]
+description = "Generate MCP servers and hooks for every AI client (rulesync)"
+# Source: ~/.config/rulesync. rulesync replaces only its own keys in each
+# client's user-scope files (MCP server list, hook list) and keeps the rest.
+# Runs after every `chezmoi apply` (run_after_200_ai-sync.sh), because chezmoi
+# rewrites those files whole and drops the generated keys.
+dir = "{{ env.HOME }}/.config/rulesync"
+run = "rulesync generate"

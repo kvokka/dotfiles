@@ -281,15 +281,6 @@ cass_model_installed
 description = "Prepare a repository for the agent stack (idempotent)"
 file = "{{ env.HOME }}/.config/mise/tasks/fw/init"
 
-[tasks."ai:sync"]
-description = "Generate MCP servers and hooks for every AI client (rulesync)"
-# Source: ~/.config/rulesync. rulesync replaces only its own keys in each
-# client's user-scope files (MCP server list, hook list) and keeps the rest.
-# Runs after every `chezmoi apply` (run_after_200_ai-sync.sh), because chezmoi
-# rewrites those files whole and drops the generated keys.
-dir = "{{ env.HOME }}/.config/rulesync"
-run = "rulesync generate"
-
 [tasks."fw:am-tui"]
 description = "Open Agent Mail's TUI in the running server (detach: Ctrl-\\)"
 # Attaches to the agent-mail daemon's tmux server; TMUX= allows it from inside

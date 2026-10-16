@@ -28,9 +28,12 @@
     stripComponents: 1
     refreshPeriod: "168h"
 
-".oh-my-zsh/custom/plugins/claude-code":
-    type: "archive"
-    url: "https://github.com/1160054/claude-code-zsh-completion/archive/master.tar.gz"
-    exact: true
-    stripComponents: 1
+".oh-my-zsh/custom/plugins/claude-code/claude-code.plugin.zsh":
+    type: "file"
+    url: "https://raw.githubusercontent.com/1160054/claude-code-zsh-completion/main/claude-code.plugin.zsh"
+    refreshPeriod: "168h"
+
+".oh-my-zsh/custom/plugins/claude-code/completions/_claude":
+    type: "file"
+    url: "https://raw.githubusercontent.com/1160054/claude-code-zsh-completion/main/completions/_claude"
     refreshPeriod: "168h"
