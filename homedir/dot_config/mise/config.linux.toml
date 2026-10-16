@@ -2,7 +2,7 @@
 
 "npm:agent-browser" = "latest"
 btop = '1.4'                   # upstream releases linux binaries only, macOS pours the bottle
-opencode = "2.0.29"
+# opencode = "2" # not using for now + mise fail to install v2 for now. let it soak
 codex = "0"
 claude = "2.1"
 just = "1.58"

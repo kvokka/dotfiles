@@ -5,7 +5,6 @@ zshPlugins:
   - "direnv"
   - "gcloud"
   - "git"
-  - "github"
   - "golang"
   - "kubectl"
   - "npm"
