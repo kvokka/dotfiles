@@ -123,6 +123,10 @@
 [worktree]
 useRelativePaths = true
 
+[beads]
+	# bd (beads) refuses to run without it; checked by `gc doctor` beads-role
+	role = maintainer
+
 {{ if eq .chezmoi.os "darwin" }}
 [filter "plist"]
     clean = plutil -convert xml1 -o - %f
