@@ -41,12 +41,19 @@ auto_update = true
 [bootstrap.packages]
 "apt:openssh-server" = "latest"
 
+# The drop-in dir comes with openssh-server, which a bootstrap that skips
+# packages does not install.
+[bootstrap.directories."/etc/ssh/sshd_config.d"]
+owner = "root"
+group = "root"
+mode = "0755"
+
 [bootstrap.files."/etc/ssh/sshd_config.d/devcontainer.conf"]
 content = """
-AllowUsers ubuntu
+AllowUsers {{ .chezmoi.username }}
 PasswordAuthentication no
-AuthorizedKeysFile /home/ubuntu/.secrets/ssh/kvokka-agent.pub
-HostKey /home/ubuntu/.local/state/sshd/ssh_host_ed25519_key
+AuthorizedKeysFile .secrets/ssh/{{ .github_login }}-agent.pub
+HostKey {{ .chezmoi.homeDir }}/.local/state/sshd/ssh_host_ed25519_key
 """
 owner = "root"
 group = "root"
