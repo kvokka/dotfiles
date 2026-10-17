@@ -13,7 +13,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5-1",
+  "model": "opus",
   "skillOverrides": {
     "run": "off",
     "init": "off"
@@ -67,15 +67,25 @@
       "effortLevel": "high"
     }
   },
+  "pluginConfigs": {
+    "cc-plugin-agents-md@builtin": {
+      "options": {
+        "instructionFiles": "claude-md-or-agents-md"
+      }
+    }
+  },
+  "enableArtifact": false,
   "askUserQuestionTimeout": "never",
   "channelsEnabled": true,
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "dark-ansi",
+  "switchModelsOnFlag": true,
   "remoteControlAtStartup": false,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
+  "awaySummaryEnabled": false,
   "//": [
     "TODO: move siam-orchestration@siam to the project level"
   ]
