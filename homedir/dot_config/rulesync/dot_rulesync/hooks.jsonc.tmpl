@@ -13,35 +13,20 @@
     "preToolUse": [
       { "matcher": "Bash", "command": "{{ .chezmoi.homeDir }}/.claude/hooks/trauma_guard.py", "timeout": 10 },
     ],
-    // Instruction blocks of the tools every session uses, then Agent Mail
-    // state. Beads is a repository's own (its AGENTS.md from fw:init), and ubs
-    // runs in the repository's pre-commit hook, so neither has a block here.
-    // SessionStart also fires after compaction, so the blocks come back.
-    // Claude Code and Codex show the model plain stdout only from SessionStart
-    // and UserPromptSubmit, and from PostToolUse only a JSON
-    // `additionalContext`; am-hook prints the one each event needs. agy has
-    // neither SessionStart nor UserPromptSubmit.
+    // Instruction blocks of the tools every session uses. Beads is a
+    // repository's own (its AGENTS.md from fw:init), and ubs runs in the
+    // repository's pre-commit hook, so neither has a block here. Agent Mail is
+    // not global: it belongs to the fw stack only (config.fw.toml), and gc
+    // agents, which run with this HOME, use beadmail. SessionStart also fires
+    // after compaction, so the blocks come back. agy has neither SessionStart
+    // nor UserPromptSubmit.
     {{- $i := printf "%s/.config/fw/instructions" .chezmoi.homeDir }}
     "sessionStart": [
-      { "command": "cat {{ $i }}/cm.md {{ $i }}/cass.md {{ $i }}/agent-mail.md", "timeout": 10 },
-      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-hook session", "timeout": 10 },
+      { "command": "cat {{ $i }}/cm.md {{ $i }}/cass.md", "timeout": 10 },
     ],
     // cass-memory rules for the task, once, on the first prompt of a session.
     "beforeSubmitPrompt": [
       { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/cm-context-hook", "timeout": 15 },
-    ],
-    "postToolUse": [
-      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-hook inbox", "timeout": 10 },
-    ],
-    // A subagent that may edit files gets an Agent Mail identity of its own at
-    // its start (its name comes back as `additionalContext`), and its file
-    // reservations are released when it stops; am-subagent skips read-only
-    // agent types and prints nothing on stop.
-    "subagentStart": [
-      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-subagent start", "timeout": 15 },
-    ],
-    "subagentStop": [
-      { "command": "{{ .chezmoi.homeDir }}/.config/fw/bin/am-subagent stop", "timeout": 10 },
     ],
   },
 }
