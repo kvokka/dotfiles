@@ -15,13 +15,14 @@ experimental = true # `mise daemons`
 DO_NOT_TRACK = "1"
 
 # gc's home (city registry, supervisor state, pack cache) outlives the
-# container: ~/.gc is a chezmoi symlink (symlink_dot_gc.tmpl) into
-# ~/proj/share/gc. Not GC_HOME: a daemon or shell started without mise's
-# environment would still use ~/.gc.
+# container: ~/.gc is a chezmoi symlink (symlink_dot_gc.tmpl) to
+# ~/proj/share/gc, which is also the city. Not GC_HOME: a daemon or shell
+# started without mise's environment would still use ~/.gc.
 [dotfiles]
 "~/proj/share/gc/.keep" = { content = "" }
 
 [tools]
+# Release binaries (github backend); bd = the version gc pins.
 "github:gastownhall/beads" = "1.3.1"
 "github:gastownhall/gascity" = "1.5.0"
 # Session provider of the cities (`[session] provider = "herdr"` in city.toml);
@@ -46,8 +47,8 @@ herdr = "0.9.5"
 # scopes, since it could merge two cities' `hq` databases.
 #
 # Setting up:
-# - City: the repository gc-city (no remote yet), cloned to
-#   ~/proj/active/gc-city; `gc start` there registers it with the supervisor.
+# - City: the repository gc-city (no remote yet) at ~/proj/share/gc, also
+#   gc's home; `gc start` there registers it with the supervisor.
 #   It was made with `gc init --template gascity --providers claude,codex
 #   --default-provider claude`, and its city.toml sets
 #   `[session] provider = "herdr"` and `[daemon] auto_restart_on_drift = false`
