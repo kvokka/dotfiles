@@ -34,3 +34,35 @@ replace = true
 [settings]
 
 auto_update = true
+
+# sshd for the host's `ssh docker-container` (compose publishes 2222 as 22).
+# The host logs in with the key of the `ssh_agent_*` compose secrets, so the
+# mounted public key is the only authorized key.
+[bootstrap.packages]
+"apt:openssh-server" = "latest"
+
+[bootstrap.files."/etc/ssh/sshd_config.d/devcontainer.conf"]
+content = """
+AllowUsers ubuntu
+PasswordAuthentication no
+AuthorizedKeysFile /home/ubuntu/.secrets/ssh/kvokka-agent.pub
+HostKey /home/ubuntu/.local/state/sshd/ssh_host_ed25519_key
+"""
+owner = "root"
+group = "root"
+mode = "0644"
+
+# The host key lives in the `home` volume: the one apt generates in /etc/ssh
+# changes with every new container, and the host's ssh would refuse it. The
+# container has no systemd to create sshd's privilege separation dir.
+[daemons.sshd]
+run = """
+key=~/.local/state/sshd/ssh_host_ed25519_key
+[ -f "$key" ] || { mkdir -p -m 700 "${key%/*}" && ssh-keygen -q -t ed25519 -N '' -f "$key"; }
+sudo mkdir -p /run/sshd
+exec sudo /usr/sbin/sshd -D -e
+"""
+dir = "~"
+ready_port = 22
+retry = true
+auto = ["start"]
