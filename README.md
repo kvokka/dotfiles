@@ -78,8 +78,8 @@ too, through `gc-supervisor-publish`). gc's home
 `config.gc.toml`.
 
 ```bash
-git clone <gc-city> ~/proj/active/gc-city
-cd ~/proj/active/gc-city && gc start    # registers the city
+git clone <gc-city> ~/proj/work/gc-city
+cd ~/proj/work/gc-city && gc start      # registers the city
 gc rig add <repo> --prefix <unique>     # every project
 bd list                                 # a rig's own issues, inside the rig
 gc bd show <id>                         # any rig's issue

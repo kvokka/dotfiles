@@ -32,7 +32,7 @@ herdr = "0.9.5"
 # Never 2.2.4 to 2.3.1: some fresh databases answer every
 # CALL DOLT_RESET('--hard') with "context canceled", which beads' own 2.2.0 pin
 # avoids.
-"aqua:dolthub/dolt" = "2.4.2"
+"aqua:dolthub/dolt" = "2.5.0"
 # dcg guards the repositories that carry its hook (fw:init and this dotfiles
 # repository); ~/.config/dcg holds its config. Never run `dcg install`.
 "github:Dicklesworthstone/destructive_command_guard" = "0.15.3"

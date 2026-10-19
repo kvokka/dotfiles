@@ -24,7 +24,7 @@ max_bytes = 104857600 # 100 MiB
 [projects."/workspace"]
 trust_level = "trusted"
 
-[projects."/home/ubuntu/proj/active/"]
+[projects."/home/ubuntu/proj/work/"]
 trust_level = "trusted"
 
 [tui]
@@ -82,7 +82,6 @@ enabled = true
 
 {{ $codex_active_repos := list
   "siam-platform"
-  "codex-mcp"
   "siam-api"
   "siam-app"
   "siam-ocr"
@@ -94,7 +93,7 @@ enabled = true
   "siam-image-prepare"  -}}
 
 {{ range $codex_active_repos -}}
-[projects."/home/ubuntu/proj/active/{{ . }}"]
+[projects."/home/ubuntu/proj/work/{{ . }}"]
 trust_level = "trusted"
 
 {{ end -}}

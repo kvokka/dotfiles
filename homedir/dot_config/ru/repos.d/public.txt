@@ -1,1 +1,4 @@
 # Repositories for `ru sync`, one per line: owner/repo [dirname], optional @branch.
+gastownhall/gascity-packs
+gastownhall/gascity
+kvokka/pp_sql

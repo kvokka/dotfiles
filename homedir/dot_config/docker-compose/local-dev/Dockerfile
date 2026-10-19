@@ -26,7 +26,7 @@ RUN apt update \
   && rm -rf /var/lib/apt/lists/*
 
 USER ubuntu
-WORKDIR /home/ubuntu/proj/active
+WORKDIR /home/ubuntu/proj/work
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/usr/bin/tini", "--", "/entrypoint.sh"]

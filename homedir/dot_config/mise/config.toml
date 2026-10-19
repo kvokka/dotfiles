@@ -93,7 +93,7 @@ npm.package_manager = "bun"
 
 idiomatic_version_file_enable_tools = ["python", "ruby"]
 
-trusted_config_paths = ["~/proj/active"]
+trusted_config_paths = ["~/proj/active", "~/proj/work"]
 
 [settings.pipx]
 uvx = true

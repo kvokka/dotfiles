@@ -4,9 +4,12 @@
 load_dotenv = true
 
 [whitelist]
+# TODO: Drain this list after 01-01-2027
 prefix = [
   "/workspace",
   "~/proj/active/sa-web",
   "~/proj/active/wise-generator",
+  "~/proj/work/sa-web",
+  "~/proj/work/wise-generator",
   "~/proj/active/cat",
 ]

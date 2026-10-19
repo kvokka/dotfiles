@@ -4,7 +4,7 @@
 # file_count * file_size_bytes = 5 GiB.
 
 [scanner]
-root_paths = ["{{ .chezmoi.homeDir }}/proj/active", "{{ .chezmoi.homeDir }}/.cache", "/tmp"]
+root_paths = ["{{ .chezmoi.homeDir }}/proj/work", "{{ .chezmoi.homeDir }}/.cache", "/tmp"]
 cross_devices = false
 protected_paths = ["{{ .chezmoi.homeDir }}/proj/share/*", "{{ .chezmoi.homeDir }}/.ballast"]
 quarantine_enabled = true
@@ -17,8 +17,8 @@ auto_provision = true
 file_count = 5
 file_size_bytes = 1073741824 # 1 GiB per file
 
-# ~/proj/active is a bind mount from the host: never place a ballast pool there.
-[ballast.overrides."{{ .chezmoi.homeDir }}/proj/active"]
+# ~/proj/work is a bind mount from the host: never place a ballast pool there.
+[ballast.overrides."{{ .chezmoi.homeDir }}/proj/work"]
 enabled = false
 
 [policy]

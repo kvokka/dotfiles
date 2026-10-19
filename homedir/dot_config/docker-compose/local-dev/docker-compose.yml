@@ -9,7 +9,6 @@ x-common-base: &common-base
     - dev
   volumes:
     - home:/home/ubuntu:cached
-    - ~/proj/active:/home/ubuntu/proj/active:cached
     - ~/proj/share:/home/ubuntu/proj/share:cached
     - ~/.dotfiles:/home/ubuntu/.dotfiles:cached # chezmoi source, shared with the host
     - /var/run/docker.sock:/var/run/docker.sock
@@ -194,7 +193,7 @@ services:
   sa-backend:
     <<: *common-base
     profiles: [ "sa" ]
-    working_dir: /home/ubuntu/proj/active/sa-web/backend
+    working_dir: /home/ubuntu/proj/work/sa-web/backend
     environment:
       BACKEND_CORS_ORIGINS: http://localhost:5373,http://frontend:5373,http://host.docker.internal:5373
     ports:
@@ -212,7 +211,7 @@ services:
         uv run cli db create
         uv run cli db migrate
         uv run cli db seed
-        sudo dpkg -i $(ls -v ~/proj/active/wise-generator/shared/wise-gen_*_arm64.deb | tail -1) || true
+        sudo dpkg -i $(ls -v ~/proj/work/wise-generator/shared/wise-gen_*_arm64.deb | tail -1) || true
         ENVIRONMENT=test uv run cli db create
         ENVIRONMENT=test uv run cli db migrate
         uv run uvicorn src.main:app --host 0.0.0.0 --port 8200 --reload
@@ -220,7 +219,7 @@ services:
   sa-frontend:
     <<: *common-base
     profiles: [ "sa" ]
-    working_dir: /home/ubuntu/proj/active/sa-web/frontend
+    working_dir: /home/ubuntu/proj/work/sa-web/frontend
     environment:
       APP_PROXY_TARGET: http://sa-backend:8200
       APP_BACKEND_TARGET: http://localhost:8200
@@ -242,7 +241,7 @@ services:
     <<: *common-base
     profiles: [ "sa" ]
     command: uv run python serve.py
-    working_dir: /home/ubuntu/proj/active/wise-generator/test
+    working_dir: /home/ubuntu/proj/work/wise-generator/test
     ports:
       - "11199:11199" # dashboard
       - "35729:35729" # live reload
