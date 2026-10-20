@@ -49,11 +49,6 @@ CASS_SEMANTIC_EMBEDDER = "multilingual-minilm"
 "github:Dicklesworthstone/brenner_bot" = "0.4.1"
 "github:Dicklesworthstone/storage_ballast_helper" = "0.6.2"
 "github:Dicklesworthstone/aadc" = "0.1.1"
-# pi: minimal agent harness for one-shot LLM calls (a prompt in, text out, no
-# tools, no session). One profile per purpose under ~/.config/fw/pi/<name>,
-# selected with PI_CODING_AGENT_DIR; `cm-llm` (the `cm` profile) is cass-memory's
-# LLM. Reach for it instead of a full coding agent when a job only needs text.
-"github:earendil-works/pi" = "0.87.1"
 # AI client wiring: rulesync generates the clients' MCP servers and hooks
 # (`ai:sync` below).
 "npm:rulesync" = "17.0.0"
