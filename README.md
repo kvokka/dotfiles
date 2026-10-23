@@ -71,15 +71,15 @@ keep `master` checked out there and put feature branches in `git worktree`s.
 [Beads](https://github.com/gastownhall/beads) (`bd`) is declared in
 `homedir/dot_config/mise/config.gc.toml` and enabled only inside the
 devcontainer (`miserc.toml`, env `gc`). All projects are rigs of one city, the
-repository gc-city (no remote yet), and the gc supervisor runs as the pitchfork
-daemon `gc-supervisor` (dashboard on <http://localhost:8372/>, from the host
-too, through `gc-supervisor-publish`). gc's home
-`~/.gc` links into `~/proj/share/gc`. The setup notes are in the comments of
-`config.gc.toml`.
+repository [kvokka/gc](https://github.com/kvokka/gc) at `~/proj/share/gc`, and
+the gc supervisor runs as the pitchfork daemon `gc-supervisor` (dashboard on
+<http://localhost:8372/>, from the host too, through `gc-supervisor-publish`).
+gc's home `~/.gc` links to `~/proj/share/gc-home`, apart from the city. The
+setup notes are in the comments of `config.gc.toml`.
 
 ```bash
-git clone <gc-city> ~/proj/work/gc-city
-cd ~/proj/work/gc-city && gc start      # registers the city
+git clone git@github.com:kvokka/gc ~/proj/share/gc
+cd ~/proj/share/gc && gc start          # registers the city
 gc rig add <repo> --prefix <unique>     # every project
 bd list                                 # a rig's own issues, inside the rig
 gc bd show <id>                         # any rig's issue
