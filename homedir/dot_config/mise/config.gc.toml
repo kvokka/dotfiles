@@ -23,14 +23,15 @@ DO_NOT_TRACK = "1"
 
 [tools]
 # bd = the version gc's deps.env pins (BD_VERSION, still 1.3.1 on main).
-"github:gastownhall/beads" = "1.3.1"
+"github:gastownhall/beads" = "1.3.2"
 # gc follows main ("edge"), built from source: the edge release ships
 # linux_amd64 only. A main commit as version; CGO off as in upstream's
 # goreleaser (with cgo, dolt's go-icu-regex needs libicu-dev). GOFLAGS holds
 # one -X only (no spaces), so the sha goes into the version and `gc version`
 # shows commit "unknown". Bump: both shas, `chezmoi apply`, `mise install`,
 # then restart the supervisor (gc-supervisor below).
-"go:github.com/gastownhall/gascity/cmd/gc" = { version = "6e35bd5ea549c7c61117ee6510763f1ffe742e33", install_env = { CGO_ENABLED = "0", GOFLAGS = "-trimpath -ldflags=-X=main.version=1.5.0-edge.6e35bd5ea" } }
+# "go:github.com/gastownhall/gascity/cmd/gc" = { version = "6e35bd5ea549c7c61117ee6510763f1ffe742e33", install_env = { CGO_ENABLED = "0", GOFLAGS = "-trimpath -ldflags=-X=main.version=1.5.0-edge.6e35bd5ea" } }
+"github:gastownhall/gascity" = "1.5.1"
 # Session provider of the cities (`[session] provider = "herdr"` in city.toml);
 # gc starts and stops the herdr server of each city itself.
 herdr = "0.9.5"
