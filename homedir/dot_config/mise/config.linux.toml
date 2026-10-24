@@ -9,7 +9,7 @@ claude = "2.1"
 just = "1"
 ast-grep = "0.51"
 agy = "1.4"                    # aqua:google-antigravity/antigravity-cli
-pi = "1.4"
+pi = "1.4.0"
 
 "npm:tokscale" = "latest"
 
