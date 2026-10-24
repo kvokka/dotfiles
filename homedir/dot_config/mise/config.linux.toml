@@ -9,11 +9,11 @@ claude = "2.1"
 just = "1"
 ast-grep = "0.51"
 agy = "1.4"                    # aqua:google-antigravity/antigravity-cli
-pi = "1.3"
+pi = "1.4"
 
 "npm:tokscale" = "latest"
 
-"github:Dicklesworthstone/repo_updater" = { version = "1.5.0", asset_pattern = "ru" }
+"github:Dicklesworthstone/repo_updater" = { version = "1.6.0", asset_pattern = "ru" }
 
 [env]
 # agy updates its own binary in place on start, inside mise's install dir, so

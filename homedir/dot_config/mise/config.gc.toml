@@ -30,7 +30,7 @@ DO_NOT_TRACK = "1"
 # one -X only (no spaces), so the sha goes into the version and `gc version`
 # shows commit "unknown". Bump: both shas, `chezmoi apply`, `mise install`,
 # then restart the supervisor (gc-supervisor below).
-"go:github.com/gastownhall/gascity/cmd/gc" = { version = "b1a5e28d43f2122ff395282e6d0d86e6578a57b6", install_env = { CGO_ENABLED = "0", GOFLAGS = "-trimpath -ldflags=-X=main.version=1.5.0-edge.b1a5e28d4" } }
+"go:github.com/gastownhall/gascity/cmd/gc" = { version = "6e35bd5ea549c7c61117ee6510763f1ffe742e33", install_env = { CGO_ENABLED = "0", GOFLAGS = "-trimpath -ldflags=-X=main.version=1.5.0-edge.6e35bd5ea" } }
 # Session provider of the cities (`[session] provider = "herdr"` in city.toml);
 # gc starts and stops the herdr server of each city itself.
 herdr = "0.9.5"
@@ -38,7 +38,7 @@ herdr = "0.9.5"
 # Never 2.2.4 to 2.3.1: some fresh databases answer every
 # CALL DOLT_RESET('--hard') with "context canceled", which beads' own 2.2.0 pin
 # avoids.
-"aqua:dolthub/dolt" = "2.5.0"
+"aqua:dolthub/dolt" = "2.6.0"
 # dcg guards the repositories that carry its hook (fw:init and this dotfiles
 # repository); ~/.config/dcg holds its config. Never run `dcg install`.
 "github:Dicklesworthstone/destructive_command_guard" = "0.15.3"
