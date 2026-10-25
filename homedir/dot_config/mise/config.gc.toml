@@ -81,9 +81,15 @@ DO_NOT_TRACK = "1"
 # `gc start` kills the supervisor and forks a detached one next to pitchfork's:
 # set `[daemon] auto_restart_on_drift = false` in each city.toml and restart
 # with `pitchfork restart gc-supervisor` after a bump.
+#
+# On SIGTERM (`pitchfork stop|restart`) the supervisor stops every agent
+# session unless GC_SUPERVISOR_PRESERVE_SESSIONS_ON_SIGNAL=1, the setting gc's
+# own systemd unit carries: with it the `tmux -L <city>` servers live on and
+# the next supervisor adopts their sessions. To stop the sessions too, run
+# `gc stop` in the city first.
 [daemons.gc-supervisor]
 run = "exec gc supervisor run"
-env = { GC_SUPERVISOR_LOG_TEE = "0" }
+env = { GC_SUPERVISOR_LOG_TEE = "0", GC_SUPERVISOR_PRESERVE_SESSIONS_ON_SIGNAL = "1" }
 ready_http = "http://127.0.0.1:8372/health"
 retry = true
 auto = ["start"]
