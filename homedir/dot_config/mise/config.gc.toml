@@ -87,8 +87,20 @@ DO_NOT_TRACK = "1"
 # own systemd unit carries: with it the `tmux -L <city>` servers live on and
 # the next supervisor adopts their sessions. To stop the sessions too, run
 # `gc stop` in the city first.
+#
+# DOLT_REMOTE_INFO_BRANCH="" (empty, not unset): a dolt push to a git remote
+# writes the data to refs/dolt/<name> and, unless this is empty, also
+# force-pushes a visible branch `__dolt_remote_info__` to the same repository.
+# The managed dolt sql-server inherits this env and does the pushes of
+# `gc dolt sync` (the city's dolt-remotes-patrol pushes its scopes to the
+# private kvokka/gc, bead gc-032), so the code repo gets no extra branch. It
+# reaches a running dolt server only when gc starts it again. It is exported in
+# `run` (the shell sets the empty value for sure). A change of `run` or `env`
+# reaches pitchfork only once mise regenerates its config: from `~`, with the
+# agent variables stripped, `MISE_ENV=devcontainer,gc mise hook-env --force
+# --shell-pid $$ -s zsh >/dev/null`, then `pitchfork stop` + `pitchfork start`.
 [daemons.gc-supervisor]
-run = "exec gc supervisor run"
+run = "export DOLT_REMOTE_INFO_BRANCH=; exec gc supervisor run"
 env = { GC_SUPERVISOR_LOG_TEE = "0", GC_SUPERVISOR_PRESERVE_SESSIONS_ON_SIGNAL = "1" }
 ready_http = "http://127.0.0.1:8372/health"
 retry = true
