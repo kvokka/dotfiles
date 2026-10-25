@@ -22,19 +22,20 @@ DO_NOT_TRACK = "1"
 "~/proj/share/gc-home/.keep" = { content = "" }
 
 [tools]
-# bd = the version gc's deps.env pins (BD_VERSION, still 1.3.1 on main).
+# bd = the version gc's deps.env pins (BD_VERSION 1.3.2 on main, floor 1.3.0).
 "github:gastownhall/beads" = "1.3.2"
 # gc follows main ("edge"), built from source: the edge release ships
-# linux_amd64 only. A main commit as version; CGO off as in upstream's
-# goreleaser (with cgo, dolt's go-icu-regex needs libicu-dev). GOFLAGS holds
-# one -X only (no spaces), so the sha goes into the version and `gc version`
-# shows commit "unknown". Bump: both shas, `chezmoi apply`, `mise install`,
-# then restart the supervisor (gc-supervisor below).
-# "go:github.com/gastownhall/gascity/cmd/gc" = { version = "6e35bd5ea549c7c61117ee6510763f1ffe742e33", install_env = { CGO_ENABLED = "0", GOFLAGS = "-trimpath -ldflags=-X=main.version=1.5.0-edge.6e35bd5ea" } }
-"github:gastownhall/gascity" = "1.5.1"
-# Session provider of the cities (`[session] provider = "herdr"` in city.toml);
-# gc starts and stops the herdr server of each city itself.
-herdr = "0.9.5"
+# linux_amd64 only. A green main commit as version; CGO off as in upstream's
+# goreleaser (with cgo, dolt's go-icu-regex needs libicu-dev). `go install`
+# embeds no VCS info, so the -X flags set version, commit and date (quoted
+# into one -ldflags: GOFLAGS splits on spaces outside quotes); the supervisor's
+# /health build_id and gc's binary-drift check read the commit. Bump: the sha
+# in version and the three -X values, `chezmoi apply`, `mise install`, then
+# restart the supervisor (gc-supervisor below) and every agent session.
+"go:github.com/gastownhall/gascity/cmd/gc" = { version = "ff7194cf9ccf4c1bd2dfcfcad3c8666af7aeb083", install_env = { CGO_ENABLED = "0", GOFLAGS = "-trimpath '-ldflags=-X=main.version=1.5.1-edge.ff7194cf9 -X=main.commit=ff7194cf9ccf4c1bd2dfcfcad3c8666af7aeb083 -X=main.date=2026-10-25T08:47:27Z'" } }
+# Session provider of the cities is tmux (`[session] provider = "tmux"`,
+# socket "gc" in city.toml): gc starts the `tmux -L gc` server of each city,
+# and it outlives a supervisor restart. tmux itself is pinned in config.toml.
 # bd's server mode and gc's bd provider need the dolt CLI (gc: 2.1.0 or newer).
 # Never 2.2.4 to 2.3.1: some fresh databases answer every
 # CALL DOLT_RESET('--hard') with "context canceled", which beads' own 2.2.0 pin
@@ -58,7 +59,7 @@ herdr = "0.9.5"
 #   next to gc's home; `gc start` there registers it with the supervisor.
 #   It was made with `gc init --template gascity --providers claude,codex
 #   --default-provider claude`, and its city.toml sets
-#   `[session] provider = "herdr"` and `[daemon] auto_restart_on_drift = false`
+#   `[session] provider = "tmux"` and `[daemon] auto_restart_on_drift = false`
 #   (see gc-supervisor). Another city is another directory, registered with
 #   `gc init` or `gc register`, never inside gc's home.
 # - Rig: `gc rig add <repo> --prefix <unique>`. bd init commits `.beads/` into
