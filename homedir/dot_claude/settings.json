@@ -16,7 +16,17 @@
   "model": "opus",
   "skillOverrides": {
     "run": "off",
-    "init": "off"
+    "init": "off",
+    "anthropic-skills:built-in-browser": "off",
+    "anthropic-skills:chrome-browser": "off",
+    "anthropic-skills:computer-use": "off",
+    "anthropic-skills:docx": "off",
+    "anthropic-skills:google-workspace": "off",
+    "anthropic-skills:import-memory": "off",
+    "anthropic-skills:morning": "off",
+    "anthropic-skills:pdf": "off",
+    "anthropic-skills:pptx": "off",
+    "anthropic-skills:xlsx": "off"
   },
   "worktree": {
     "baseRef": "fresh"
