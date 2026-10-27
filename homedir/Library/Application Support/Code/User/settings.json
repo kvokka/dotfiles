@@ -147,7 +147,6 @@
   "terminal.integrated.stickyScroll.enabled": true,
   "editor.wordWrap": "on",
   "explorer.confirmPasteNative": false,
-  "diffEditor.renderSideBySide": false,
   "github.copilot.enable": {
     "*": false,
     "plaintext": false,
@@ -177,5 +176,12 @@
     "https://opencode.ai/": true,
   },
   "scm.repositories.selectionMode": "single",
-  "git.confirmSync": false
+  "git.confirmSync": false,
+  "security.promptForRemoteFileProtocolHandling": false,
+  "security.promptForLocalFileProtocolHandling": false,
+  "git.decorations.enabled": true,
+  "explorer.decorations.colors": true,
+  "workbench.colorCustomizations": {
+    "gitDecoration.ignoredResourceForeground": "#6a6a6a"
+  }
 }
