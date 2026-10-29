@@ -32,7 +32,8 @@ vale = '3.24'
 
 chezmoi = '2.73'
 bat = '0.26'
-delta = '0.20' # git pager, wired in ~/.config/git/config
+delta = '0.20' # git pager, wired in ~/.config/git/config for interactive mode
+hunk = '0.24'
 gdu = '5.38' # ncdu has no release binaries at all
 fzf = '0.74'
 fd = '10.5'
