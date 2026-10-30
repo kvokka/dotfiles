@@ -96,6 +96,7 @@
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "awaySummaryEnabled": false,
+  "idleCompaction": false,
   "//": [
     "TODO: move siam-orchestration@siam to the project level"
   ]
