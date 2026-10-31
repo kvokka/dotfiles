@@ -2,7 +2,7 @@
   "cSpell.language": "ru,en,en-GB,en-US",
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
-  "cSpell.enabledLanguageIds": [
+  "#cSpell.enabledLanguageIds": [
     "asciidoc",
     "c",
     "cpp",
@@ -120,7 +120,7 @@
     "jupyter-notebook": "left"
   },
   "redhat.telemetry.enabled": false,
-  "cSpell.enableFiletypes": [
+  "#cSpell.enableFiletypes": [
     "helm"
   ],
   "files.associations": {
