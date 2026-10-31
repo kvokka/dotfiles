@@ -183,5 +183,8 @@
   "explorer.decorations.colors": true,
   "workbench.colorCustomizations": {
     "gitDecoration.ignoredResourceForeground": "#6a6a6a"
-  }
+  },
+  "chat.commandCenter.enabled": false,
+  "workbench.secondarySideBar.defaultVisibility": "hidden",
+  "chat.agent.enabled": false
 }
