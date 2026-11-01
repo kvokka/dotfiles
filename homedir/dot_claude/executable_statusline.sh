@@ -37,7 +37,7 @@ I_DIRTY=$'\uf044'
 I_TREE=$'\uf126'
 I_RAM=$'\ue266'      # the glyph the oh-my-posh sysinfo segment uses
 I_CTX=$'\uf0f6'      # text document: the context window
-I_QUOTA=$'\uf252'    # hourglass: the 5h/7d subscription windows
+I_QUOTA=$'\uf252'    # hourglass: the 7-day subscription window
 UP=$'\u2191'
 DOWN=$'\u2193'
 
@@ -74,7 +74,6 @@ eval "$(printf '%s' "$input" | jq -r '
   @sh "ctx=\(.context_window.used_percentage // "")",
   @sh "pr_num=\(.pr.number // "")",
   @sh "pr_kind=\(.pr.kind // "")",
-  @sh "five=\(.rate_limits.five_hour.used_percentage // "")",
   @sh "week=\(.rate_limits.seven_day.used_percentage // "")"
 ')"
 
@@ -139,13 +138,7 @@ if [ -n "$ctx" ]; then
   cand+=("$ctx_bg|$ctx_fg| $I_CTX ${pct}% ")
 fi
 
-# Both windows share one segment: 5-hour / 7-day.
-quota=""
-[ -n "$five" ] && quota=$(printf '%.0f' "$five")
-if [ -n "$week" ]; then
-  [ -n "$quota" ] && quota="$quota/$(printf '%.0f' "$week")" || quota="-/$(printf '%.0f' "$week")"
-fi
-[ -n "$quota" ] && cand+=("$BG_QUOTA|$FG_ON_DARK| $I_QUOTA ${quota}% ")
+[ -n "$week" ] && cand+=("$BG_QUOTA|$FG_ON_DARK| $I_QUOTA $(printf '%.0f' "$week")% ")
 
 # -- terminal width -----------------------------------------------------------
 # /dev/tty may pass [ -r ] and still fail to open (no controlling terminal),
