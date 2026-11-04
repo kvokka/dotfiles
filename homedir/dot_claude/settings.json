@@ -58,6 +58,13 @@
         "repo": "smixs/pohuy"
       }
     },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      },
+      "autoUpdate": true
+    },
     "claude-codex-bridge": {
       "source": {
         "source": "github",
@@ -81,6 +88,12 @@
     "cc-plugin-agents-md@builtin": {
       "options": {
         "instructionFiles": "claude-md-or-agents-md"
+      }
+    },
+    "ponytail@ponytail": {
+      "options": {
+        "ledger": true,
+        "sendNames": true
       }
     }
   },
