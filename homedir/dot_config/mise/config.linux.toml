@@ -34,6 +34,7 @@ DEJA_EMBED_PASSAGE_PREFIX = "Represent the document for retrieval: "
 # This model's best matches have a median cosine of .55, right at deja's default
 # floor, while nine of ten queries with no answer stay under .44.
 DEJA_EMBED_FLOOR = "0.40"
+DEJA_NO_UPDATE_NOTICE = "1"
 
 # Daily at 13:00: upload the whole usage history to tokscale.ai. Not `tokscale
 # autosubmit enable`: its scheduler is a systemd user timer or a crontab, both
