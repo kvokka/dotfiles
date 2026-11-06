@@ -90,7 +90,7 @@
 
 ## deja
 
-- deja is the search over past agent sessions: the mise tool and the Claude Code plugin, with a semantic tier from the `DEJA_EMBED_*` of `config.linux.toml` and the hourly pitchfork daemon `deja-embed`. Its key is fnox's `MONGODB_API_KEY`, which deja reads as `DEJA_EMBED_KEY`: `homedir/dot_config/zshrc.d/executable_800-secrets.zsh` maps the name in the shell (a precmd hook behind fnox's), the daemon in its `run`.
+- deja is the search over past agent sessions: the mise tool and the Claude Code plugin, with a semantic tier from the `DEJA_EMBED_*` of `config.linux.toml`, the key `DEJA_EMBED_KEY` in fnox and the hourly pitchfork daemon `deja-embed`.
 - It is a general setup, not part of the fw stack. Notes and open upstream problems: `homedir/dot_config/deja/README.md`, read before changing the setup or bumping the pin.
 
 ## Local Dev Compose
