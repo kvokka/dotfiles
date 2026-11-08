@@ -32,7 +32,7 @@ DO_NOT_TRACK = "1"
 # /health build_id and gc's binary-drift check read the commit. Bump: the sha
 # in version and the three -X values, `chezmoi apply`, `mise install`, then
 # restart the supervisor (gc-supervisor below) and every agent session.
-"go:github.com/gastownhall/gascity/cmd/gc" = { version = "ff7194cf9ccf4c1bd2dfcfcad3c8666af7aeb083", install_env = { CGO_ENABLED = "0", GOFLAGS = "-trimpath '-ldflags=-X=main.version=1.5.1-edge.ff7194cf9 -X=main.commit=ff7194cf9ccf4c1bd2dfcfcad3c8666af7aeb083 -X=main.date=2026-10-25T08:47:27Z'" } }
+"go:github.com/gastownhall/gascity/cmd/gc" = { version = "a86d05bd73e05329e6173cd1b470a23bb927bc91", install_env = { CGO_ENABLED = "0", GOFLAGS = "-trimpath '-ldflags=-X=main.version=1.5.1-edge.a86d05bd7 -X=main.commit=a86d05bd73e05329e6173cd1b470a23bb927bc91 -X=main.date=2026-10-27T19:52:30Z'" } }
 # Session provider of the cities is tmux (`[session] provider = "tmux"`,
 # socket "gc" in city.toml): gc starts the `tmux -L gc` server of each city,
 # and it outlives a supervisor restart. tmux itself is pinned in config.toml.

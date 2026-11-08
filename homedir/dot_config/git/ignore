@@ -22,3 +22,8 @@ tmp/
 **/fnox.local.toml
 .claude/worktrees/
 .worktrees/
+.gc/*
+.beads/*
+!.beads/issues.json
+!.beads/issues.jsonc
+!.beads/identity.toml

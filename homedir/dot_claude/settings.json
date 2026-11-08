@@ -42,7 +42,8 @@
     "frontend-design@claude-plugins-official": false,
     "claude-codex-bridge@claude-codex-bridge": false,
     "pohuy@pohuy": false,
-    "telemetry@builtin": false
+    "telemetry@builtin": false,
+    "deja-vu@deja-vu": true
   },
   "extraKnownMarketplaces": {
     "siam-platform": {
@@ -58,12 +59,25 @@
         "repo": "smixs/pohuy"
       }
     },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      },
+      "autoUpdate": true
+    },
     "claude-codex-bridge": {
       "source": {
         "source": "github",
         "repo": "umum-ai/claude-codex-bridge"
       },
       "autoUpdate": true
+    },
+    "deja-vu": {
+      "source": {
+        "source": "github",
+        "repo": "vshulcz/deja-vu"
+      }
     }
   },
   "language": "Русский",
@@ -82,6 +96,12 @@
       "options": {
         "instructionFiles": "claude-md-or-agents-md"
       }
+    },
+    "ponytail@ponytail": {
+      "options": {
+        "ledger": true,
+        "sendNames": true
+      }
     }
   },
   "enableArtifact": false,
@@ -96,6 +116,7 @@
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "awaySummaryEnabled": false,
+  "idleCompaction": false,
   "//": [
     "TODO: move siam-orchestration@siam to the project level"
   ]

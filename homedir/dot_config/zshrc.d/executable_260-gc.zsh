@@ -9,3 +9,7 @@ fi
 if mise_active bd; then
   eval "$(bd completion zsh)"
 fi
+
+if mise_active deja; then
+  eval "$(deja completion zsh)"
+fi

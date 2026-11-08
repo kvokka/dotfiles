@@ -6,9 +6,8 @@
 // `codex mcp add` or a hand edit is dropped on the next `mise run ai:sync`.
 // Add servers here.
 {
-  "mcpServers": {
-    "cass-memory": { "type": "http", "url": "http://127.0.0.1:8766/", "networkTimeout": 30000 },
-  },
+  // cass-memory (the fw stack's `cm` daemon) is off with that stack.
+  "mcpServers": {},
   "opencode": {
     "mcpServers": {
       // Kept from ~/.config/opencode/opencode.json, all switched off there.
