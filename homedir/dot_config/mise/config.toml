@@ -22,9 +22,6 @@ ty = '0.0.91'
 pipx = '1.18.0'
 
 "pipx:hf" = "2.3"
-# Codebase index for agents (Claude plugin repowise@repowise). Not on 3.15: its dependencies do not build there;
-# tree-sitter-gdscript 6.1.0 has no linux-aarch64 wheel and a broken sdist, so there it builds from the grammar's tag.
-"pipx:repowise" = { version = "0", uvx_args = "--python 3.13 --with \"tree-sitter-gdscript @ git+https://github.com/PrestonKnopp/tree-sitter-gdscript@v6.1.0 ; sys_platform == 'linux' and platform_machine == 'aarch64'\"" }
 
 prek = '0.5'
 hadolint = '2.15'

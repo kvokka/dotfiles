@@ -1,7 +1,5 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-# A hook that names no stages runs only before a commit, not in the post-commit and post-merge runs.
-default_stages: [pre-commit, manual]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -33,14 +31,3 @@ repos:
     rev: v2.15.1
     hooks:
       - id: hadolint
-  # repowise's index follows the repo after each commit and merge (a fast-forward merge makes no commit), in the
-  # background; it is a no-op where repowise has not indexed the checkout (no .repowise/state.json).
-  - repo: local
-    hooks:
-      - id: repowise-update
-        name: repowise update (background)
-        language: system
-        entry: sh -c '[ -f .repowise/state.json ] && command -v repowise >/dev/null || exit 0; nohup repowise update >> .repowise/.update.log 2>&1 < /dev/null &'
-        stages: [post-commit, post-merge]
-        always_run: true
-        pass_filenames: false
