@@ -44,6 +44,8 @@ Library/**
 .config/mise/config.gc.toml
 .config/zshrc.d/260-gc.zsh
 .gc
+# deja: Linux only (mise config.linux.toml)
+.config/deja/**
 .gemini/**
 .claude/**
 {{ end }}

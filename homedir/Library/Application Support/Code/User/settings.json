@@ -2,7 +2,7 @@
   "cSpell.language": "ru,en,en-GB,en-US",
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
-  "cSpell.enabledLanguageIds": [
+  "#cSpell.enabledLanguageIds": [
     "asciidoc",
     "c",
     "cpp",
@@ -120,7 +120,7 @@
     "jupyter-notebook": "left"
   },
   "redhat.telemetry.enabled": false,
-  "cSpell.enableFiletypes": [
+  "#cSpell.enableFiletypes": [
     "helm"
   ],
   "files.associations": {
@@ -147,7 +147,6 @@
   "terminal.integrated.stickyScroll.enabled": true,
   "editor.wordWrap": "on",
   "explorer.confirmPasteNative": false,
-  "diffEditor.renderSideBySide": false,
   "github.copilot.enable": {
     "*": false,
     "plaintext": false,
@@ -177,5 +176,15 @@
     "https://opencode.ai/": true,
   },
   "scm.repositories.selectionMode": "single",
-  "git.confirmSync": false
+  "git.confirmSync": false,
+  "security.promptForRemoteFileProtocolHandling": false,
+  "security.promptForLocalFileProtocolHandling": false,
+  "git.decorations.enabled": true,
+  "explorer.decorations.colors": true,
+  "workbench.colorCustomizations": {
+    "gitDecoration.ignoredResourceForeground": "#6a6a6a"
+  },
+  "chat.commandCenter.enabled": false,
+  "workbench.secondarySideBar.defaultVisibility": "hidden",
+  "chat.agent.enabled": false
 }

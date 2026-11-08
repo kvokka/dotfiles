@@ -11,7 +11,8 @@
 
 [core]
 	excludesfile = ~/.config/git/ignore
-	pager = delta
+	# pager = delta
+	pager = hunk pager
 	attributesfile = ~/.config/git/attributes
 
 	# Treat spaces before tabs and all kinds of trailing whitespace as an error
@@ -32,9 +33,7 @@
 	preloadindex = true
 
 [alias]
-	dsf = "!f() { [ -z \"$GIT_PREFIX\" ] || cd \"$GIT_PREFIX\" && git diff --color \"$@\" | delta; }; f"
   cb = "!git branch --merged | egrep -v '(^\\*|master|production)' | xargs git branch -d"
-	vb = version-bump
 [push]
 	default = current
 	autoSetupRemote = true

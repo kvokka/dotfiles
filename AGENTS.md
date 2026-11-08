@@ -88,6 +88,11 @@
 - A harness subagent that may edit files is an Agent Mail participant of its own: `~/.config/fw/bin/am-subagent` (`SubagentStart`/`SubagentStop` hooks, Claude Code and Codex, not registered globally) creates its identity, hands it the name as `additionalContext` and releases its reservations when it stops; read-only agent types are skipped. The `am-subagent-reap` cron daemon retires identities unused for a day. `am agents reap` is not used: it would retire busy ntm pane agents. Note: `homedir/dot_config/fw/templates/docs/agent-tooling/agent-mail.md`.
 - After `ai:sync` changes `~/.codex/hooks.json`, Codex skips the changed hooks until they are approved once in Codex; then copy its new `[hooks.state]` entries into `homedir/dot_codex/private_config.toml.tmpl`.
 
+## deja
+
+- deja is the search over past agent sessions: the mise tool and the Claude Code plugin, with a semantic tier from the `DEJA_EMBED_*` of `config.linux.toml`, the key `DEJA_EMBED_KEY` in fnox and the hourly pitchfork daemon `deja-embed`.
+- It is a general setup, not part of the fw stack. Notes and open upstream problems: `homedir/dot_config/deja/README.md`, read before changing the setup or bumping the pin.
+
 ## Local Dev Compose
 
 - `homedir/dot_config/docker-compose/local-dev/README.md` describes local compose as the devcontainer replacement.

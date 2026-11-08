@@ -12,6 +12,10 @@ agy = "1.4"                    # aqua:google-antigravity/antigravity-cli
 pi = "1.4.0"
 
 "npm:tokscale" = "latest"
+# Pinned: the installed linux-arm64 binary is a local build that reads
+# DEJA_EMBED_FLOOR, and an upgrade would replace it with one that does not.
+# See ~/.config/deja/README.md.
+"npm:@vshulcz/deja-vu" = "0.24.0"
 
 "github:Dicklesworthstone/repo_updater" = { version = "1.6.0", asset_pattern = "ru" }
 
@@ -19,6 +23,18 @@ pi = "1.4.0"
 # agy updates its own binary in place on start, inside mise's install dir, so
 # the pin above would silently drift (1.2.7 became 1.2.10 on the first run).
 AGY_CLI_DISABLE_AUTO_UPDATE = "1"
+# deja's semantic tier: voyage-4-large through MongoDB's Voyage endpoint. Voyage
+# does not take deja's `input_type` values, so the prefixes stand in for it and
+# match its vectors. The model and the passage prefix name the sidecar: changing
+# either embeds the whole history again. The key is DEJA_EMBED_KEY in fnox.
+DEJA_EMBED_URL = "https://ai.mongodb.com/v1/embeddings"
+DEJA_EMBED_MODEL = "voyage-4-large"
+DEJA_EMBED_QUERY_PREFIX = "Represent the query for retrieving supporting documents: "
+DEJA_EMBED_PASSAGE_PREFIX = "Represent the document for retrieval: "
+# This model's best matches have a median cosine of .55, right at deja's default
+# floor, while nine of ten queries with no answer stay under .44.
+DEJA_EMBED_FLOOR = "0.40"
+DEJA_NO_UPDATE_NOTICE = "1"
 
 # Daily at 13:00: upload the whole usage history to tokscale.ai. Not `tokscale
 # autosubmit enable`: its scheduler is a systemd user timer or a crontab, both
@@ -28,6 +44,16 @@ AGY_CLI_DISABLE_AUTO_UPDATE = "1"
 run = "exec fnox exec -- tokscale submit"
 dir = "~"
 cron = { schedule = "0 0 13 * * *", retrigger = "finish" }
+
+# Hourly: embed what is new since the last run. A run adds only new records but
+# reads and rewrites the whole sidecar, so it is not worth running more often:
+# lexical search finds a new session before it has vectors. `mise x` puts the
+# DEJA_EMBED_* of [env] in front of deja, since a run with another model replaces
+# every vector.
+[daemons.deja-embed]
+run = "exec fnox exec -- mise x -- deja embed"
+dir = "~"
+cron = { schedule = "0 0 * * * *", retrigger = "finish" }
 
 [bootstrap.packages]
 "apt:language-pack-en-base" = "latest"

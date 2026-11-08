@@ -22,19 +22,20 @@ DO_NOT_TRACK = "1"
 "~/proj/share/gc-home/.keep" = { content = "" }
 
 [tools]
-# bd = the version gc's deps.env pins (BD_VERSION, still 1.3.1 on main).
+# bd = the version gc's deps.env pins (BD_VERSION 1.3.2 on main, floor 1.3.0).
 "github:gastownhall/beads" = "1.3.2"
 # gc follows main ("edge"), built from source: the edge release ships
-# linux_amd64 only. A main commit as version; CGO off as in upstream's
-# goreleaser (with cgo, dolt's go-icu-regex needs libicu-dev). GOFLAGS holds
-# one -X only (no spaces), so the sha goes into the version and `gc version`
-# shows commit "unknown". Bump: both shas, `chezmoi apply`, `mise install`,
-# then restart the supervisor (gc-supervisor below).
-# "go:github.com/gastownhall/gascity/cmd/gc" = { version = "6e35bd5ea549c7c61117ee6510763f1ffe742e33", install_env = { CGO_ENABLED = "0", GOFLAGS = "-trimpath -ldflags=-X=main.version=1.5.0-edge.6e35bd5ea" } }
-"github:gastownhall/gascity" = "1.5.1"
-# Session provider of the cities (`[session] provider = "herdr"` in city.toml);
-# gc starts and stops the herdr server of each city itself.
-herdr = "0.9.5"
+# linux_amd64 only. A green main commit as version; CGO off as in upstream's
+# goreleaser (with cgo, dolt's go-icu-regex needs libicu-dev). `go install`
+# embeds no VCS info, so the -X flags set version, commit and date (quoted
+# into one -ldflags: GOFLAGS splits on spaces outside quotes); the supervisor's
+# /health build_id and gc's binary-drift check read the commit. Bump: the sha
+# in version and the three -X values, `chezmoi apply`, `mise install`, then
+# restart the supervisor (gc-supervisor below) and every agent session.
+"go:github.com/gastownhall/gascity/cmd/gc" = { version = "a86d05bd73e05329e6173cd1b470a23bb927bc91", install_env = { CGO_ENABLED = "0", GOFLAGS = "-trimpath '-ldflags=-X=main.version=1.5.1-edge.a86d05bd7 -X=main.commit=a86d05bd73e05329e6173cd1b470a23bb927bc91 -X=main.date=2026-10-27T19:52:30Z'" } }
+# Session provider of the cities is tmux (`[session] provider = "tmux"`,
+# socket "gc" in city.toml): gc starts the `tmux -L gc` server of each city,
+# and it outlives a supervisor restart. tmux itself is pinned in config.toml.
 # bd's server mode and gc's bd provider need the dolt CLI (gc: 2.1.0 or newer).
 # Never 2.2.4 to 2.3.1: some fresh databases answer every
 # CALL DOLT_RESET('--hard') with "context canceled", which beads' own 2.2.0 pin
@@ -58,7 +59,7 @@ herdr = "0.9.5"
 #   next to gc's home; `gc start` there registers it with the supervisor.
 #   It was made with `gc init --template gascity --providers claude,codex
 #   --default-provider claude`, and its city.toml sets
-#   `[session] provider = "herdr"` and `[daemon] auto_restart_on_drift = false`
+#   `[session] provider = "tmux"` and `[daemon] auto_restart_on_drift = false`
 #   (see gc-supervisor). Another city is another directory, registered with
 #   `gc init` or `gc register`, never inside gc's home.
 # - Rig: `gc rig add <repo> --prefix <unique>`. bd init commits `.beads/` into
@@ -80,9 +81,27 @@ herdr = "0.9.5"
 # `gc start` kills the supervisor and forks a detached one next to pitchfork's:
 # set `[daemon] auto_restart_on_drift = false` in each city.toml and restart
 # with `pitchfork restart gc-supervisor` after a bump.
+#
+# On SIGTERM (`pitchfork stop|restart`) the supervisor stops every agent
+# session unless GC_SUPERVISOR_PRESERVE_SESSIONS_ON_SIGNAL=1, the setting gc's
+# own systemd unit carries: with it the `tmux -L <city>` servers live on and
+# the next supervisor adopts their sessions. To stop the sessions too, run
+# `gc stop` in the city first.
+#
+# DOLT_REMOTE_INFO_BRANCH="" (empty, not unset): a dolt push to a git remote
+# writes the data to refs/dolt/<name> and, unless this is empty, also
+# force-pushes a visible branch `__dolt_remote_info__` to the same repository.
+# The managed dolt sql-server inherits this env and does the pushes of
+# `gc dolt sync` (the city's dolt-remotes-patrol pushes its scopes to the
+# private kvokka/gc, bead gc-032), so the code repo gets no extra branch. It
+# reaches a running dolt server only when gc starts it again. It is exported in
+# `run` (the shell sets the empty value for sure). A change of `run` or `env`
+# reaches pitchfork only once mise regenerates its config: from `~`, with the
+# agent variables stripped, `MISE_ENV=devcontainer,gc mise hook-env --force
+# --shell-pid $$ -s zsh >/dev/null`, then `pitchfork stop` + `pitchfork start`.
 [daemons.gc-supervisor]
-run = "exec gc supervisor run"
-env = { GC_SUPERVISOR_LOG_TEE = "0" }
+run = "export DOLT_REMOTE_INFO_BRANCH=; exec gc supervisor run"
+env = { GC_SUPERVISOR_LOG_TEE = "0", GC_SUPERVISOR_PRESERVE_SESSIONS_ON_SIGNAL = "1" }
 ready_http = "http://127.0.0.1:8372/health"
 retry = true
 auto = ["start"]
