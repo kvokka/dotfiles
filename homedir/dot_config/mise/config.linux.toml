@@ -8,17 +8,17 @@ codex = "0"
 claude = "2.1"
 just = "1"
 ast-grep = "0.51"
-agy = "1.4"                    # aqua:google-antigravity/antigravity-cli
-pi = "1.4.0"
+agy = "1.5"                    # aqua:google-antigravity/antigravity-cli
+pi = "1.5.0"
 
 "npm:tokscale" = "latest"
 # Pinned: the installed linux-arm64 binary is a local build that reads
 # DEJA_EMBED_FLOOR, and an upgrade would replace it with one that does not.
 # Upstream calibrates the floor itself from the release with #5980; then unpin
 # and drop DEJA_EMBED_FLOOR. See ~/.config/deja/README.md, Upstream.
-"npm:@vshulcz/deja-vu" = "0.24.0"
+"npm:@vshulcz/deja-vu" = "0.24.1"
 
-"github:Dicklesworthstone/repo_updater" = { version = "1.6.0", asset_pattern = "ru" }
+"github:Dicklesworthstone/repo_updater" = { version = "1.7.0", asset_pattern = "ru" }
 
 [env]
 # agy updates its own binary in place on start, inside mise's install dir, so
