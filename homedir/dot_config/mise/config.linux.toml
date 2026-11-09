@@ -24,10 +24,8 @@ pi = "1.5.0"
 # agy updates its own binary in place on start, inside mise's install dir, so
 # the pin above would silently drift (1.2.7 became 1.2.10 on the first run).
 AGY_CLI_DISABLE_AUTO_UPDATE = "1"
-# deja's semantic tier: voyage-4-large through MongoDB's Voyage endpoint. Voyage
-# does not take deja's `input_type` values, so the prefixes stand in for it and
-# match its vectors. The model and the passage prefix name the sidecar: changing
-# either embeds the whole history again. The key is DEJA_EMBED_KEY in fnox.
+
+DEJA_EMBED_KEY = "{{ exec(command='fnox get MONGODB_API_KEY') }}"
 DEJA_EMBED_URL = "https://ai.mongodb.com/v1/embeddings"
 DEJA_EMBED_MODEL = "voyage-4-large"
 DEJA_EMBED_QUERY_PREFIX = "Represent the query for retrieving supporting documents: "
