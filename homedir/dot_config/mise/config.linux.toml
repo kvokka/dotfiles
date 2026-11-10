@@ -12,10 +12,6 @@ agy = "1.5"                    # aqua:google-antigravity/antigravity-cli
 pi = "1.5.0"
 
 "npm:tokscale" = "latest"
-# Pinned: the installed linux-arm64 binary is a local build that reads
-# DEJA_EMBED_FLOOR, and an upgrade would replace it with one that does not.
-# Upstream calibrates the floor itself from the release with #5980; then unpin
-# and drop DEJA_EMBED_FLOOR. See ~/.config/deja/README.md, Upstream.
 "npm:@vshulcz/deja-vu" = "0.24.1"
 
 "github:Dicklesworthstone/repo_updater" = { version = "1.7.0", asset_pattern = "ru" }
@@ -24,8 +20,13 @@ pi = "1.5.0"
 # agy updates its own binary in place on start, inside mise's install dir, so
 # the pin above would silently drift (1.2.7 became 1.2.10 on the first run).
 AGY_CLI_DISABLE_AUTO_UPDATE = "1"
-
-DEJA_EMBED_KEY = "{{ exec(command='fnox get MONGODB_API_KEY') }}"
+# deja's semantic tier: voyage-4-large through MongoDB's Voyage endpoint. Voyage
+# does not take deja's `input_type` values, so the prefixes stand in for it and
+# match its vectors. The model and the passage prefix name the sidecar: changing
+# either embeds the whole history again. The key is not set here but in fnox,
+# as DEJA_EMBED_KEY over MONGODB_API_KEY: a template here would run fnox on
+# every mise call, and mise runs it without its own tools on PATH, so fnox is
+# not found and every config of $HOME fails to load.
 DEJA_EMBED_URL = "https://ai.mongodb.com/v1/embeddings"
 DEJA_EMBED_MODEL = "voyage-4-large"
 DEJA_EMBED_QUERY_PREFIX = "Represent the query for retrieving supporting documents: "
