@@ -43,7 +43,7 @@
     "claude-codex-bridge@claude-codex-bridge": false,
     "pohuy@pohuy": false,
     "telemetry@builtin": false,
-    "deja-vu@deja-vu": true
+    "deja-vu@deja-vu": false
   },
   "extraKnownMarketplaces": {
     "siam-platform": {

@@ -14,3 +14,7 @@
 /.claude/skills/
 /.agents/skills/
 .gc/
+
+# Gas City
+/.mcp.json
+/.codex/config.toml
