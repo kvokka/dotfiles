@@ -60,7 +60,7 @@ dir = "~"
 cron = { schedule = "0 0 * * * *", retrigger = "finish" }
 
 [daemons.sbh]
-run = "exec sbh daemon"
+run = "exec sudo env PATH=$PATH sbh daemon"
 retry = true
 auto = ["start"]
 
