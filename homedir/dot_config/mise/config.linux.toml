@@ -1,3 +1,6 @@
+# `mise daemons` needs a recent mise.
+min_version = "2026.9.12"
+
 [tools]
 
 "npm:agent-browser" = "latest"
@@ -15,8 +18,10 @@ pi = "1.5.0"
 "npm:@vshulcz/deja-vu" = "0.24.1"
 
 "github:Dicklesworthstone/repo_updater" = { version = "1.7.0", asset_pattern = "ru" }
+"github:Dicklesworthstone/storage_ballast_helper" = "0.7.16"
 
 [env]
+DO_NOT_TRACK = "1"
 # agy updates its own binary in place on start, inside mise's install dir, so
 # the pin above would silently drift (1.2.7 became 1.2.10 on the first run).
 AGY_CLI_DISABLE_AUTO_UPDATE = "1"
@@ -54,6 +59,11 @@ run = "exec fnox exec -- mise x -- deja embed"
 dir = "~"
 cron = { schedule = "0 0 * * * *", retrigger = "finish" }
 
+[daemons.sbh]
+run = "exec sbh daemon"
+retry = true
+auto = ["start"]
+
 [bootstrap.packages]
 "apt:language-pack-en-base" = "latest"
 "apt:coreutils" = "latest"
@@ -78,6 +88,7 @@ cron = { schedule = "0 0 * * * *", retrigger = "finish" }
 "apt:socat" = "latest"                 # claude code
 
 [settings]
+experimental = true # `mise daemons`
 
 yes = true
 
