@@ -1,5 +1,7 @@
 # Storage Ballast Helper (managed by chezmoi). Devcontainer only: the daemon
-# runs under pitchfork (config.fw.toml), never `sbh install`.
+# runs as root under pitchfork with `--config` pointing here (`[daemons.sbh]`
+# in config.linux.toml), never `sbh install`. Root's own HOME is /root, so
+# without `--config` the daemon falls back to built-in defaults.
 # Ballast lives in ~/.ballast on the `home` volume; the pool is capped at
 # file_count * file_size_bytes = 5 GiB.
 

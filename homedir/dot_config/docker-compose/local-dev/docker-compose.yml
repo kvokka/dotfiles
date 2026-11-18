@@ -45,6 +45,11 @@ services:
     command: tail -f /dev/null
     environment:
       DOTFILES_BOOTSTRAP_CONTAINER: "true" # mise bootstrap on a new container (entrypoint.sh)
+    # sbh's open-file sweep reads /proc/<pid>/cwd and fd of every process; root
+    # needs CAP_SYS_PTRACE for those of another uid (`[daemons.sbh]` in
+    # mise/config.linux.toml).
+    cap_add:
+      - SYS_PTRACE
     ports:
       - "8000:8000"
       - "5173:5173"

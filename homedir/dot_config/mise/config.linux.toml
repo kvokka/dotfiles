@@ -59,10 +59,20 @@ run = "exec fnox exec -- mise x -- deja embed"
 dir = "~"
 cron = { schedule = "0 0 * * * *", retrigger = "finish" }
 
-[daemons.sbh]
-run = "exec sudo env PATH=$PATH sbh daemon"
-retry = true
-auto = ["start"]
+# sbh deletes a candidate only after a sweep of /proc shows that no process
+# holds a file open in it or works in it; one process it cannot read holds the
+# whole batch. Reading /proc/<pid>/cwd and fd of another uid needs
+# CAP_SYS_PTRACE: the daemon runs as root (as the unit of upstream's
+# `sbh install` does), and the console service of the local-dev compose adds
+# SYS_PTRACE, which Docker drops by default. `--config` points root at this
+# user's config instead of /root/.config. `sbh explain`, `scan` and `clean`
+# run the same sweep, so they need `sudo` too.
+# Off until the console container is recreated with that cap_add: enable the
+# block once `sudo ls -l /proc/1/cwd` no longer answers "Permission denied".
+# [daemons.sbh]
+# run = "exec sudo env PATH=$PATH sbh daemon --config $HOME/.config/sbh/config.toml"
+# retry = true
+# auto = ["start"]
 
 [bootstrap.packages]
 "apt:language-pack-en-base" = "latest"
