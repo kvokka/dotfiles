@@ -19,6 +19,7 @@ pi = "1.5.0"
 
 "github:Dicklesworthstone/repo_updater" = { version = "1.7.0", asset_pattern = "ru" }
 "github:Dicklesworthstone/storage_ballast_helper" = "0.7.16"
+"github:Dicklesworthstone/destructive_command_guard" = "0.16.0"
 
 [env]
 DO_NOT_TRACK = "1"
