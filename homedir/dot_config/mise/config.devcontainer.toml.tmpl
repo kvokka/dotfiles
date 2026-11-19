@@ -88,9 +88,13 @@ auto = ["start"]
 # this daemon does not run. The fixed port is for `ready_port` and the compose
 # publish (the default takes the first free port from 3773); `--lan` binds
 # 0.0.0.0 and accepts private networks only, so the host and its LAN reach it
-# with a pairing code (`t3 pair`).
+# with a pairing code (`t3 pair`). `fnox exec` hands the server, and every
+# agent and terminal it starts, the secrets of the fnox profile (such as the
+# MY_CLI_LLM_PROXY_API_KEY that Codex's `env_key` reads): the daemon misses the
+# shell's `fnox activate`, and t3 takes only PATH from a login shell. A secret
+# added to fnox reaches the agents after `pitchfork restart` of this daemon.
 [daemons.t3]
-run = "exec t3 serve --port 3773 --lan"
+run = "exec fnox exec -- t3 serve --port 3773 --lan"
 dir = "~"
 ready_port = 3773
 watch = ["{{ .chezmoi.homeDir }}/.local/share/mise/installs/github-pingdotgg-t3code/*/t3"]
