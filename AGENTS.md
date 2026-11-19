@@ -95,7 +95,7 @@
 
 ## T3 Code
 
-- The T3 Code server (`t3`, `github:pingdotgg/t3code`) is the pitchfork daemon `t3` of `homedir/dot_config/mise/config.devcontainer.toml.tmpl` (`t3 serve --port 3773 --lan`, compose publishes 3773). It runs the mise-pinned version, and its `watch` restarts it when mise installs another one. Never run `t3 up`, `t3 service install` or `t3 update`: the first two need systemd, the last installs into `~/.t3/runtime`, which the daemon does not run.
+- The T3 Code server (`t3`, `github:pingdotgg/t3code`) is the pitchfork daemon `t3` of `homedir/dot_config/mise/config.devcontainer.toml.tmpl` (`fnox exec -- t3 serve --port 3773 --lan`, compose publishes 3773); `fnox exec` gives it and its agents the secrets of the fnox profile, so a new secret needs a restart of the daemon. It runs the mise-pinned version, and its `watch` restarts it when mise installs another one. Never run `t3 up`, `t3 service install` or `t3 update`: the first two need systemd, the last installs into `~/.t3/runtime`, which the daemon does not run.
 - On macOS T3 Code is the desktop app (`brew-cask:t3-code` in `config.macos.toml`), which runs its own local server with the same `~/.t3/userdata`. `homedir/dot_t3/private_userdata/` serves both and holds the settings (a `modify_` template that merges the pinned keys into the file t3 rewrites; the text generator's `baseUrl` comes from `.my_cli_llm_proxy.url`) and the themes. Secrets stay in `~/.t3/userdata/secrets`: the generator's API key is entered once in Settings, and T3 Connect is linked once with `t3 connect`.
 
 ## Local Dev Compose
