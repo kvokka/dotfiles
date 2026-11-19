@@ -31,6 +31,10 @@ group = "root"
 mode = "0644"
 replace = true
 
+[tools]
+
+"github:pingdotgg/t3code" = "0.1.10" # `t3`, run by [daemons.t3]
+
 [settings]
 
 auto_update = true
@@ -71,5 +75,24 @@ exec sudo /usr/sbin/sshd -D -e
 """
 dir = "~"
 ready_port = 22
+retry = true
+auto = ["start"]
+
+# T3 Code server, for the desktop and web clients and for T3 Connect (remote
+# access through the T3 account; its link and token live in
+# ~/.t3/userdata/secrets). Not `t3 up` or `t3 service install`: they need a
+# systemd user manager. `t3` comes from mise, so the server runs the pinned
+# version, and `watch` restarts it once mise installs another one, which stops
+# running agent turns. pitchfork expands no `~` or variables in `watch`, hence
+# the rendered path. Never `t3 update`: it installs into ~/.t3/runtime, which
+# this daemon does not run. The fixed port is for `ready_port` and the compose
+# publish (the default takes the first free port from 3773); `--lan` binds
+# 0.0.0.0 and accepts private networks only, so the host and its LAN reach it
+# with a pairing code (`t3 pair`).
+[daemons.t3]
+run = "exec t3 serve --port 3773 --lan"
+dir = "~"
+ready_port = 3773
+watch = ["{{ .chezmoi.homeDir }}/.local/share/mise/installs/github-pingdotgg-t3code/*/t3"]
 retry = true
 auto = ["start"]
