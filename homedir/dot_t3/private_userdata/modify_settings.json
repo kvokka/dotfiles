@@ -1,0 +1,33 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /*
+  T3 Code server settings. t3 rewrites this file itself (every change in its
+  settings UI), so chezmoi merges the pinned keys into the current content
+  instead of replacing the file; the keys left out (project overrides, folds)
+  stay as the UI wrote them.
+
+  The text generator's baseUrl must be a literal URL: t3 expands no variables
+  in settings, so chezmoi renders the proxy URL. Its apiKey is not pinned: t3
+  keeps the key in ~/.t3/userdata/secrets and writes only a mask here, so the
+  key is entered once in Settings and the merge keeps the mask.
+*/ -}}
+{{- $current := dict -}}
+{{- /* .chezmoi.stdin is only set while applying; `chezmoi cat|status` render without it */ -}}
+{{- if and (hasKey .chezmoi "stdin") .chezmoi.stdin -}}
+{{-   $current = fromJson .chezmoi.stdin -}}
+{{- end -}}
+{{- $pinned := dict
+      "providerModelPreferences" (dict
+        "codex" (dict
+          "hiddenModels" (list "gpt-5.5" "gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-sol")
+          "modelOrder" (list "gpt-6.2-astra" "gpt-6.2-sol" "gpt-6.1-terra" "gpt-6.1-sol" "gpt-6-astra" "gpt-6-luna" "gpt-6-sol" "gpt-5.6-sol" "gpt-5.6-terra" "gpt-5.6-luna" "gpt-5.5"))
+        "claudeAgent" (dict
+          "hiddenModels" (list "claude-haiku-4-5" "claude-sonnet-4-6" "claude-sonnet-5" "claude-opus-4-5" "claude-opus-4-6" "claude-opus-4-7" "claude-opus-4-8" "claude-opus-5" "claude-fable-5" "claude-fable-5-1")))
+      "defaultModelSelection" (dict "instanceId" "codex" "model" "gpt-6.2-astra")
+      "idleCompaction" "onReturn"
+      "addProjectBaseDirectory" "~/proj/work"
+      "textGenerators" (dict
+        "custom" (dict
+          "kind" "openaiCompatible"
+          "label" "my"
+          "baseUrl" .my_cli_llm_proxy.url)) -}}
+{{ mergeOverwrite $current $pinned | toPrettyJson }}

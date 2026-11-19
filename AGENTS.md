@@ -93,6 +93,11 @@
 - deja is the search over past agent sessions: the mise tool and the Claude Code plugin, with a semantic tier from the `DEJA_EMBED_*` of `config.linux.toml`, the key `MONGODB_API_KEY` in fnox (deja reads it through the fnox alias `DEJA_EMBED_KEY`) and the hourly pitchfork daemon `deja-embed`.
 - It is a general setup, not part of the fw stack. Notes and open upstream problems: `homedir/dot_config/deja/README.md`, read before changing the setup or bumping the pin.
 
+## T3 Code
+
+- The T3 Code server (`t3`, `github:pingdotgg/t3code`) is the pitchfork daemon `t3` of `homedir/dot_config/mise/config.devcontainer.toml.tmpl` (`t3 serve --port 3773 --lan`, compose publishes 3773). It runs the mise-pinned version, and its `watch` restarts it when mise installs another one. Never run `t3 up`, `t3 service install` or `t3 update`: the first two need systemd, the last installs into `~/.t3/runtime`, which the daemon does not run.
+- `homedir/dot_t3/private_userdata/` holds the settings (a `modify_` template that merges the pinned keys into the file t3 rewrites; the text generator's `baseUrl` comes from `.my_cli_llm_proxy.url`) and the themes. Secrets stay in `~/.t3/userdata/secrets`: the generator's API key is entered once in Settings, and T3 Connect is linked once with `t3 connect`.
+
 ## Local Dev Compose
 
 - `homedir/dot_config/docker-compose/local-dev/README.md` describes local compose as the devcontainer replacement.
