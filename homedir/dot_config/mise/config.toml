@@ -71,7 +71,7 @@ pitchfork = '2.33'
 "github:Dicklesworthstone/franken_markdown" = "0.7.0" # `fmd` markdown -> html/pdf
 typos = "1.50"                                        # aqua:crate-ci/typos spell checker
 
-cloc = { version = "2.10", bin = "cloc", asset_pattern = "cloc-{{ version }}.pl" }
+tokei = "15.0.0"
 
 # # # # # # extras
 # rust = '1'
