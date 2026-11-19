@@ -46,9 +46,6 @@ Library/**
 .gc
 # deja: Linux only (mise config.linux.toml)
 .config/deja/**
-# T3 Code server: Linux devcontainer only (mise config.devcontainer.toml)
-.t3
-.t3/**
 .gemini/**
 .claude/**
 {{ end }}

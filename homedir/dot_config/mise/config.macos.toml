@@ -31,6 +31,7 @@ adopt = true
 "brew-cask:google-chrome" = "latest"
 "brew-cask:transmission" = "latest"
 "brew-cask:veracrypt" = "latest"          # pulls the macfuse cask, which needs a kernel extension approval
+"brew-cask:t3-code" = "latest"            # T3 Code desktop app; its settings and themes are ~/.t3/userdata
 
 "mas:747648890" = "latest" # telegram
 "mas:310633997" = "latest" # whatsapp
