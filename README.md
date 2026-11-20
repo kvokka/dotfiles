@@ -86,6 +86,21 @@ gc bd show <id>                         # any rig's issue
 gc doctor                               # in the city
 ```
 
+### Loop-manager development daemon (Linux)
+
+In `~/proj/work/loop-manager` run `mise run devloop-install` to copy its prepared debug binary to
+`~/.local/opt/loop-manager-dev/bin/loop-manager`. When chezmoi's `github_login` is `kvokka`, the Linux mise configuration
+registers the `loop-manager-dev` Pitchfork daemon for manual start. From any directory:
+
+```sh
+mise -C ~ daemons start loop-manager-dev
+pitchfork logs loop-manager-dev
+mise -C ~ daemons stop loop-manager-dev
+```
+
+From the checkout, `devloop/lm status` talks to this daemon on its own socket. To update it between epics,
+run `mise run devloop-install` and then `devloop/lm restart`.
+
 ### Flywheel stack (off)
 
 The agent-management stack ported from [acfs](https://github.com/Dicklesworthstone/agentic_coding_flywheel_setup)
