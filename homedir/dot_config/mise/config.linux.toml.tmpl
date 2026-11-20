@@ -42,12 +42,14 @@ DEJA_NO_UPDATE_NOTICE = "1"
 # No other DEJA_* hook switch is set on purpose: none made the hooks more useful,
 # for subagents least (~/.config/deja/README.md, Hooks and subagents).
 
+{{ if eq .github_login "kvokka" -}}
 # Start on demand with `mise -C ~ daemons start loop-manager-dev`. The checkout supplies
 # the toolchain and devloop/lm selects the installed binary, state directory and socket.
 [daemons.loop-manager-dev]
 dir = "~/proj/work/loop-manager"
 run = "exec mise exec -- ./devloop/lm daemon --config devloop/config.toml"
 
+{{ end -}}
 # Daily at 13:00: upload the whole usage history to tokscale.ai. Not `tokscale
 # autosubmit enable`: its scheduler is a systemd user timer or a crontab, both
 # absent in the container. `submit` takes TOKSCALE_API_TOKEN (fnox) before
@@ -116,5 +118,5 @@ description = "Generate MCP servers and hooks for every AI client (rulesync)"
 # client's user-scope files (MCP server list, hook list) and keeps the rest.
 # Runs after every `chezmoi apply` (run_after_200_ai-sync.sh), because chezmoi
 # rewrites those files whole and drops the generated keys.
-dir = "{{ env.HOME }}/.config/rulesync"
+dir = "{{ `{{ env.HOME }}` }}/.config/rulesync"
 run = "rulesync generate"

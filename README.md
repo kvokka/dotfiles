@@ -89,8 +89,8 @@ gc doctor                               # in the city
 ### Loop-manager development daemon (Linux)
 
 In `~/proj/work/loop-manager` run `mise run devloop-install` to copy its prepared debug binary to
-`~/.local/opt/loop-manager-dev/bin/loop-manager`. The Linux mise configuration registers the
-`loop-manager-dev` Pitchfork daemon for manual start. From any directory:
+`~/.local/opt/loop-manager-dev/bin/loop-manager`. When chezmoi's `github_login` is `kvokka`, the Linux mise configuration
+registers the `loop-manager-dev` Pitchfork daemon for manual start. From any directory:
 
 ```sh
 mise -C ~ daemons start loop-manager-dev
