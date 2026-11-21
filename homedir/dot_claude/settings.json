@@ -3,6 +3,7 @@
   "cleanupPeriodDays": 99999,
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_CODE_MODE": "1",
+    "ENABLE_TOOL_SEARCH": "true",
     "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "3"
   },
   "permissions": {
@@ -38,19 +39,16 @@
     "refreshInterval": 60
   },
   "enabledPlugins": {
-    "org@siam-platform": false,
-    "engineering@siam-platform": false,
     "frontend-design@claude-plugins-official": false,
-    "claude-codex-bridge@claude-codex-bridge": false,
     "pohuy@pohuy": false,
     "telemetry@builtin": false,
-    "deja-vu@deja-vu": false
+    "run-card@loop-manager": true
   },
   "extraKnownMarketplaces": {
-    "siam-platform": {
+    "loop-manager": {
       "source": {
         "source": "github",
-        "repo": "umum-ai/siam-platform"
+        "repo": "kvokka/loop-manager"
       },
       "autoUpdate": true
     },
@@ -66,19 +64,6 @@
         "repo": "DietrichGebert/ponytail"
       },
       "autoUpdate": true
-    },
-    "claude-codex-bridge": {
-      "source": {
-        "source": "github",
-        "repo": "umum-ai/claude-codex-bridge"
-      },
-      "autoUpdate": true
-    },
-    "deja-vu": {
-      "source": {
-        "source": "github",
-        "repo": "vshulcz/deja-vu"
-      }
     }
   },
   "language": "Русский",
@@ -88,7 +73,7 @@
     "claude-opus-5-5": {
       "effortLevel": "high"
     },
-    "claude-fable-5-1": {
+    "claude-fable-5-2": {
       "effortLevel": "high"
     }
   },
@@ -102,6 +87,11 @@
       "options": {
         "ledger": true,
         "sendNames": true
+      }
+    },
+    "run-card@loop-manager": {
+      "options": {
+        "auto_open": true
       }
     }
   },
@@ -117,8 +107,5 @@
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "awaySummaryEnabled": false,
-  "idleCompaction": false,
-  "//": [
-    "TODO: move siam-orchestration@siam to the project level"
-  ]
+  "idleCompaction": false
 }
