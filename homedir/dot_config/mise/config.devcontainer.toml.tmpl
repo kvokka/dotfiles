@@ -100,3 +100,12 @@ ready_port = 3773
 watch = ["{{ .chezmoi.homeDir }}/.local/share/mise/installs/github-pingdotgg-t3code/*/t3"]
 retry = true
 auto = ["start"]
+
+{{ if eq .github_login "kvokka" -}}
+# Start on demand with `mise -C ~ daemons start loop-manager-dev`. The checkout supplies
+# the toolchain and devloop/lm selects the installed binary, state directory and socket.
+[daemons.loop-manager-dev]
+dir = "~/proj/work/loop-manager"
+run = "exec mise exec -- ./devloop/lm daemon --config devloop/config.toml"
+
+{{ end -}}
