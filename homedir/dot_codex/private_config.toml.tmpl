@@ -1,5 +1,5 @@
 suppress_unstable_features_warning = true # stub default_mode_request_user_input
-model = "gpt-6-astra"
+model = "gpt-6-2-sol"
 model_context_window = 600_000
 model_reasoning_effort = "high"
 approval_policy = "never"
@@ -22,12 +22,6 @@ env_key = "MY_CLI_LLM_PROXY_API_KEY"
 persistence = "save-all"
 max_bytes = 104857600 # 100 MiB
 
-[projects."/workspace"]
-trust_level = "trusted"
-
-[projects."/home/ubuntu/proj/work/"]
-trust_level = "trusted"
-
 [tui]
 # Send desktop notifications when approvals are required or a turn completes.
 # Defaults to false.
@@ -38,10 +32,12 @@ status_line = [
   "current-dir",
   "weekly-limit",
 ]
+screen_reader_detection_done = true
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4
 "gpt-5.6-sol" = 4
+"gpt-6.1-sol" = 4
 
 [analytics]
 enabled = false
@@ -64,54 +60,23 @@ max_threads = 15
 max_depth = 2
 job_max_runtime_seconds = 1800
 
-{{ if or (eq .github_login "kvokka") (eq .github_login "kvokka-agent")  }}
-[marketplaces."siam-platform"]
+[marketplaces."loop-manager"]
 source_type = "git"
-source = "https://github.com/umum-ai/siam-platform.git"
+source = "https://github.com/kvokka/loop-manager.git"
 
-# TODO: After maturity of this plugin exctract it to the separate marketplace/plugin
-#       with pubic scope
-[plugins."engineering@siam-platform"]
+[plugins."loop-manager@loop-manager"]
 enabled = true
 
-# With codex 0.149.1 this DOES NOT override global config because of codex bug!
-# kept it just to make it explisit. Have edit global codex config
-# TODO: make this project-related, not global
-[plugins."org@siam-platform"]
+[plugins."run-card@loop-manager"]
 enabled = true
-{{ end }}
 
 {{ $codex_active_repos := list
-  "siam-platform"
-  "siam-api"
-  "siam-app"
-  "siam-ocr"
-  "siam-web"
-  "siam-telemetry"
-  "siam-staging-provisioner"
-  "siam-plugins"
-  "siam-infra"
-  "siam-image-prepare"  -}}
+  "proj/work"
+  "proj/work/loop-manager"
+  ".dotfiles"  -}}
 
 {{ range $codex_active_repos -}}
 [projects."/home/ubuntu/proj/work/{{ . }}"]
 trust_level = "trusted"
 
-{{ end -}}
-
-[hooks.state]
-
-[hooks.state."org@siam-platform:hooks/hooks.json:pre_tool_use:0:0"]
-trusted_hash = "sha256:cf6ae0ec53146e85e63b8f6d06545d020143fd1bef3f25a5586aba1a93bf4906"
-
-[hooks.state."org@siam-platform:hooks/hooks.json:session_start:0:0"]
-trusted_hash = "sha256:9bf1969b76317735251d8c336b0ea96dacbda45558c5ed5ae53871a9a1e28429"
-
-[hooks.state."org@siam-platform:hooks/hooks.json:session_start:0:1"]
-trusted_hash = "sha256:3c71afe678f109df7a5f438125523fa210312607a620683c6e13df4817f80f1a"
-
-[hooks.state."org@siam-platform:hooks/hooks.json:subagent_start:0:0"]
-trusted_hash = "sha256:ce2c65b52d3a1c228b8ae6271fd5929d4fae9585c2c4aef6307836571ecc591d"
-
-[hooks.state."org@siam-platform:hooks/hooks.json:subagent_start:0:1"]
-trusted_hash = "sha256:be7766451cdeb611a549aaca188b55b6f9e1efe6d65d05c93a4c2f077cada688"
+{{ end }}
