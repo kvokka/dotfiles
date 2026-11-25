@@ -88,7 +88,7 @@ tokei = "15.0.0"
 [settings]
 
 minimum_release_age = "3d"
-minimum_release_age_excludes = ["opencode", "claude", "codex", "aqua:openai/codex"]
+minimum_release_age_excludes = ["opencode", "claude", "codex", "aqua:openai/codex", "github:pingdotgg/t3code"]
 
 npm.package_manager = "bun"
 
