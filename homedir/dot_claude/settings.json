@@ -42,6 +42,7 @@
     "frontend-design@claude-plugins-official": false,
     "pohuy@pohuy": false,
     "telemetry@builtin": false,
+    "t3-run-card@loop-manager": true,
     "run-card@loop-manager": true
   },
   "extraKnownMarketplaces": {
@@ -87,6 +88,11 @@
       "options": {
         "ledger": true,
         "sendNames": true
+      }
+    },
+    "t3-run-card@loop-manager": {
+      "options": {
+        "auto_open": true
       }
     },
     "run-card@loop-manager": {
