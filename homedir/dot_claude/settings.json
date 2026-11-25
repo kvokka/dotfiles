@@ -43,7 +43,7 @@
     "pohuy@pohuy": false,
     "telemetry@builtin": false,
     "t3-run-card@loop-manager": true,
-    "run-card@loop-manager": true
+    "loop-manager@loop-manager": true
   },
   "extraKnownMarketplaces": {
     "loop-manager": {
@@ -91,11 +91,6 @@
       }
     },
     "t3-run-card@loop-manager": {
-      "options": {
-        "auto_open": true
-      }
-    },
-    "run-card@loop-manager": {
       "options": {
         "auto_open": true
       }
