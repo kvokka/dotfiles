@@ -1,0 +1,7 @@
+{
+  "name": "coder",
+  "description": "The subagents of the claude-coder profile: the expert above the coder, the helper below it.",
+  "author": {
+    "name": "kvokka"
+  }
+}
