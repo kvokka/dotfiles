@@ -12,6 +12,9 @@
 
   mergeOverwrite never overwrites with a false value, so the pinned
   "enabled" false only holds while the UI leaves it off.
+
+  t3 expands "~" in the --settings of launchArgs, which it reads itself, but
+  passes --plugin-dir to Claude as it is, and Claude does not expand it.
 */ -}}
 {{- $current := dict -}}
 {{- /* .chezmoi.stdin is only set while applying; `chezmoi cat|status` render without it */ -}}
@@ -49,7 +52,8 @@
         "claude-coder" (dict
           "driver" "claudeAgent"
           "displayName" "Claude coder"
-          "config" (dict "launchArgs" "--settings ~/.t3/claude-coder/settings.json"))
+          "config" (dict "launchArgs" (printf "--settings ~/.t3/claude-coder/settings.json --plugin-dir %s"
+            (joinPath .chezmoi.homeDir ".t3/claude-coder/plugin"))))
         "codex-coder" (dict
           "driver" "codex"
           "displayName" "Codex coder"
@@ -58,7 +62,7 @@
             "binaryPath" "~/.t3/codex-coder/bin/codex-trusted")
           "environment" (list
             (dict "name" "CACHE_WARM_TTL" "value" "30")
-            (dict "name" "AGENTS_CHEAP_MODELS" "value" "gpt-6.1-terra, gpt-6-luna"))))
+            (dict "name" "PONYTAIL_SUBAGENT_MATCHER" "value" "^(default|worker|expert|helper)$"))))
       "textGenerators" (dict
         "custom" (dict
           "kind" "openaiCompatible"

@@ -59,10 +59,14 @@ enabled = true
 [plugins."agent-mail@kvokka-harness-plugins"]
 enabled = true
 
-[plugins."agents@kvokka-harness-plugins"]
+[plugins."cache-warm@kvokka-harness-plugins"]
 enabled = true
 
-[plugins."cache-warm@kvokka-harness-plugins"]
+[marketplaces.ponytail]
+source_type = "git"
+source = "https://github.com/DietrichGebert/ponytail.git"
+
+[plugins."ponytail@ponytail"]
 enabled = true
 
 [hooks.state."agent-mail@kvokka-harness-plugins:hooks/hooks.json:session_start:0:0"]
@@ -100,6 +104,20 @@ trusted_content_hash = "sha256:110feaa179f050cb4019cb71670ab84c487f5360afec5608b
 [hooks.state."dcg@kvokka-harness-plugins:hooks/hooks.json:pre_tool_use:0:0"]
 trusted_hash = "sha256:1519f7b9c07564ba713d6d2fe2cdcadf3473bf2c61892e04871c2c25aeb41c30"
 trusted_content_hash = "sha256:8888f8f1c808d651efb0c360ba7f739cc556c0ccdef3316787f294f90fa6af0f"
+
+# codex-trusted trusts only the hooks of kvokka-harness-plugins: ponytail's are trusted here, and a new ponytail
+# release that changes them needs their new hashes (`/hooks` in Codex).
+[hooks.state."ponytail@ponytail:hooks/claude-codex-hooks.json:session_start:0:0"]
+trusted_hash = "sha256:defea43402fc8edba23234c694a1117cf80efc2da38968a40a1004cd9d63f725"
+trusted_content_hash = "sha256:84975b724492523884ae54f649d948a66ea1c2d421659499a7ec1240fbcad8f7"
+
+[hooks.state."ponytail@ponytail:hooks/claude-codex-hooks.json:subagent_start:0:0"]
+trusted_hash = "sha256:5b2c1dfa8c7ecc5e8881c8e69479f65d46ed727e0bc5b8e7b4553cee9e5c3daf"
+trusted_content_hash = "sha256:84975b724492523884ae54f649d948a66ea1c2d421659499a7ec1240fbcad8f7"
+
+[hooks.state."ponytail@ponytail:hooks/claude-codex-hooks.json:user_prompt_submit:0:0"]
+trusted_hash = "sha256:5aa5ec474e0bb546f207794993b37fdf7507e54a64e09216be164c5b7b42a197"
+trusted_content_hash = "sha256:84975b724492523884ae54f649d948a66ea1c2d421659499a7ec1240fbcad8f7"
 
 [hooks.state."shell-tools@kvokka-harness-plugins:hooks/hooks.json:session_start:0:0"]
 trusted_hash = "sha256:528c31fd6f6df21b6cef5f9afc1fb93016a00bd58f564090e263ac884836586c"

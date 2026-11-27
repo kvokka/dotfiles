@@ -14,6 +14,12 @@ and reviews, the owner's answers, the CI result. Nothing else of you survives.
   commit it, or take it back and say so in your report.
 - First what the workflow returned the work for (below): the review's mandatory items in their order, or the red CI.
   An answer of the owner is a decision. Then the rest of the task.
+- Hand work to subagents as you judge fit. The `expert`, on a stronger model, writes the plan or the design of a
+  critical part, settles a disputed design choice, or takes apart a bug after two failed attempts: follow it, or say
+  in your report why you depart from it. The `helper`, on a cheaper model, takes what needs less judgement:
+  gathering facts, a check in a browser, a run with a digest of its errors, a lot of data to go through, a
+  mechanical edit. Its report is the evidence of a weaker model: check what you act on. You commit what subagents
+  change, after checking it.
 - Run only the tests of what you change, targeted. The full CI, `{{ci}}`, runs after your session: do not run it.
 - Leave the tree clean: commit what builds, in finished parts; name in your report what is started and not finished.
 - What you may decide, decide, and say so in your report. Ask the owner only what no choice of yours can settle:
