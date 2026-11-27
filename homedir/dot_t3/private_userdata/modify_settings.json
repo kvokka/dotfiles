@@ -9,6 +9,9 @@
   in settings, so chezmoi renders the proxy URL. Its apiKey is not pinned: t3
   keeps the key in ~/.t3/userdata/secrets and writes only a mask here, so the
   key is entered once in Settings and the merge keeps the mask.
+
+  mergeOverwrite never overwrites with a false value, so the pinned
+  "enabled" false only holds while the UI leaves it off.
 */ -}}
 {{- $current := dict -}}
 {{- /* .chezmoi.stdin is only set while applying; `chezmoi cat|status` render without it */ -}}
@@ -16,15 +19,40 @@
 {{-   $current = fromJson .chezmoi.stdin -}}
 {{- end -}}
 {{- $pinned := dict
+      "favorites" (list (dict "provider" "claudeAgent" "model" "claude-opus-5-5"))
       "providerModelPreferences" (dict
         "codex" (dict
-          "hiddenModels" (list "gpt-5.5" "gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-sol")
+          "hiddenModels" (list "gpt-5.5" "gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-sol" "gpt-6-astra" "gpt-6.1-sol")
           "modelOrder" (list "gpt-6.2-astra" "gpt-6.2-sol" "gpt-6.1-terra" "gpt-6.1-sol" "gpt-6-astra" "gpt-6-luna" "gpt-6-sol" "gpt-5.6-sol" "gpt-5.6-terra" "gpt-5.6-luna" "gpt-5.5"))
         "claudeAgent" (dict
           "hiddenModels" (list "claude-haiku-4-5" "claude-sonnet-4-6" "claude-sonnet-5" "claude-opus-4-5" "claude-opus-4-6" "claude-opus-4-7" "claude-opus-4-8" "claude-opus-5" "claude-fable-5" "claude-fable-5-1")))
-      "defaultModelSelection" (dict "instanceId" "codex" "model" "gpt-6.2-astra")
-      "idleCompaction" "onReturn"
+      "storageCleanup" (dict "worktreeOnMerge" true "worktreeOnDelete" true)
+      "defaultModelSelection" (dict
+        "instanceId" "claudeAgent"
+        "model" "claude-opus-5-5"
+        "options" (list (dict "id" "effort" "value" "high")))
+      "idleCompaction" "off"
+      "workflowsEnabled" true
       "addProjectBaseDirectory" "~/proj/work"
+      "providerInstances" (dict
+        "loop-manager" (dict
+          "driver" "acpRegistry"
+          "displayName" "Loop Manager"
+          "enabled" false
+          "config" (dict
+            "source" "local"
+            "commandPath" (joinPath .chezmoi.homeDir ".local/bin/loop-manager")
+            "commandArgs" (list "acp" "--socket" (joinPath .chezmoi.homeDir ".config/loop-manager/sockets/devloop"))))
+        "claude-coder" (dict
+          "driver" "claudeAgent"
+          "displayName" "Claude coder"
+          "config" (dict "homePath" "~/.t3/claude-coder"))
+        "codex-coder" (dict
+          "driver" "codex"
+          "displayName" "Codex coder"
+          "config" (dict
+            "homePath" "~/.t3/codex-coder"
+            "binaryPath" "~/.t3/codex-coder/bin/codex-trusted")))
       "textGenerators" (dict
         "custom" (dict
           "kind" "openaiCompatible"

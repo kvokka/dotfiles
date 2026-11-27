@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "cleanupPeriodDays": 99999,
+  "env": {
+    "PONYTAIL_SUBAGENT_MATCHER": "^(general-purpose|coder|expert)$",
+    "CLAUDE_CODE_EXPERIMENTAL_CODE_MODE": "1",
+    "ENABLE_TOOL_SEARCH": "true",
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "3"
+  },
+  "permissions": {
+    "deny": [
+      "EndConversation",
+      "NotebookEdit",
+      "DesignSync"
+    ],
+    "defaultMode": "auto"
+  },
+  "skillOverrides": {
+    "run": "off",
+    "init": "off",
+    "anthropic-skills:built-in-browser": "off",
+    "anthropic-skills:chrome-browser": "off",
+    "anthropic-skills:computer-use": "off",
+    "anthropic-skills:docx": "off",
+    "anthropic-skills:google-workspace": "off",
+    "anthropic-skills:import-memory": "off",
+    "anthropic-skills:morning": "off",
+    "anthropic-skills:pdf": "off",
+    "anthropic-skills:pptx": "off",
+    "anthropic-skills:xlsx": "off"
+  },
+  "model": "opus",
+  "enabledPlugins": {
+    "ponytail@ponytail": true,
+    "telemetry@builtin": false,
+    "dcg@kvokka-harness-plugins": true,
+    "conventional-commits@kvokka-harness-plugins": true,
+    "context-budget@kvokka-harness-plugins": true,
+    "shell-tools@kvokka-harness-plugins": true,
+    "agent-mail@kvokka-harness-plugins": true,
+    "agents@kvokka-harness-plugins": true
+  },
+  "extraKnownMarketplaces": {
+    "kvokka-harness-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "kvokka/kvokka-harness-plugins"
+      },
+      "autoUpdate": true
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      },
+      "autoUpdate": true
+    }
+  },
+  "pluginConfigs": {
+    "cc-plugin-agents-md@builtin": {
+      "options": {
+        "instructionFiles": "claude-md-or-agents-md"
+      }
+    },
+    "ponytail@ponytail": {
+      "options": {
+        "ledger": true,
+        "sendNames": true
+      }
+    },
+  },
+  "language": "Русский",
+  "enableArtifact": false,
+  "askUserQuestionTimeout": "never",
+  "feedbackDrafts": "off",
+  "autoMemoryEnabled": false,
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "awaySummaryEnabled": false,
+  "theme": "dark-ansi",
+  "autoCompactWindow": 633000
+}

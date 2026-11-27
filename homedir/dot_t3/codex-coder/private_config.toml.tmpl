@@ -1,0 +1,108 @@
+# CODEX_HOME of the T3 provider instance codex-coder: the host's provider and model, plus kvokka-harness-plugins.
+model = "gpt-6.2-sol"
+model_context_window = 600_000
+model_reasoning_effort = "high"
+# The harness compacts at 600k; the context-budget plugin warns at 300k and stops at 420k.
+model_auto_compact_token_limit = 600_000
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+web_search = "cached"
+model_provider = "myproxy"
+
+[model_providers.myproxy]
+# Have to use chezmoi interpolation since it does not support it from env var
+base_url = {{ .my_cli_llm_proxy.url | quote }}
+name = "My Proxy for Codex"
+wire_api = "responses"
+env_key = "MY_CLI_LLM_PROXY_API_KEY"
+
+[analytics]
+enabled = false
+
+[feedback]
+enabled = false
+
+[features]
+plugins = true
+memories = false
+
+[agents]
+max_threads = 15
+max_depth = 2
+job_max_runtime_seconds = 5400
+
+{{ $codex_active_repos := list
+  "proj/work"
+  ".dotfiles"  -}}
+
+{{ range $codex_active_repos -}}
+[projects."/home/ubuntu/proj/work/{{ . }}"]
+trust_level = "trusted"
+
+{{ end }}
+
+[marketplaces.kvokka-harness-plugins]
+source_type = "git"
+source = "https://github.com/kvokka/kvokka-harness-plugins.git"
+
+[plugins."dcg@kvokka-harness-plugins"]
+enabled = true
+
+[plugins."conventional-commits@kvokka-harness-plugins"]
+enabled = true
+
+[plugins."context-budget@kvokka-harness-plugins"]
+enabled = true
+
+[plugins."shell-tools@kvokka-harness-plugins"]
+enabled = true
+
+[plugins."agent-mail@kvokka-harness-plugins"]
+enabled = true
+
+[plugins."agents@kvokka-harness-plugins"]
+enabled = true
+
+[hooks.state."agent-mail@kvokka-harness-plugins:hooks/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:97279e0db38627e41117f06d5687821b9b7f28f1a980c0d752e75920415a6c62"
+trusted_content_hash = "sha256:f694f31e74910064a841d9a223640d567cdaf5b813a67773a27e99449c643dbd"
+
+[hooks.state."agent-mail@kvokka-harness-plugins:hooks/hooks.json:session_end:0:0"]
+trusted_hash = "sha256:c7604b04daaac99aea4b1109806d701c2319b454e399d866e5c71efd7a155898"
+trusted_content_hash = "sha256:f694f31e74910064a841d9a223640d567cdaf5b813a67773a27e99449c643dbd"
+
+[hooks.state."context-budget@kvokka-harness-plugins:hooks/hooks.json:pre_tool_use:0:0"]
+trusted_hash = "sha256:0fd72d862090e169bab39e16a97a816682cbbc5c30dae914515d9e0bdad6d8a5"
+trusted_content_hash = "sha256:d5aa87f3159fd9398044803a9854eca4b37bb6264bf223b50b451c581020c2fd"
+
+[hooks.state."context-budget@kvokka-harness-plugins:hooks/hooks.json:post_tool_use:0:0"]
+trusted_hash = "sha256:2165a608654a297a659b188092ca0e7bc6ed0f6b8b3e516a4e05e0322d0c9c2d"
+trusted_content_hash = "sha256:d5aa87f3159fd9398044803a9854eca4b37bb6264bf223b50b451c581020c2fd"
+
+[hooks.state."context-budget@kvokka-harness-plugins:hooks/hooks.json:pre_compact:0:0"]
+trusted_hash = "sha256:8d49587c928f642b9c7c13b413bc1a3b1ce5465edc10232be2a392704ce8fe02"
+trusted_content_hash = "sha256:d5aa87f3159fd9398044803a9854eca4b37bb6264bf223b50b451c581020c2fd"
+
+[hooks.state."context-budget@kvokka-harness-plugins:hooks/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:2f9993a9c9d19cb2d036d6f64828f38d6e5176c8d83f739a301e39c1001e15e2"
+trusted_content_hash = "sha256:d5aa87f3159fd9398044803a9854eca4b37bb6264bf223b50b451c581020c2fd"
+
+[hooks.state."context-budget@kvokka-harness-plugins:hooks/hooks.json:subagent_start:0:0"]
+trusted_hash = "sha256:5706319e93e77088ad0bf18aab90bb243f36c8f9f4a48615bff17e436cffb5af"
+trusted_content_hash = "sha256:d5aa87f3159fd9398044803a9854eca4b37bb6264bf223b50b451c581020c2fd"
+
+[hooks.state."conventional-commits@kvokka-harness-plugins:hooks/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:5205564260ed5ca5f693a96b71342c154976ccfb58afc853582aae088be30271"
+trusted_content_hash = "sha256:110feaa179f050cb4019cb71670ab84c487f5360afec5608b0cb3d0d56179da6"
+
+[hooks.state."dcg@kvokka-harness-plugins:hooks/hooks.json:pre_tool_use:0:0"]
+trusted_hash = "sha256:1519f7b9c07564ba713d6d2fe2cdcadf3473bf2c61892e04871c2c25aeb41c30"
+trusted_content_hash = "sha256:8888f8f1c808d651efb0c360ba7f739cc556c0ccdef3316787f294f90fa6af0f"
+
+[hooks.state."shell-tools@kvokka-harness-plugins:hooks/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:528c31fd6f6df21b6cef5f9afc1fb93016a00bd58f564090e263ac884836586c"
+trusted_content_hash = "sha256:ee76faacc11fa128ddd7262e9e6da595f71b1ea8b58eb7f69c1cf101801ecee2"
+
+[hooks.state."shell-tools@kvokka-harness-plugins:hooks/hooks.json:subagent_start:0:0"]
+trusted_hash = "sha256:6be103e454bd5d1d2e1fbd055059b0543854741890f6be08e8ad728f670d4e66"
+trusted_content_hash = "sha256:ee76faacc11fa128ddd7262e9e6da595f71b1ea8b58eb7f69c1cf101801ecee2"
