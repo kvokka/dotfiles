@@ -27,22 +27,28 @@ itself. This file lists what chezmoi cannot do, and how the coder profiles keep 
    claude plugin install ponytail@ponytail
    ```
 
-`codex-coder` needs no manual step: `codex-trusted` installs its plugins.
+4. **The plugins of `codex-coder`**: `CODEX_HOME=~/.t3/codex-coder codex plugin list` shows what is installed;
+   install what `config.toml` enables and is missing:
+
+   ```sh
+   CODEX_HOME=~/.t3/codex-coder codex plugin marketplace upgrade
+   CODEX_HOME=~/.t3/codex-coder codex plugin add <name>@<marketplace>
+   ```
 
 ## codex-coder: plugin hooks
 
 Codex runs a plugin's hook only while it is trusted, and skips it without a word otherwise. Each change of the
-plugin, an update of the plugin included, makes its hooks untrusted again, and a plugin enabled in `config.toml` but
-not installed has no hooks at all. Every chezmoi apply also drops the trust Codex keeps in `config.toml`.
+plugin, an update of the plugin included, makes its hooks untrusted again.
 
 So T3 starts Codex through `codex-coder/bin/codex-trusted` (the instance's `binaryPath`; chezmoi fetches it from
-kvokka-harness-plugins every day). At each start, for the marketplaces of `CODEX_TRUSTED_MARKETPLACES` (the
-instance's `environment` in T3's settings), it fetches a marketplace that does not load, installs each enabled
-plugin that is not installed and trusts their hooks. If anything is still missing, it does not start Codex: the
-session fails, and the cause is on stderr, with the fix.
+kvokka-harness-plugins every day). At each start it trusts the hooks of the installed plugins of the marketplaces in
+`CODEX_TRUSTED_MARKETPLACES` (the instance's `environment` in T3's settings: `kvokka-harness-plugins ponytail`), so
+an update of those plugins needs no approval. A plugin that is not installed is left alone. When a hook stays
+untrusted all the same, Codex is not started: the session fails with `codex-trusted: codex is not started` and the
+cause on stderr. Fix the cause, or trust the hooks by hand with `CODEX_HOME=~/.t3/codex-coder codex`, then `/hooks`.
 
-- A plugin from a new marketplace goes into `config.toml` (the marketplace and the plugin) and its marketplace into
-  `CODEX_TRUSTED_MARKETPLACES`. Without the latter its hooks stay untrusted, silently.
-- Never pin `[hooks.state]` hashes in the config template: they go stale with the next plugin update.
-- A session that does not start with `codex-trusted: codex is not started`: fix the cause it names, or trust the
-  hooks by hand with `CODEX_HOME=~/.t3/codex-coder codex`, then `/hooks`.
+- The trust lives in `[hooks.state]` of `codex-coder/config.toml`, which `codex-trusted` writes. The config template
+  pins none: pinned hashes go stale with the next plugin update. So a chezmoi apply drops the trust, the next start
+  writes it again, and `chezmoi diff` shows those entries in between.
+- A plugin from another marketplace goes into `config.toml` (the marketplace and the plugin) and its marketplace into
+  `CODEX_TRUSTED_MARKETPLACES`; without the latter, its hooks wait for an approval in `/hooks`.
