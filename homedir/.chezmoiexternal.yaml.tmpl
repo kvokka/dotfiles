@@ -37,3 +37,10 @@
     type: "file"
     url: "https://raw.githubusercontent.com/1160054/claude-code-zsh-completion/main/completions/_claude"
     refreshPeriod: "168h"
+
+# The trust wrapper of the codex-coder T3 instance (its binaryPath): Codex skips plugin hooks it does not trust.
+".t3/codex-coder/bin/codex-trusted":
+    type: "file"
+    url: "https://raw.githubusercontent.com/kvokka/kvokka-harness-plugins/main/bin/codex-trusted"
+    executable: true
+    refreshPeriod: "24h"

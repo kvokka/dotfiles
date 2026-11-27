@@ -1,6 +1,6 @@
 ---
 name: review-loop
-description: Hand a task to the T3 workflow review-loop, which takes it through rounds of a coder, the project's full CI and a reviewer until the review passes. Use when the user asks to run, start or send a task to the review loop.
+description: Use when the user asks to run, start or send a task to the review loop - the T3 workflow that takes a task through rounds of a coder, the project's full CI and a reviewer until a review passes.
 ---
 
 # review-loop
