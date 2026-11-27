@@ -1,6 +1,6 @@
 ---
 name: helper
-description: A subagent on a cheaper model for work that needs less judgement - gathering facts from the code, the documents or the web, a check in a browser, a build or test run with a digest of its errors, going through a large amount of data, a mechanical edit by an exact description. Runs on sonnet; start it with the model haiku for the simplest of it. Its report is the evidence of a weaker model, not a judgement - check what you act on.
+description: Delegate what needs less judgement than yours - collecting facts, browser checks, runs with an error digest, bulk data, mechanical edits. A cheaper model (sonnet; haiku on request); its report is evidence to check, not a verdict.
 model: sonnet
 ---
 

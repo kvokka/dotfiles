@@ -62,6 +62,7 @@
             "binaryPath" "~/.t3/codex-coder/bin/codex-trusted")
           "environment" (list
             (dict "name" "CACHE_WARM_TTL" "value" "30")
+            (dict "name" "CODEX_TRUSTED_MARKETPLACES" "value" "kvokka-harness-plugins ponytail")
             (dict "name" "PONYTAIL_SUBAGENT_MATCHER" "value" "^(default|worker|expert|helper)$"))))
       "textGenerators" (dict
         "custom" (dict
