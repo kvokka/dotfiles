@@ -49,7 +49,7 @@
         "claude-coder" (dict
           "driver" "claudeAgent"
           "displayName" "Claude coder"
-          "config" (dict "launchArgs": "--settings ~/.t3/claude-coder/settings.json"))
+          "config" (dict "launchArgs" "--settings ~/.t3/claude-coder/settings.json"))
         "codex-coder" (dict
           "driver" "codex"
           "displayName" "Codex coder"
