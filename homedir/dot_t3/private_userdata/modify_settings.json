@@ -55,7 +55,10 @@
           "displayName" "Codex coder"
           "config" (dict
             "homePath" "~/.t3/codex-coder"
-            "binaryPath" "~/.t3/codex-coder/bin/codex-trusted")))
+            "binaryPath" "~/.t3/codex-coder/bin/codex-trusted")
+          "environment" (list
+            (dict "name" "CACHE_WARM_TTL" "value" "30")
+            (dict "name" "AGENTS_CHEAP_MODELS" "value" "gpt-6.1-terra, gpt-6-luna"))))
       "textGenerators" (dict
         "custom" (dict
           "kind" "openaiCompatible"

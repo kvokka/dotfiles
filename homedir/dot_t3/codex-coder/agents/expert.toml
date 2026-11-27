@@ -1,0 +1,7 @@
+# The expert role of the agents plugin (kvokka-harness-plugins): a Codex plugin cannot ship a role, so the role is
+# here and points at the plugin's skill, the one text of the expert for Claude and Codex.
+name = "expert"
+description = "The expert a coder consults for the plan or the design of a critical part, a disputed design choice, or a bug after two failed attempts. Writes a document, changes no product code."
+developer_instructions = "Work as the `expert` skill of the `agents` plugin says."
+model = "gpt-6.2-astra"
+model_reasoning_effort = "high"

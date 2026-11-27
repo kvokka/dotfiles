@@ -29,7 +29,6 @@ memories = false
 [agents]
 max_threads = 15
 max_depth = 2
-job_max_runtime_seconds = 5400
 
 {{ $codex_active_repos := list
   "proj/work"
@@ -61,6 +60,9 @@ enabled = true
 enabled = true
 
 [plugins."agents@kvokka-harness-plugins"]
+enabled = true
+
+[plugins."cache-warm@kvokka-harness-plugins"]
 enabled = true
 
 [hooks.state."agent-mail@kvokka-harness-plugins:hooks/hooks.json:session_start:0:0"]
