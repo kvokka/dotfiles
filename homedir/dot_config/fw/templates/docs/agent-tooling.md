@@ -14,7 +14,7 @@ repository expects.
 | `br` | Beads (Rust): local dependency-aware issue tracker in `.beads/` (SQLite + committed `issues.jsonl`) | Single source of truth for what to do next; travels with the code | `br ready --json`, `br update <id> --claim`, `br close <id>`, `br sync --flush-only` |
 | `bv` | Beads viewer: graph-aware triage (PageRank, critical path, parallel tracks) | Deterministic answer to "what unlocks the most work" | Only `bv --robot-triage`, `bv --robot-next`, `bv --robot-plan`; bare `bv` is a blocking TUI |
 | `am` / `mcp-agent-mail` | MCP Agent Mail: HTTP MCP server (`http://127.0.0.1:8765/mcp/`, web UI at `/mail`) with agent identities, threaded messages and advisory file reservations | Coordination bus between agents; prevents two agents editing the same files | In an ntm pane the agent is already registered (`am agents resolve-pane --project <repo>`), elsewhere it registers once; MCP tools `file_reservation_paths`, `send_message`, `fetch_inbox`; the pre-commit guard enforces reservations; setup notes: `docs/agent-tooling/agent-mail.md` |
-| `dcg` | Destructive Command Guard: hook that blocks `rm -rf`, `git reset --hard`, `git clean -fd` and similar before they run | Safety net for autonomous agents in this repository; a repository hook of each agent (`.rulesync/`, `.opencode/plugins/dcg-guard.js`), not a machine-wide one, so a chat session outside such a repository runs what the user asks for | Transparent; a blocked command is reported back to the agent |
+| `dcg` | Destructive Command Guard: hook that blocks `rm -rf`, `git reset --hard`, `git clean -fd` and similar before they run | Safety net for autonomous agents in this repository; a repository hook of each agent (`.claude/settings.json`, `.codex/hooks.json`, `.agents/hooks.json`, `.opencode/plugins/dcg-guard.js`), not a machine-wide one, so a chat session outside such a repository runs what the user asks for | Transparent; a blocked command is reported back to the agent |
 | `cc-safety-net` | Third-party OpenCode plugin (kenryu42) with the same role as `dcg`: blocks destructive git commands (`reset --hard`, `checkout --`, `clean -f`, `push --force`, `branch -D`, `stash clear`) and `rm -rf` outside the working directory | Same safety net inside OpenCode; loaded by this repository's `opencode.json` | Transparent |
 | `ubs` | Ultimate Bug Scanner: multi-language pattern scanner tuned for generated code | Quality gate before every commit (pre-commit hook, critical findings fail the commit) | Runs in the pre-commit hook; agents fix its findings, `ubs <files>` reproduces them (exit 0 = clean); setup notes: `docs/agent-tooling/ubs.md` |
 | `toon` | Token-Optimized Notation encoder | Compact `--format toon` output of `ubs`, `bv`, `br` for agents | Optional output format, e.g. `bv --robot-triage --format toon` |
@@ -41,12 +41,11 @@ repository expects.
 4. `.pre-commit-config.yaml` + `scripts/hooks/agent-mail-guard`: the global
    git hook runs `prek`, which runs the reservation guard, `ubs`, `gitleaks`
    and formatters on every commit.
-5. The `dcg` guard: `rulesync.jsonc` and `.rulesync/hooks.jsonc`, from which
-   `rulesync generate` writes `.claude/settings.json`, `.codex/hooks.json` and
-   `.agents/hooks.json` (agy); `.opencode/plugins/dcg-guard.js` and
-   `opencode.json` (`cc-safety-net`) for OpenCode. Commit them all. rulesync
-   replaces the whole hook list of each file it writes, so the task generates
-   only while none of them exists; add further hooks to `.rulesync/hooks.jsonc`.
+5. The `dcg` guard from the template: `.claude/settings.json`,
+   `.codex/hooks.json` and `.agents/hooks.json` (agy);
+   `.opencode/plugins/dcg-guard.js` and `opencode.json` (`cc-safety-net`) for
+   OpenCode. Commit them all; a file that already exists is kept, so merge its
+   dcg hook by hand.
    Codex runs them only in a trusted project, after they are approved once.
 
 The Agent Mail and cass-memory MCP servers need no per-repository step: they

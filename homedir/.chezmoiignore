@@ -37,7 +37,6 @@ Library/**
 .config/ntm/**
 .config/bv/**
 .config/brenner/**
-.config/rulesync/**
 .config/cass-memory/**
 .config/zshrc.d/250-fw.zsh
 # Gas City and Beads: Linux devcontainer only (mise config.gc.toml)

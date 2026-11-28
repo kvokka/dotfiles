@@ -5,7 +5,7 @@ How MCP Agent Mail runs on this machine and which parts of its setup look odd bu
 ## How it works
 
 - **Pin:** `am` 0.3.36 (`mcp_agent_mail_rust`, which also ships `mcp-agent-mail`) in `~/.config/mise/config.fw.toml`.
-- **Service:** the pitchfork daemon `agent-mail`, `am serve-http` with its TUI on 0.0.0.0:8765, MCP at `/mcp/`, registered for every client by `mise run ai:sync`. am runs in the session `am` of a private tmux server (socket `agent-mail`) that the daemon holds in the foreground. Data: the SQLite database and the git archive (`STORAGE_ROOT`) under `~/proj/share/agent-mail`.
+- **Service:** the pitchfork daemon `agent-mail`, `am serve-http` with its TUI on 0.0.0.0:8765, MCP at `/mcp/`. am runs in the session `am` of a private tmux server (socket `agent-mail`) that the daemon holds in the foreground. Data: the SQLite database and the git archive (`STORAGE_ROOT`) under `~/proj/share/agent-mail`.
 - **TUI:** `mise run fw:am-tui` attaches to the running server's TUI from any terminal or tmux pane. Detach with Ctrl-\ (or the default prefix, C-b d); the server keeps running. The window takes the size of the last attached terminal. The TUI saves its preferences and dismissed hints under `~/proj/share/agent-mail/tui/` (`CONSOLE_PERSIST_PATH`), not in the managed `config.env`.
 - **Web UI:** <http://localhost:8765/mail> from the macOS host: projects, agents, threads, reservations, and the HumanOverseer compose page. `ntm mail send <repo> ...` is the same overseer from the shell.
 - **Terminal views:** the `am` commands [below](#am-cli).
@@ -14,8 +14,8 @@ How MCP Agent Mail runs on this machine and which parts of its setup look odd bu
   - Anywhere else the agent registers itself once and keeps the name; for the pre-commit guard it commits with `AGENT_NAME=<name>`.
   - A harness subagent (Claude Code, Codex) gets its own identity from `~/.config/fw/bin/am-subagent`, below.
   - The project key is the repository's absolute path, which for ntm is `~/proj/active/<session>`.
-- **Hooks** (`~/.config/fw/bin/am-hook`, registered by rulesync for Claude Code and Codex): at session start the agent's name, pending acknowledgements and active reservations; after a tool call an unread-mail reminder, at most every 120 s. The agent is `AGENT_NAME`, else `AGENT_MAIL_AGENT`, else the pane identity; inside a subagent (`agent_id` in the hook input) only the subagent's own identity. Without one the hooks stay silent.
-- **Subagents** (`am-subagent`, the `SubagentStart` and `SubagentStop` hooks from rulesync; agy has neither event):
+- **Hooks** (`~/.config/fw/bin/am-hook`, for Claude Code and Codex, registered in no client): at session start the agent's name, pending acknowledgements and active reservations; after a tool call an unread-mail reminder, at most every 120 s. The agent is `AGENT_NAME`, else `AGENT_MAIL_AGENT`, else the pane identity; inside a subagent (`agent_id` in the hook input) only the subagent's own identity. Without one the hooks stay silent.
+- **Subagents** (`am-subagent`, the `SubagentStart` and `SubagentStop` hooks, registered in no client; agy has neither event):
   - `start` runs `am agents create` (no pane id, so the parent's pane binding stays) for every agent type except the read-only ones (`Explore`, `Plan`, `claude-code-guide`, Codex's `explorer`), keeps name, project and registration token in `~/.cache/fw/am-subagents/<agent_id>`, and hands the subagent its name as `additionalContext`. A later start for the same `agent_id` reuses the name.
   - `stop` releases the subagent's reservations and keeps the state.
   - The cron daemon `am-subagent-reap` (daily at 11:30) retires the identities whose state went unused for a day, through the MCP tool `retire_agent` with the saved token, and deletes the state. `pitchfork logs am-subagent-reap` shows each retirement.
