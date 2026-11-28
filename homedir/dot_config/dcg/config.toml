@@ -50,3 +50,18 @@ self_heal_hook = false
 
 [history]
 enabled = true
+
+# The workflow folder of T3: chezmoi writes its files again on every apply, and the rest there are copies made to try a
+# workflow out. Removing them is routine cleanup, so the recursive rm rules leave literal targets under it alone; every
+# other rule still checks the whole command. Worktrees stay guarded: `git worktree remove` refuses a dirty one.
+[rules."core.filesystem:rm-recursive-root-home"]
+exempt_target_globs = ["~/.t3/workflows/**"]
+
+[rules."core.filesystem:rm-rf-root-home"]
+exempt_target_globs = ["~/.t3/workflows/**"]
+
+[rules."core.filesystem:rm-r-f-separate-root-home"]
+exempt_target_globs = ["~/.t3/workflows/**"]
+
+[rules."core.filesystem:rm-recursive-force-root-home"]
+exempt_target_globs = ["~/.t3/workflows/**"]

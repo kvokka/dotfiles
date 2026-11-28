@@ -6,43 +6,47 @@ description: Use when the user asks to run, start or send a task to the review l
 # review-loop
 
 The workflow `review-loop` (`~/.t3/workflows/review-loop.mjs`) takes one task through rounds of a coder, the
-project's full CI and a reviewer, on a branch and a worktree of its own, until a review gives the pass score. It
-asks the owner only what no agent can settle. You start the run; you do not do the task.
+project's full CI and a reviewer until a review gives the pass score. It works where this thread works, in its worktree
+or else in the project's checkout, on the branch checked out there, and reports to this thread. It asks the owner only
+what no agent can settle. You start the run; you do not do the task.
 
 ## Start a run
 
 1. **The project** is the root checkout of the repository, as T3 has it registered: the first line of
    `git worktree list`, not a worktree you may be in.
-2. **The CI.** The workflow runs the script named `ci` of `t3.json` at the project's root. When it has none, ask
+2. **The place.** The run commits on the branch checked out in this thread's worktree, or in the project's checkout
+   when this thread has none: `t3_worktree_status` shows which. Say so to the user before you start. The tree must be
+   clean: commit or stash first, with the user's consent. Change nothing in that tree while the run works.
+3. **The CI.** The workflow runs the script named `ci` of `t3.json` at the project's root. When it has none, ask
    the user for the command of the full CI and offer to add it:
    `{"scripts": [{"name": "ci", "command": "<command>"}]}`. A command given for this run only goes in the input
    as `"ci"`.
-3. **The task** is everything a coder with no access to this conversation needs: the goal, the decisions already
+4. **The task** is everything a coder with no access to this conversation needs: the goal, the decisions already
    made, what is out of scope, how "done" is checked. Write it to a file and show it to the user before you start,
    unless they gave the text themselves.
-4. Start it. The key is unique per run; `thread` is this thread, which the run tells how it ended:
+5. Start it. The key is unique per run:
 
    ```sh
    t3 workflow start review-loop --key "<slug>-$(date +%Y%m%d-%H%M)" \
-     --input "$(jq -n --arg project "<project root>" --rawfile task <task file> --arg thread "$T3CODE_THREAD_ID" \
-       '{$project, $task, $thread}')"
+     --input "$(jq -n --arg project "<project root>" --arg thread "$T3CODE_THREAD_ID" --rawfile task <task file> \
+       '{$project, $thread, $task}')"
    ```
 
-5. Give the user the run id. The run and its questions are on the Workflows page of T3 ("Needs you");
-   `t3 workflow show <run>` prints its steps. Do not wait for the run.
+6. Give the user the run id. The run and its questions are on the Workflows page of T3 ("Needs you");
+   `t3 workflow show <run>` prints its steps. Do not wait for the run: it writes to this thread when it ends.
 
 ## More rounds
 
-A run is never extended: a new run with `"continue": "<run id>"` goes on from an ended one, in its worktree and branch,
-with its task, reports, reviews and the owner's answers, and numbers its rounds after them. A `task` given with it is
-the owner's follow-up, added to the old task; leave it out for more rounds of the same task. A run older than this
-(it has no `task` step in `t3 workflow show`) kept no task: give the whole task. The run refuses to start while the
-run it continues has not ended. `project` stays the root checkout.
+A run is never extended: a new run with `"continue": "<run id>"` goes on from an ended one, with its task, reports,
+reviews, the owner's answers and base, and numbers its rounds after them. A `task` given with it is the owner's
+follow-up, added to the old task; leave it out for more rounds of the same task. A run older than this (it has no
+`task` step in `t3 workflow show`) kept no task: give the whole task. The run refuses to start while the run it
+continues has not ended. `t3 workflow list --subject "$T3CODE_THREAD_ID"` lists the runs this thread started.
 
 ```sh
 t3 workflow start review-loop --key "<slug>-$(date +%Y%m%d-%H%M)" \
-  --input "$(jq -n --arg project "<project root>" --arg continue "<run id>" --arg thread "$T3CODE_THREAD_ID" \
-    --argjson rounds 5 '{$project, $continue, $thread, $rounds}')"
+  --input "$(jq -n --arg project "<project root>" --arg thread "$T3CODE_THREAD_ID" --arg continue "<run id>" \
+    --argjson rounds 5 '{$project, $thread, $continue, $rounds}')"
 ```
 
 ## The input
@@ -50,19 +54,17 @@ t3 workflow start review-loop --key "<slug>-$(date +%Y%m%d-%H%M)" \
 | Field | Default | What |
 |---|---|---|
 | `project` | | the absolute path of the project's root |
+| `thread` | | the thread the run works for: `$T3CODE_THREAD_ID`; without it, the project's checkout and no report |
 | `task` | | the task, whole; with `continue`, the owner's follow-up to it |
-| `continue` | | an ended run to go on from, in its worktree |
-| `thread` | | the thread told how the run ended: `$T3CODE_THREAD_ID` |
-| `ci` | the `ci` script of `t3.json` | the full CI, run in the worktree |
-| `base` | `HEAD` of the project's checkout | the ref the run's branch starts from |
+| `continue` | | an ended run to go on from |
+| `ci` | the `ci` script of `t3.json` | the full CI, run where the run works |
+| `base` | `HEAD` at the start, or the base of `continue` | the commit the work is reviewed from |
 | `passScore` | `9` | the review score, of 10, that ends the loop |
 | `rounds` | `10` | the rounds of this run, after which it stops |
-| `coder`, `reviewer` | Claude Opus on `claude-coder`, GPT Sol on `codex-coder` | `{"instanceId", "model", "options"}` of a T3 provider instance |
+| `coder`, `reviewer`, `summarizer` | Claude Opus on `claude-coder`, GPT Sol and GPT Terra on `codex-coder` | `{"instanceId", "model", "options"}` of a T3 provider instance |
 
 ## The end
 
-Every end opens a thread on the run's worktree, on the project's default model, with the outcome, the task and the
-last report and review: there the user reads the diff, talks the work over, opens a pull request or starts more
-rounds. `thread` then gets a message with that thread's link: tell the user in a sentence or two. Nothing is pushed or
-merged. A run stopped after its last round, or by the owner, keeps its branch; a cancelled run opens no thread and
-sends no message.
+At every end a summarizer writes one summary of the whole task: what is done, what stays open, what the owner
+decided, what comes next. The run sends it to this thread: give it to the user. Nothing is pushed or merged. A
+cancelled run sends nothing.

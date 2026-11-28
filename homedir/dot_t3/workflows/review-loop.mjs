@@ -7,23 +7,24 @@
 // - A question no agent can settle goes to the owner as a T3 question; the answer starts a new coder round.
 // - A session gets the task, the last reports and reviews, every answer of the owner and the last notes on the
 //   repository (lib/repo-notes.mjs).
-// - The work stays on a branch of its own, in a worktree of its own. Nothing is pushed.
-// - `continue` names an ended run: the new run goes on in its worktree and branch, with its task, reports, reviews and
-//   answers, and numbers its rounds after them. A `task` given with it is the owner's follow-up to that task.
-// - Every end leaves a thread on the worktree, with the result, where the owner reads the diff, talks about the work
-//   and opens a pull request; `thread` (the one that started the run) gets a word with its link.
+// - The run works where `thread`, the thread that starts it, works: in its worktree, or else in the project's checkout,
+//   on the branch checked out there, from a clean tree. It makes no worktree or branch of its own and pushes nothing.
+// - At the end a summarizer turns the task, the reports, the reviews and the owner's answers into one summary of the
+//   whole task, which `thread` gets.
+// - `continue` names an ended run: the new run takes over its task, reports, reviews, answers and base, and numbers
+//   its rounds after them. A `task` given with it is the owner's follow-up to that task.
 //
 // The prompts are in review-loop/, read at the start of each run. The agents run with the project's runtime mode: one
 // that waits for approvals makes a session wait for the owner.
 //
-//   t3 workflow start review-loop --key <unique> --input '{"project":"/abs/repo","task":"...","thread":"<id>"}'
+//   t3 workflow start review-loop --key <unique> --input '{"project":"/abs/repo","thread":"<id>","task":"..."}'
 import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { basename, join } from "node:path";
+import { join } from "node:path";
 import { RepoNotes, RepoNoteSets, recentRepoNotes, saveRepoNotes } from "./lib/repo-notes.mjs";
 
-const { workflow, step, agent, ask, stop, title } = T3;
+const { workflow, step, agent, ask, stop, title, subject } = T3;
 const S = Schema;
 
 // A provider instance of T3's settings: its plugins, environment and launch arguments are the agent's.
@@ -34,9 +35,11 @@ const Model = S.Struct({
 });
 const CODER = { instanceId: "claude-coder", model: "claude-opus-5-5", options: [{ id: "effort", value: "high" }] };
 const REVIEWER = { instanceId: "codex-coder", model: "gpt-6.2-sol", options: [{ id: "reasoningEffort", value: "high" }] };
+const SUMMARIZER = { instanceId: "codex-coder", model: "gpt-6.1-terra" };
 
 const CODER_TIMEOUT = "2 hours";
 const REVIEWER_TIMEOUT = "1 hour";
+const SUMMARY_TIMEOUT = "20 minutes";
 const CI_TIMEOUT_MS = 60 * 60_000;
 // How long a session may stay silent between turns (it waits for its background work) before it is asked for its result.
 const QUIET = "30 minutes";
@@ -45,16 +48,17 @@ const NOTE_SETS = 4; // the sets of repo notes a session gets
 const CI_RETURNS = 3; // red CI runs in a row that go back to a coder without a review
 
 const Payload = S.Struct({
-  project: S.String, // the absolute path of a repository registered as a T3 project
+  project: S.String, // the root checkout of a repository registered as a T3 project
+  thread: S.optional(S.String), // the thread that starts the run: the run works in its place and reports to it
   task: S.optional(S.String), // the task; with `continue`, the owner's follow-up to the task of that run
-  continue: S.optional(S.String), // an ended run of review-loop to go on from, in its worktree
-  thread: S.optional(S.String), // the thread that started the run, told how it ended
-  ci: S.optional(S.String), // the full CI, `sh -c` in the worktree; default: the script named `ci` of the project's t3.json
-  base: S.optional(S.String), // the ref the run's branch starts from; default: HEAD of the project's checkout
+  continue: S.optional(S.String), // an ended run of review-loop to go on from
+  ci: S.optional(S.String), // the full CI, `sh -c` where the run works; default: the script named `ci` of t3.json
+  base: S.optional(S.String), // the commit the work is reviewed from; default: HEAD at the start, or the base of `continue`
   passScore: S.optional(S.Number), // default 9
   rounds: S.optional(S.Number), // default 10
   coder: S.optional(Model),
   reviewer: S.optional(Model),
+  summarizer: S.optional(Model),
 });
 
 const CoderResult = S.Struct({
@@ -72,18 +76,18 @@ const ReviewResult = S.Struct({
 });
 const Tree = S.Struct({ head: S.String, dirty: S.Number });
 const Ci = S.Struct({ code: S.Number, tail: S.String, head: S.String, dirty: S.Number });
+// `worktree` is the folder the run works in: the thread's worktree or the project's checkout.
 const Setup = S.Struct({ base: S.String, branch: S.String, worktree: S.String });
-const Prompts = S.Struct({ coder: S.String, reviewer: S.String, launcher: S.String, result: S.String });
+const Prompts = S.Struct({ coder: S.String, reviewer: S.String, summary: S.String });
 // What a run takes over from the run it continues.
 const Inherited = S.Struct({
   ended: S.String, // how that run ended
   task: S.NullOr(S.String), // its task; null for a run older than the `task` step
-  setup: Setup,
+  base: S.String,
   history: S.Array(S.String),
   answers: S.Array(S.String),
   round: S.Number, // the last round it reached
 });
-const Opened = S.Struct({ threadId: S.String, link: S.String });
 
 // A command in a folder: its exit code and output. It never fails; a command that could not run or ran out of time
 // exits 124.
@@ -142,8 +146,9 @@ const inherit = (runId) =>
     if (!["completed", "stopped", "cancelled", "skipped"].includes(run.status))
       return yield* Effect.fail(new Error(`run ${runId} is ${run.status}: continue it once it has ended`));
     const done = Object.fromEntries(steps.filter((s) => s.status === "completed").map((s) => [s.name, s.result]));
-    if (!done.setup) return yield* Effect.fail(new Error(`run ${runId} ended before it made its worktree`));
-    // `inherit` is a step.try: its journal holds `{ outcome, value }`.
+    // A step.try's journal holds `{ outcome, value }`; `setup` was a plain step before version 4.
+    const setup = done.setup?.outcome ? done.setup.value : done.setup;
+    if (!setup) return yield* Effect.fail(new Error(`run ${runId} ended before it started its rounds`));
     const before = done.inherit?.value ?? { history: [], answers: [], round: 0 };
     const history = [...before.history];
     const answers = [...before.answers];
@@ -159,7 +164,7 @@ const inherit = (runId) =>
       else if (s.name.startsWith("answer-") && s.status === "completed") answers.push(s.result);
     }
     const ended = run.detail ?? run.status;
-    return { ended, task: done.task ?? null, setup: done.setup, history, answers, round };
+    return { ended, task: done.task ?? null, base: setup.base, history, answers, round };
   });
 
 // `{{name}}` of a prompt becomes its value. A value is not read again, so a task may hold braces of its own.
@@ -182,7 +187,7 @@ export default workflow(
         { returns: Prompts },
         Effect.promise(async () => {
           const read = (name) => readFile(new URL(`./review-loop/${name}.md`, import.meta.url), "utf8");
-          return { coder: await read("coder"), reviewer: await read("reviewer"), launcher: await read("launcher"), result: await read("result") };
+          return { coder: await read("coder"), reviewer: await read("reviewer"), summary: await read("summary") };
         }),
       );
 
@@ -192,33 +197,44 @@ export default workflow(
       let task = input.task ?? "";
       let headline = "(no task)";
 
-      // The end of every run: a thread on the worktree with the result, then a word to the thread that started the run.
+      if (input.thread) yield* subject({ threadId: input.thread });
+
+      // The agents work in the thread's place: its worktree, or the project's checkout.
+      const workspaceOf = (setup) =>
+        setup.worktree === input.project
+          ? { type: "root" }
+          : {
+              type: "existing_worktree",
+              worktreePath: setup.worktree,
+              ...(setup.branch === "HEAD" ? {} : { branch: setup.branch }),
+            };
+      // The end of every run: a summary of the whole task, for `thread` and the run's result.
       const finish = (outcome, setup) =>
         Effect.gen(function* () {
-          let where = setup ? `The work is on ${setup.branch} in ${setup.worktree}.` : "";
+          let summary = null;
+          let where = "";
           if (setup) {
             const at = yield* step("end-tree", { returns: Tree }, tree(setup.worktree));
-            const result = fill(prompts.result, {
-              runId: run.id,
-              outcome,
-              ...setup,
-              head: at.head,
-              task,
-              last: history.slice(-2).join("\n\n") || "(none)",
-            });
-            // The model and modes are the project's: the launcher's own, which the thread it opens takes.
-            const opened = yield* agent.try("result-thread", {
+            where = ` The work is in ${setup.worktree}, on ${setup.branch}, at ${at.head}.`;
+            const summed = yield* agent.try("summary", {
               project: input.project,
-              workspace: { type: "existing_worktree", worktreePath: setup.worktree, branch: setup.branch },
-              title: `${headline} · result`,
-              timeout: "15 minutes",
-              returns: Opened,
-              brief: fill(prompts.launcher, { title: `${headline} · review-loop`, ...setup, result }),
+              workspace: workspaceOf(setup),
+              model: input.summarizer ?? SUMMARIZER,
+              title: `${headline} · summary`,
+              timeout: SUMMARY_TIMEOUT,
+              brief: fill(prompts.summary, {
+                outcome,
+                ...setup,
+                head: at.head,
+                task,
+                answers: answers.join("\n\n") || "(none)",
+                history: history.join("\n\n") || "(none)",
+              }),
             });
-            if (opened.outcome === "done") where = `The result, its diff and its worktree are in ${opened.value.link}.`;
+            summary = summed.outcome === "done" ? summed.value : `(no summary: ${summed.reason})`;
           }
           // shortcut: T3 tells no thread that a run it started has ended, so the run writes to it itself; drop this
-          // step once T3 links a run to the thread that started it.
+          // step once T3 does.
           if (input.thread)
             yield* step(
               "notify",
@@ -228,16 +244,17 @@ export default workflow(
                   "thread",
                   "send",
                   input.thread,
-                  `The review-loop run ${run.id} (${headline}) has ended: ${outcome}. ${where}\n` +
-                    `Tell the owner this in a sentence or two, with the link; do nothing else.`,
+                  `The review-loop run ${run.id} (${headline}) has ended: ${outcome}.${where}\n\n` +
+                    `${summary ?? ""}\n\nGive the owner this summary, in the language you speak with them; do nothing else.`,
                 ]),
                 (r) => r.code,
               ),
             );
+          return summary;
         });
       const end = (reason, setup) =>
         Effect.flatMap(finish(reason, setup), () =>
-          stop(setup ? `${reason}; the work is on ${setup.branch} in ${setup.worktree}` : reason),
+          stop(setup ? `${reason}; the work is in ${setup.worktree}, on ${setup.branch}` : reason),
         );
 
       let inherited = null;
@@ -263,26 +280,31 @@ export default workflow(
       if (ciCommand.outcome === "failed") return yield* end(ciCommand.reason);
       const ci = ciCommand.value;
 
-      const setup = yield* step(
+      const placed = yield* step.try(
         "setup",
         { returns: Setup },
         Effect.gen(function* () {
-          if (inherited) {
-            const { worktree, branch } = inherited.setup;
-            const there = yield* exec("git", ["-C", worktree, "rev-parse", "--git-dir"], input.project);
-            if (there.code !== 0) yield* git(input.project, "worktree", "add", "-q", worktree, branch);
-            return inherited.setup;
+          let worktree = input.project;
+          if (input.thread) {
+            const shown = yield* exec("t3", ["thread", "show", input.thread, "--json"], homedir());
+            if (shown.code !== 0)
+              return yield* Effect.fail(new Error(`t3 thread show ${input.thread}: ${shown.out.trim()}`));
+            worktree = JSON.parse(shown.stdout).thread.worktreePath ?? input.project;
           }
-          const id = run.id.slice(0, 8);
-          const branch = `review-loop/${id}`;
-          const worktree = join(homedir(), ".t3", "worktrees", basename(input.project), `review-loop-${id}`);
-          const base = yield* git(input.project, "rev-parse", "--verify", `${input.base ?? "HEAD"}^{commit}`);
-          // The step may run twice: a worktree that is there is the one it made.
-          const made = yield* exec("git", ["-C", worktree, "rev-parse", "--git-dir"], input.project);
-          if (made.code !== 0) yield* git(input.project, "worktree", "add", "-q", "-B", branch, worktree, base);
+          // The coders commit everything in the tree: the owner's uncommitted work stays out of their commits.
+          const { dirty } = yield* tree(worktree);
+          if (dirty > 0)
+            return yield* Effect.fail(new Error(`${worktree} has ${dirty} uncommitted paths: commit or stash them first`));
+          const branch = yield* git(worktree, "rev-parse", "--abbrev-ref", "HEAD");
+          const base =
+            input.base || !inherited
+              ? yield* git(worktree, "rev-parse", "--verify", `${input.base ?? "HEAD"}^{commit}`)
+              : inherited.base;
           return { base, branch, worktree };
         }),
       );
+      if (placed.outcome === "failed") return yield* end(placed.reason);
+      const setup = placed.value;
       let notes = yield* step("notes", { returns: RepoNoteSets }, recentRepoNotes(input.project, NOTE_SETS));
       // An agent's notes join the store; the step gives back the sets the next session gets.
       const keepNotes = (name, given) =>
@@ -294,7 +316,7 @@ export default workflow(
           ),
         );
 
-      const workspace = { type: "existing_worktree", worktreePath: setup.worktree, branch: setup.branch };
+      const workspace = workspaceOf(setup);
       const session = (start, name, role, model, timeout, returns, brief) =>
         start(name, {
           project: input.project,
@@ -426,8 +448,8 @@ export default workflow(
           now.dirty > 0 && `${now.dirty} paths are not committed`,
         ].filter(Boolean);
         if (short.length === 0) {
-          yield* finish(`passed: the review of round ${round} gave ${r.score}/10`, setup);
-          return { branch: setup.branch, worktree: setup.worktree, head: now.head, score: r.score, rounds: round };
+          const summary = yield* finish(`passed: the review of round ${round} gave ${r.score}/10`, setup);
+          return { branch: setup.branch, worktree: setup.worktree, head: now.head, score: r.score, rounds: round, summary };
         }
         returned =
           `The review of round ${round} sent the work back: ${short.join("; ")}. Its mandatory items come first.` +
