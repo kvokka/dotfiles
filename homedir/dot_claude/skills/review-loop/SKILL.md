@@ -10,6 +10,27 @@ project's full CI and a reviewer until a review gives the pass score. It works w
 or else in the project's checkout, on the branch checked out there, and reports to this thread. It asks the owner only
 what no agent can settle. You start the run; you do not do the task.
 
+## Where it runs
+
+The run works in the place of the thread it is given and reports to that thread. The user's words choose the thread
+and the place; what they leave out takes the default:
+
+| The user asks for | You |
+|---|---|
+| nothing about where | start the run from this thread, in its place |
+| a new worktree for this thread | `t3_worktree_handoff` (only when this thread has none), last in your turn, with a `continuationPrompt` that starts the run |
+| a new thread | `t3_thread_launch` with a new worktree: two threads in one tree get in each other's way |
+| a new thread in this place | `t3_thread_launch` with `existing_worktree` (this thread's `worktreePath`) or `root`; this thread then leaves the tree alone |
+
+A new worktree whose base the user does not name starts from the branch checked out here: `baseRef` that branch,
+`startFromOrigin: false`, a new `branch` named after the task. Its work is meant to merge into the repository's default
+branch (`git symbolic-ref --short refs/remotes/origin/HEAD`): say so in the task. Uncommitted edits stay behind: commit
+what the task needs first.
+
+A new thread gets in its `message` the order to start the run at once, then the whole task: `Use the skill review-loop
+and start a run in this thread with the task below, as it stands; ask nothing.` Its agent passes its own
+`$T3CODE_THREAD_ID`, so the run reports there. Give the user the new thread's `link`.
+
 ## Start a run
 
 1. **The project** is the root checkout of the repository, as T3 has it registered: the first line of
@@ -22,8 +43,8 @@ what no agent can settle. You start the run; you do not do the task.
    `{"scripts": [{"name": "ci", "command": "<command>"}]}`. A command given for this run only goes in the input
    as `"ci"`.
 4. **The task** is everything a coder with no access to this conversation needs: the goal, the decisions already
-   made, what is out of scope, how "done" is checked. Write it to a file and show it to the user before you start,
-   unless they gave the text themselves.
+   made, what is out of scope, how "done" is checked. Write it to a file. Show it to the user and wait for their
+   word only when the conversation has not settled it: not when they gave the text, approved it, or said to start.
 5. Start it. The key is unique per run:
 
    ```sh
