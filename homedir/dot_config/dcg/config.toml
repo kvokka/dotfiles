@@ -44,8 +44,7 @@ enabled = [
 unverified_decision = "deny"
 # No self-heal: on every call dcg would register its own hook in
 # ~/.claude/settings.json and guard every session. dcg runs only from the hooks
-# of the repositories fw:init prepared; rulesync owns the user-scope hook lists
-# (`mise run ai:sync`).
+# of the repositories fw:init prepared.
 self_heal_hook = false
 
 [history]

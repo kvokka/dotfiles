@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # cass-memory context for the first prompt of a session: what `cm context`
 # finds for the prompt (rules, pitfalls, related sessions), printed once per
-# session. A UserPromptSubmit hook in Claude Code and Codex (~/.config/rulesync),
+# session. A UserPromptSubmit hook in Claude Code and Codex,
 # whose plain stdout reaches the model; OpenCode's cass-memory plugin passes
 # the same input. A slash command is not a prompt. History is filtered by the
 # repository's main checkout, so a worktree sees its repository's sessions.

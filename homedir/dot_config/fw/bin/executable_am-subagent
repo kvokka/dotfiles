@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Agent Mail identity of a harness subagent, wired by ~/.config/rulesync.
+# Agent Mail identity of a harness subagent (hooks not registered in any client).
 #
 #   am-subagent start   SubagentStart: gives the subagent its own Agent Mail
 #                       name and tells it, as the JSON `additionalContext`

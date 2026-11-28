@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Agent Mail context for AI client hooks, wired by ~/.config/rulesync.
+# Agent Mail context for AI client hooks (not registered in any client).
 #
 #   am-hook session   SessionStart: pending acknowledgements and active file
 #                     reservations, as plain text (the model sees SessionStart

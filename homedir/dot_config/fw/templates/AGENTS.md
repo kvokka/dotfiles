@@ -30,7 +30,7 @@ reporting the observed result.
 - Never run `git reset --hard`, `git checkout -- .`, `git clean -fd`,
   `rm -rf`, force pushes or history rewrites unless the user gives the
   exact command and states the consequences are intended. The repository's
-  guard hooks (dcg, from `.rulesync/`) block most of these and other
+  guard hooks (dcg) block most of these and other
   known-dangerous commands before they run (not `--amend`, rebases or
   `--force-with-lease`); a blocked command needs another approach or
   the user, not a workaround.
